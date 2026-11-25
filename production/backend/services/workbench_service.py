@@ -178,17 +178,79 @@ class WorkbenchService:
             log_svc.emit_stage_log(stage_num, f"Sistem hatası: {str(e)}", level="ERROR")
             raise StageExecutionError(f"Stage {stage_num} error: {str(e)}") from e
 
+    def _get_valid_disk_stems(self) -> Optional[Dict[str, Any]]:
+        """Returns persisted stems.json payload if it exists AND all referenced stem WAV files exist on disk."""
+        stems_data = self.repo.load_artifact("stems")
+        if not isinstance(stems_data, dict):
+            return None
+        stems_map = stems_data.get("stems")
+        if not isinstance(stems_map, dict) or not stems_map:
+            return None
+        stems_dir = self.repo.get_stems_dir()
+        if not stems_dir.exists():
+            return None
+        for stem_name in stems_map.keys():
+            wav_path = stems_dir / f"{stem_name}.wav"
+            if not wav_path.exists() or wav_path.stat().st_size == 0:
+                return None
+        return stems_data
+
+    def _get_valid_disk_lyrics(self) -> Optional[Dict[str, Any]]:
+        """Returns persisted lyrics.json payload if valid (either transcribed lines or confirmed instrumental)."""
+        lyrics_data = self.repo.load_artifact("lyrics")
+        if not isinstance(lyrics_data, dict):
+            return None
+        lines = lyrics_data.get("lines")
+        is_inst = bool(lyrics_data.get("is_instrumental"))
+        if isinstance(lines, list) and (len(lines) > 0 or is_inst):
+            return lyrics_data
+        return None
+
+    @staticmethod
+    def _format_cached_stems_summary(stems_data: Dict[str, Any]) -> str:
+        stems_map = stems_data.get("stems") or {}
+        total = len(stems_map) or 6
+        detected = int(stems_data.get("detected_count", sum(1 for v in stems_map.values() if isinstance(v, dict) and v.get("detected"))))
+        return f"{detected}/{total} Enstrüman · Disk Önbellek"
+
+    @staticmethod
+    def _format_cached_lyrics_summary(lyrics_data: Dict[str, Any]) -> str:
+        if lyrics_data.get("is_instrumental") or not lyrics_data.get("lines"):
+            return "Enstrümantal Parça · Vokal Söz Tespit Edilmedi (Disk Önbellek)"
+        lang = str(lyrics_data.get("detected_language") or "auto").upper()
+        line_count = int(lyrics_data.get("line_count") or len(lyrics_data.get("lines") or []))
+        word_count = int(lyrics_data.get("word_count") or 0)
+        return f"{line_count} Satır · {word_count} Kelime · Dil: {lang} (Disk Önbellek)"
+
+    def _hydrate_lyrics_from_disk(self, disk_lyrics: Dict[str, Any], track_key: Optional[str]) -> None:
+        """Populates session state and private DB with cached AI lyrics without overwriting manual/LRCLIB lyrics."""
+        lines = disk_lyrics.get("lines") or []
+        if not lines:
+            return
+        latest_state = self.repo.load_state()
+        has_existing = bool(latest_state.get("lyrics"))
+        if has_existing:
+            return
+        latest_state["lyrics"] = lines
+        latest_state["lyrics_source"] = "ai"
+        latest_state["lyrics_locked"] = False
+        self.repo.save_state(latest_state)
+        if self.current_user and track_key and str(track_key).startswith("sha256:"):
+            self.song_db.update_user_private_song_lyrics(
+                self.current_user["id"],
+                str(track_key),
+                lines,
+                lyrics_source="ai",
+            )
+
     def prepare_studio_session(self, background_stems: bool = True) -> Dict[str, Any]:
         """
         Progressive Studio Loader:
-        1. Checks if song's track_key exists in SQLite DB with pipeline_version == APP_PIPELINE_VERSION.
-           - If YES (Cache Hit): Restores Stage 1 (Tempo/Beats) & Stage 2 (Chords/Key/Coalesced Sections)
-             in < 10ms without re-running Stage 1 or Stage 2!
-           - If NO (Cache Miss or Version Upgraded): Executes Stage 1 and Stage 2, then persists
-             metadata + APP_PIPELINE_VERSION to SQLite DB.
-        2. Spawns Stage 3 (BS-RoFormer 6-Stem Demux) in a background daemon thread so the user interface
-           opens immediately with Master Audio (source.wav), full chords, sections, and diagrams while
-           6-channel stem separation completes in the background!
+        1. Checks SQLite DB (versioned by APP_PIPELINE_VERSION) AND persistent track disk artifacts
+           (`storage/tracks/<shard>/beats.json`, `chords.json`, `stems.json`, `lyrics.json`).
+           - If cached on DB or Disk (Cache Hit): Restores completed stages in < 10ms without re-running GPU/CPU models!
+           - If Cache Miss: Executes Stage 1 & Stage 2 so the studio opens immediately, then runs missing
+             Stage 3 (BS-RoFormer 6-Stem Demux) and Stage 4 (Lyrics & CTC Alignment) in background.
         """
         if not self.repo.has_source_audio():
             raise SessionAudioNotFoundError(
@@ -214,6 +276,15 @@ class WorkbenchService:
             self.song_db.get_valid_cached_song(track_key, APP_PIPELINE_VERSION, user_id=user_id)
             if track_key
             else None
+        )
+        disk_beats = self.repo.load_artifact("beats") if not cached else None
+        disk_chords = self.repo.load_artifact("chords") if not cached else None
+        has_valid_disk_s1_s2 = bool(
+            isinstance(disk_beats, dict)
+            and disk_beats.get("beats")
+            and isinstance(disk_chords, dict)
+            and disk_chords.get("chords")
+            and disk_chords.get("pipeline_version") in (None, APP_PIPELINE_VERSION)
         )
         cache_hit = False
 
@@ -255,6 +326,55 @@ class WorkbenchService:
                 "INFO",
                 "backend.cache",
                 f"Şarkı veritabanı önbelleğinden (v{APP_PIPELINE_VERSION}) 10ms içinde yüklendi: {state.get('track_name')}",
+            )
+        elif has_valid_disk_s1_s2:
+            cache_hit = True
+            s1_data = disk_beats
+            s2_data = disk_chords
+            if is_private_upload:
+                lyrics = state.get("lyrics") or []
+                lyrics_source = state.get("lyrics_source") or "user"
+            else:
+                lyrics, lyrics_source = fetch_synchronized_lyrics_with_source(
+                    str(state.get("track_name") or ""),
+                    duration_sec=float(state.get("duration_sec") or 240.0),
+                )
+            state["lyrics"] = lyrics
+            state["lyrics_source"] = lyrics_source
+            state["lyrics_locked"] = lyrics_source == "lrclib" and not is_private_upload
+            state["lyrics_version"] = int(state.get("lyrics_version") or 1)
+            state["lyrics_updated_by"] = state.get("lyrics_updated_by")
+            state["is_private"] = is_private_upload
+            self.repo.save_state(state)
+
+            s1_summary = f"{s1_data.get('tempo_bpm', 120)} BPM, {s1_data.get('time_signature', '4/4')} (Disk Önbellek)"
+            s2_summary = (
+                f"Ton: {s2_data.get('key_signature', 'C major')} · "
+                f"{len(s2_data.get('chords', []))} Akor · "
+                f"{len(s2_data.get('sections', []))} Bölüm (Disk Önbellek)"
+            )
+            self.repo.update_stage_state(1, status="completed", timings_ms=2.0, summary=s1_summary, error=None)
+            self.repo.update_stage_state(2, status="completed", timings_ms=2.0, summary=s2_summary, error=None)
+            if track_key:
+                disk_stems_preview = self._get_valid_disk_stems() or {}
+                self.song_db.save_song_analysis(
+                    track_key=track_key,
+                    title=str(state.get("track_name") or "Kythra Track"),
+                    duration_sec=float(state.get("duration_sec") or 180.0),
+                    stage1=s1_data,
+                    stage2=s2_data,
+                    waveform_peaks=waveform_peaks,
+                    lyrics=lyrics,
+                    lyrics_source=lyrics_source,
+                    pipeline_version=APP_PIPELINE_VERSION,
+                    owner_user_id=user_id,
+                    is_private_upload=is_private_upload,
+                    stage3=disk_stems_preview,
+                )
+            log_svc.add_entry(
+                "INFO",
+                "backend.cache",
+                f"Şarkı disk önbelleğinden (beats.json & chords.json) anında yüklendi: {state.get('track_name')}",
             )
         else:
             # Execute Stage 1 and Stage 2 so the screen can open immediately!
@@ -302,9 +422,56 @@ class WorkbenchService:
                     stage3=s3_data,
                 )
 
-        # Spawn Stage 3 (6-Channel Separation) in background if not yet completed
+        # Check persistent disk cache for Stage 3 (stems.json + stems/*.wav) before running BS-RoFormer
         current_state = self.repo.load_state()
         s3_status = current_state.get("stages", {}).get("3", {}).get("status")
+        if s3_status != "completed":
+            disk_stems = self._get_valid_disk_stems()
+            if disk_stems is not None:
+                s3_summary = self._format_cached_stems_summary(disk_stems)
+                self.repo.update_stage_state(
+                    3,
+                    status="completed",
+                    timings_ms=1.0,
+                    summary=s3_summary,
+                    error=None,
+                )
+                if self.current_user and track_key and str(track_key).startswith("sha256:"):
+                    self.song_db.update_user_private_song_stage3(
+                        self.current_user["id"],
+                        str(track_key),
+                        disk_stems,
+                    )
+                log_svc.add_entry(
+                    "INFO",
+                    "backend.cache",
+                    f"Aşama 3 (6-Kanal Stems) disk önbelleğinden anında yüklendi -> {s3_summary}",
+                )
+                s3_status = "completed"
+
+        # Check persistent disk cache for Stage 4 (lyrics.json) before running ASR/MMS_FA
+        current_state = self.repo.load_state()
+        s4_status = current_state.get("stages", {}).get("4", {}).get("status")
+        if s4_status != "completed":
+            disk_lyrics = self._get_valid_disk_lyrics()
+            if disk_lyrics is not None:
+                s4_summary = self._format_cached_lyrics_summary(disk_lyrics)
+                self.repo.update_stage_state(
+                    4,
+                    status="completed",
+                    timings_ms=1.0,
+                    summary=s4_summary,
+                    error=None,
+                )
+                self._hydrate_lyrics_from_disk(disk_lyrics, track_key)
+                log_svc.add_entry(
+                    "INFO",
+                    "backend.cache",
+                    f"Aşama 4 (Söz & Karaoke) disk önbelleğinden anında yüklendi -> {s4_summary}",
+                )
+                s4_status = "completed"
+
+        # Spawn missing Stage 3 (and/or Stage 4) in background only when not already cached on disk
         if s3_status != "completed":
             if background_stems:
                 self.repo.update_stage_state(
@@ -319,18 +486,54 @@ class WorkbenchService:
                         self.run_stage(3)
                         st_after = self.repo.load_state()
                         has_lyrics = bool(st_after.get("lyrics"))
-                        s4_status = st_after.get("stages", {}).get("4", {}).get("status")
-                        if not has_lyrics and s4_status != "completed":
-                            try:
-                                self.run_stage(4)
-                            except Exception as e4:
-                                logger.warning("Background Stage 4 (Lyrics) skipped/failed: %s", e4)
+                        s4_st = st_after.get("stages", {}).get("4", {}).get("status")
+                        if not has_lyrics and s4_st != "completed":
+                            cached_lyrics = self._get_valid_disk_lyrics()
+                            if cached_lyrics is not None:
+                                self.repo.update_stage_state(
+                                    4,
+                                    status="completed",
+                                    timings_ms=1.0,
+                                    summary=self._format_cached_lyrics_summary(cached_lyrics),
+                                    error=None,
+                                )
+                                self._hydrate_lyrics_from_disk(cached_lyrics, track_key)
+                            else:
+                                try:
+                                    self.run_stage(4)
+                                except Exception as e4:
+                                    logger.warning("Background Stage 4 (Lyrics) skipped/failed: %s", e4)
                     except Exception as e:
                         logger.error("Background Stage 3 failed: %s", e)
 
                 threading.Thread(target=_bg_stage3, daemon=True, name="bg-stage3-mss").start()
             else:
                 self.run_stage(3)
+        elif s4_status != "completed":
+            current_state = self.repo.load_state()
+            has_lyrics = bool(current_state.get("lyrics"))
+            vocals_wav = self.repo.get_stems_dir() / "vocals.wav"
+            if not has_lyrics and vocals_wav.exists() and vocals_wav.stat().st_size > 0:
+                if background_stems:
+                    self.repo.update_stage_state(
+                        4,
+                        status="running",
+                        summary="İzole vokalden şarkı sözleri çözümleniyor...",
+                        error=None,
+                    )
+
+                    def _bg_stage4():
+                        try:
+                            self.run_stage(4)
+                        except Exception as e4:
+                            logger.warning("Background Stage 4 (Lyrics) skipped/failed: %s", e4)
+
+                    threading.Thread(target=_bg_stage4, daemon=True, name="bg-stage4-lyrics").start()
+                else:
+                    try:
+                        self.run_stage(4)
+                    except Exception as e4:
+                        logger.warning("Stage 4 (Lyrics) skipped/failed: %s", e4)
 
         bundle = self.get_studio_bundle()
         bundle["cache_hit"] = cache_hit
@@ -513,23 +716,39 @@ class WorkbenchService:
         state["lyrics_version"] = cached.get("lyrics_version", 1)
         state["lyrics_updated_by"] = cached.get("lyrics_updated_by")
         state["is_private"] = cached.get("is_private", False)
-        state["stages"]["1"] = {"status": "completed", "timings_ms": 5.0}
-        state["stages"]["2"] = {"status": "completed", "timings_ms": 5.0}
-        self.repo.save_state(state)
-        has_persistent_stems = any(self.repo.get_stems_dir().glob("*.wav"))
-        state["stages"]["3"] = (
-            {"status": "completed", "timings_ms": 0.0}
-            if (has_cached_stems or has_persistent_stems)
-            else {"status": "pending", "timings_ms": 0.0}
-        )
         self.repo.save_state(state)
         self.repo.save_artifact("beats", cached["beats"])
         self.repo.save_artifact("chords", cached["chords"])
         if has_cached_stems:
             self.repo.save_artifact("stems", cached_s3)
-        s4_artifact = self.repo.load_stage_data(4)
-        if (isinstance(s4_artifact, dict) and s4_artifact.get("lines")) or state["lyrics"]:
-            self.repo.update_stage_state(4, status="completed", timings_ms=0.0)
+
+        self.repo.update_stage_state(1, status="completed", timings_ms=5.0, error=None)
+        self.repo.update_stage_state(2, status="completed", timings_ms=5.0, error=None)
+
+        disk_stems = self._get_valid_disk_stems()
+        has_persistent_stems = disk_stems is not None or any(self.repo.get_stems_dir().glob("*.wav"))
+        if has_cached_stems or has_persistent_stems:
+            s3_summary = (
+                self._format_cached_stems_summary(disk_stems or cached_s3)
+                if (disk_stems or has_cached_stems)
+                else "Disk Önbellek"
+            )
+            self.repo.update_stage_state(3, status="completed", timings_ms=0.0, summary=s3_summary, error=None)
+        else:
+            self.repo.update_stage_state(3, status="pending", timings_ms=0.0, error=None)
+
+        disk_lyrics = self._get_valid_disk_lyrics()
+        if disk_lyrics is not None:
+            self.repo.update_stage_state(
+                4,
+                status="completed",
+                timings_ms=0.0,
+                summary=self._format_cached_lyrics_summary(disk_lyrics),
+                error=None,
+            )
+            self._hydrate_lyrics_from_disk(disk_lyrics, cached["track_key"])
+        elif state["lyrics"]:
+            self.repo.update_stage_state(4, status="completed", timings_ms=0.0, error=None)
         return self.get_studio_bundle()
 
     def get_audio_path(self, filename: str) -> Path:

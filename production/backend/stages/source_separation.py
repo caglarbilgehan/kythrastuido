@@ -94,9 +94,16 @@ class SourceSeparationExecutor(BaseStageExecutor):
         detected_channels = [name for name, s in stems_info.items() if s["detected"]]
         absent_channels = [name for name, s in stems_info.items() if not s["detected"]]
 
+        batch_sz = getattr(engine, "batch_size", None)
+        if batch_sz is None:
+            from backend.config import MSS_BATCH_SIZE
+            batch_sz = MSS_BATCH_SIZE
+        use_amp = getattr(engine, "use_amp", True)
+        precision_tag = "BF16/FP16 AMP" if use_amp else "TF32"
+
         result_data = {
             "engine": engine.name,
-            "architecture": "Band-Split RoFormer (Macro 6-Stem · Batch=4 TF32)",
+            "architecture": f"Band-Split RoFormer (Macro 6-Stem · Batch={batch_sz} {precision_tag})",
             "sampling_rate_hz": 44100,
             "format": "pcm_16_disk",
             "storage_mode": "persistent_disk",

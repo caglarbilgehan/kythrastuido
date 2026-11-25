@@ -57,3 +57,11 @@ BS_ROFORMER_DIR = BENCHMARKS_DIR / "07-Music-Source-Separation" / "weights" / "b
 BS_ROFORMER_CKPT = BS_ROFORMER_DIR / "BS-Roformer-SW.ckpt"
 BS_ROFORMER_CONFIG = BS_ROFORMER_DIR / "BS-Roformer-SW.yaml"
 MSST_DIR = BENCHMARKS_DIR / "07-Music-Source-Separation" / "repos" / "MSST"
+
+# Inference Tuning (Stages 3 & 4)
+MSS_BATCH_SIZE = max(1, int(os.getenv("KYTHRA_MSS_BATCH_SIZE", "8")))
+MSS_USE_AMP = os.getenv("KYTHRA_MSS_USE_AMP", "1").strip().lower() not in ("0", "false", "no")
+
+WHISPER_MODEL_SIZE = os.getenv("KYTHRA_WHISPER_MODEL", "large-v3-turbo").strip() or "large-v3-turbo"
+WHISPER_BEAM_SIZE = max(1, int(os.getenv("KYTHRA_WHISPER_BEAM_SIZE", "2")))
+

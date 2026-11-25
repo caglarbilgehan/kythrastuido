@@ -98,9 +98,13 @@ class DAGPipelineOrchestrator:
             return feat_tuple, elapsed_cqt
 
         def _run_stage3_gpu() -> Dict[str, Any]:
+            from backend.config import MSS_BATCH_SIZE, MSS_USE_AMP
+
             t0 = time.time()
+            amp_tag = "BF16/FP16 AMP" if MSS_USE_AMP else "TF32"
             log_svc.emit_stage_log(
-                3, "[DAG Dal-3 · GPU] BS-RoFormer 6-Kanal Ayırma (Batch=4, TF32/FP16) başlatıldı..."
+                3,
+                f"[DAG Dal-3 · GPU] BS-RoFormer 6-Kanal Ayırma (Batch={MSS_BATCH_SIZE}, {amp_tag}) başlatıldı...",
             )
             executor3 = StageExecutorFactory.get_executor(3)
             data3, summary3 = executor3.execute(ctx, self.repo, state)

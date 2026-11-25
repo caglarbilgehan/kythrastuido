@@ -13,7 +13,14 @@ import torch
 import soundfile as sf
 import librosa
 
-from backend.config import BS_ROFORMER_CKPT, BS_ROFORMER_CONFIG, MSST_DIR, DEVICE
+from backend.config import (
+    BS_ROFORMER_CKPT,
+    BS_ROFORMER_CONFIG,
+    DEVICE,
+    MSS_BATCH_SIZE,
+    MSS_USE_AMP,
+    MSST_DIR,
+)
 from backend.engines.base import PipelineContext
 
 logger = logging.getLogger("backend.mss")
@@ -51,12 +58,19 @@ def _compute_and_write_stem(
 
 class MssDemuxEngine:
     name: str = "BS-RoFormer-SW"
-    version: str = "6-stem-2.0-fast"
+    version: str = "6-stem-2.1-amp"
 
-    def __init__(self):
+    def __init__(self, batch_size: int = MSS_BATCH_SIZE, use_amp: bool = MSS_USE_AMP):
         self.model = None
         self.config = None
         self.is_loaded = False
+        self.batch_size = max(1, int(batch_size))
+        self.use_amp = bool(use_amp)
+
+    def _resolve_amp_dtype(self) -> torch.dtype:
+        if torch.cuda.is_available() and getattr(torch.cuda, "is_bf16_supported", lambda: False)():
+            return torch.bfloat16
+        return torch.float16
 
     def load(self) -> None:
         if self.is_loaded:
@@ -74,9 +88,10 @@ class MssDemuxEngine:
         from utils.settings import get_model_from_config
         self.model, self.config = get_model_from_config("bs_roformer", str(BS_ROFORMER_CONFIG))
 
-        # Upgrade batch_size from 1 to 4 for 8.59 GB RTX 4060 GPU saturation
+        # Saturate GPU Tensor Cores with configurable batch size (default 8 on CUDA with AMP)
         if hasattr(self.config, "inference"):
-            self.config.inference.batch_size = 4
+            effective_bs = self.batch_size if torch.cuda.is_available() else min(2, self.batch_size)
+            self.config.inference.batch_size = effective_bs
 
         state = torch.load(str(BS_ROFORMER_CKPT), map_location="cpu")
         if "state_dict" in state:
@@ -85,7 +100,37 @@ class MssDemuxEngine:
         self.model.load_state_dict(new_state)
         self.model = self.model.to(DEVICE).eval()
         self.is_loaded = True
-        logger.info("BS-RoFormer-SW loaded onto %s (batch_size=%d, TF32=True)", DEVICE, self.config.inference.batch_size)
+        logger.info(
+            "BS-RoFormer-SW loaded onto %s (batch_size=%d, AMP=%s, TF32=True)",
+            DEVICE,
+            getattr(self.config.inference, "batch_size", self.batch_size),
+            self.use_amp and torch.cuda.is_available(),
+        )
+
+    def _run_demix_with_backoff(self, demix_fn, mix: np.ndarray):
+        device_obj = torch.device(DEVICE)
+        use_cuda_amp = bool(self.use_amp and DEVICE.startswith("cuda") and torch.cuda.is_available())
+        amp_dtype = self._resolve_amp_dtype() if use_cuda_amp else torch.float32
+
+        while True:
+            cur_bs = getattr(self.config.inference, "batch_size", self.batch_size)
+            try:
+                with torch.inference_mode():
+                    if use_cuda_amp:
+                        with torch.amp.autocast("cuda", dtype=amp_dtype):
+                            return demix_fn(self.config, self.model, mix, device_obj, "bs_roformer", pbar=False)
+                    return demix_fn(self.config, self.model, mix, device_obj, "bs_roformer", pbar=False)
+            except torch.cuda.OutOfMemoryError:
+                if cur_bs <= 1 or not hasattr(self.config, "inference"):
+                    raise
+                next_bs = max(1, cur_bs // 2)
+                logger.warning(
+                    "CUDA OOM in BS-RoFormer at batch_size=%d; clearing cache and retrying with batch_size=%d",
+                    cur_bs,
+                    next_bs,
+                )
+                torch.cuda.empty_cache()
+                self.config.inference.batch_size = next_bs
 
     def run(self, ctx: PipelineContext, output_stems_dir: Path) -> None:
         t0 = time.time()
@@ -111,13 +156,13 @@ class MssDemuxEngine:
                 mix = mix[:2, :]
 
             logger.info(
-                "Demixing multitrack audio (%d ch, %.1fs) with BS-RoFormer-SW (batch=%d)...",
+                "Demixing multitrack audio (%d ch, %.1fs) with BS-RoFormer-SW (batch=%d, amp=%s)...",
                 mix.shape[0],
                 mix.shape[1] / target_sr,
-                getattr(self.config.inference, "batch_size", 4),
+                getattr(self.config.inference, "batch_size", self.batch_size),
+                self.use_amp and torch.cuda.is_available(),
             )
-            with torch.no_grad():
-                stems_dict = demix(self.config, self.model, mix, torch.device(DEVICE), "bs_roformer", pbar=False)
+            stems_dict = self._run_demix_with_backoff(demix, mix)
 
             # Parallel 6-thread telemetry & persistent disk write
             with ThreadPoolExecutor(max_workers=6) as pool:
