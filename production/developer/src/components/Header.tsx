@@ -93,8 +93,8 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="m3-status-dot secondary is-pulsing" aria-hidden="true" />
               <span>
                 {mode === 'parallel'
-                  ? 'Üretim Akışı: Aşamalar eşzamanlı çalışıyor...'
-                  : `Adım Adım: Aşama 0${runningStage} çalışıyor...`}
+                ? 'Üretim Akışı: Aşamalar eşzamanlı çalışıyor...'
+                : `Adım Adım: Aşama 0${runningStage} çalışıyor...`}
               </span>
             </span>
           )}
@@ -125,8 +125,8 @@ export const Header: React.FC<HeaderProps> = ({
             disabled={isLoading || !hasSession || undefined}
             title={
               mode === 'parallel'
-                ? 'Seçili oturumda Web Studio üretim akışını birebir test et'
-                : 'Tüm aşamaları (01 → 04) adım adım sırayla çözümle'
+                  ? 'Seçili oturumda Web Studio üretim akışını birebir test et'
+                  : 'Tüm aşamaları (01 → 04) adım adım sırayla çözümle'
             }
           >
             <md-icon slot="icon">{mode === 'parallel' ? 'bolt' : 'play_arrow'}</md-icon>

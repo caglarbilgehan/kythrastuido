@@ -211,72 +211,72 @@ export const App: React.FC = () => {
                 onOpenConsole={() => setActiveInspectorTab('console')}
               />
 
-              {activeInspectorTab === 'requests' ? (
-                <RequestTraceView
-                  activeSessionId={activeSessionId}
-                  onSelectSession={switchSession}
-                />
-              ) : activeInspectorTab === 'console' ? (
-                <StudioConsoleView
-                  logs={logs}
-                  filterStage={filterStage}
-                  onFilterStageChange={setFilterStage}
-                  filterLevel={filterLevel}
-                  onFilterLevelChange={setFilterLevel}
-                  onClear={clearAllLogs}
-                  autoScroll={autoScroll}
-                  onToggleAutoScroll={() => setAutoScroll((p) => !p)}
-                  isExecuting={isPipelineExecuting}
-                  activeStageNum={runningStage}
-                />
-              ) : activeInspectorTab === 'json' ? (
-                <RawJsonViewer
-                  fileName={currentStage.output}
-                  data={stageOutputs[selectedStageId]}
-                />
-              ) : currentStage.status === 'running' || runningStage === selectedStageId ? (
-                <StageExecutingView
-                  stage={currentStage}
-                  logs={stageLogs(selectedStageId)}
-                  onOpenConsole={() => setActiveInspectorTab('console')}
-                />
-              ) : currentStage.status !== 'completed' ? (
-                <StagePendingView
-                  stage={currentStage}
-                  onRunStage={() => handleRunStage(selectedStageId)}
-                  missingDependency={missingDependency}
-                />
-              ) : (
-                <>
-                  {selectedStageId === 1 && (
-                    <Stage1BeatView
-                      data={stageOutputs[1]}
-                      currentTime={currentTime}
-                      onSeek={seekAudio}
-                    />
-                  )}
-                  {selectedStageId === 2 && (
-                    <Stage2ChordView
-                      data={stageOutputs[2]}
-                      currentTime={currentTime}
-                      onSeek={seekAudio}
-                    />
-                  )}
-                  {selectedStageId === 3 && (
-                    <Stage3MixerView
-                      channels={stemChannels}
-                      data={stageOutputs[3]}
-                    />
-                  )}
-                  {selectedStageId === 4 && (
-                    <Stage4LyricsView
-                      data={stageOutputs[4]}
-                      currentTime={currentTime}
-                      onSeek={seekAudio}
-                    />
-                  )}
-                </>
-              )}
+                { activeInspectorTab === 'requests' ? (
+                  <RequestTraceView
+                    activeSessionId={activeSessionId}
+                    onSelectSession={switchSession}
+                  />
+                ) : activeInspectorTab === 'console' ? (
+                  <StudioConsoleView
+                    logs={logs}
+                    filterStage={filterStage}
+                    onFilterStageChange={setFilterStage}
+                    filterLevel={filterLevel}
+                    onFilterLevelChange={setFilterLevel}
+                    onClear={clearAllLogs}
+                    autoScroll={autoScroll}
+                    onToggleAutoScroll={() => setAutoScroll((p) => !p)}
+                    isExecuting={isPipelineExecuting}
+                    activeStageNum={runningStage}
+                  />
+                ) : activeInspectorTab === 'json' ? (
+                  <RawJsonViewer
+                    fileName={currentStage.output}
+                    data={stageOutputs[selectedStageId]}
+                  />
+                ) : currentStage.status === 'running' || runningStage === selectedStageId ? (
+                  <StageExecutingView
+                    stage={currentStage}
+                    logs={stageLogs(selectedStageId)}
+                    onOpenConsole={() => setActiveInspectorTab('console')}
+                  />
+                ) : currentStage.status !== 'completed' ? (
+                  <StagePendingView
+                    stage={currentStage}
+                    onRunStage={() => handleRunStage(selectedStageId)}
+                    missingDependency={missingDependency}
+                  />
+                ) : (
+                  <>
+                    {selectedStageId === 1 && (
+                      <Stage1BeatView
+                        data={stageOutputs[1]}
+                        currentTime={currentTime}
+                        onSeek={seekAudio}
+                      />
+                    )}
+                    {selectedStageId === 2 && (
+                      <Stage2ChordView
+                        data={stageOutputs[2]}
+                        currentTime={currentTime}
+                        onSeek={seekAudio}
+                      />
+                    )}
+                    {selectedStageId === 3 && (
+                      <Stage3MixerView
+                        channels={stemChannels}
+                        data={stageOutputs[3]}
+                      />
+                    )}
+                    {selectedStageId === 4 && (
+                      <Stage4LyricsView
+                        data={stageOutputs[4]}
+                        currentTime={currentTime}
+                        onSeek={seekAudio}
+                      />
+                    )}
+                  </>
+                )}
             </div>
           </div>
 

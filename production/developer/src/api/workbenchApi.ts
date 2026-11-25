@@ -57,10 +57,10 @@ export function getLogs(
   sinceId = 0,
   stageNum?: number,
   limit = 200,
-  filterSessionId?: string | null
-): Promise<{ logs: LogEntry[]; last_id: number }> {
-  const params = new URLSearchParams({ since_id: String(sinceId), limit: String(limit) });
-  if (stageNum !== undefined && stageNum !== null) {
+    filterSessionId ?: string | null
+): Promise < { logs: LogEntry[]; last_id: number } > {
+    const params = new URLSearchParams({ since_id: String(sinceId), limit: String(limit) });
+    if(stageNum !== undefined && stageNum !== null) {
     params.set('stage_num', String(stageNum));
   }
   if (filterSessionId) {

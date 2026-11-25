@@ -16,8 +16,8 @@ export function useWorkbench() {
   });
   stopAudioRef.current = audio.stopAndResetAudio;
 
-  return {
-    ...pipeline,
+    return {
+      ...pipeline,
     ...audio
-  };
+};
 }
