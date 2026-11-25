@@ -1,6 +1,7 @@
 # Custom
 .archive/
 .test
+storage/
 
 # Node.js / Vite / TypeScript (developer & web)
 node_modules/
