@@ -1,0 +1,15 @@
+{
+  "name": "kythrastudio",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "production/web",
+    "production/developer"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=production/web",
+    "build": "npm run build --workspace=production/web",
+    "preview": "npm run preview --workspace=production/web",
+    "lint": "npm run lint --workspace=production/web"
+  }
+}
