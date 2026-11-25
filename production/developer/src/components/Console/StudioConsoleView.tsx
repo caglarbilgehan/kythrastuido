@@ -7,6 +7,9 @@ interface StudioConsoleViewProps {
   onFilterStageChange: (stage: number | 'all') => void;
   filterLevel: 'all' | 'INFO' | 'WARNING' | 'ERROR';
   onFilterLevelChange: (lvl: 'all' | 'INFO' | 'WARNING' | 'ERROR') => void;
+  onlyActiveSession: boolean;
+  onToggleOnlyActiveSession: () => void;
+  activeSessionId?: string;
   onClear: () => void;
   autoScroll: boolean;
   onToggleAutoScroll: () => void;
@@ -27,6 +30,9 @@ export const StudioConsoleView: React.FC<StudioConsoleViewProps> = ({
   onFilterStageChange,
   filterLevel,
   onFilterLevelChange,
+  onlyActiveSession,
+  onToggleOnlyActiveSession,
+  activeSessionId,
   onClear,
   autoScroll,
   onToggleAutoScroll,
@@ -165,6 +171,19 @@ export const StudioConsoleView: React.FC<StudioConsoleViewProps> = ({
             </button>
           ))}
         </div>
+
+        <button
+          type="button"
+          className={`dev-filter-pill ${onlyActiveSession ? 'is-active' : ''}`}
+          onClick={onToggleOnlyActiveSession}
+          title={
+            activeSessionId
+              ? `Yalnızca seçili oturumun (${activeSessionId}) loglarını göster`
+              : 'Yalnızca seçili oturumun loglarını göster'
+          }
+        >
+          {onlyActiveSession ? 'Sadece Seçili Oturum' : 'Tüm Oturumlar'}
+        </button>
       </div>
 
       {/* 3. Telemetry Viewport */}

@@ -90,11 +90,14 @@ export const App: React.FC = () => {
     setFilterStage,
     filterLevel,
     setFilterLevel,
+    onlyActiveSession,
+    setOnlyActiveSession,
     autoScroll,
     setAutoScroll,
     clearAllLogs
   } = useLiveLogs({
-    isExecuting: isPipelineExecuting
+    isExecuting: isPipelineExecuting,
+    activeSessionId
   });
 
   const stagesList: StageMetadata[] = useMemo(() => {
@@ -223,6 +226,9 @@ export const App: React.FC = () => {
                     onFilterStageChange={setFilterStage}
                     filterLevel={filterLevel}
                     onFilterLevelChange={setFilterLevel}
+                    onlyActiveSession={onlyActiveSession}
+                    onToggleOnlyActiveSession={() => setOnlyActiveSession((p) => !p)}
+                    activeSessionId={activeSessionId}
                     onClear={clearAllLogs}
                     autoScroll={autoScroll}
                     onToggleAutoScroll={() => setAutoScroll((p) => !p)}

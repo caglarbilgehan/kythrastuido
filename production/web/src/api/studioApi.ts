@@ -327,10 +327,10 @@ export function bundleToStudioSong(bundle: any): StudioSong | null {
   };
 }
 
-export async function fetchActiveStudioSong(): Promise<StudioSong | null> {
+export async function fetchActiveStudioSong(isPoll = false): Promise<StudioSong | null> {
   try {
     const res = await fetch(`${API_BASE}/api/workbench/studio-bundle`, {
-      headers: buildStudioHeaders()
+      headers: buildStudioHeaders(isPoll ? { 'X-Request-Poll': '1' } : undefined)
     });
     if (!res.ok) return null;
     const bundle = await res.json();

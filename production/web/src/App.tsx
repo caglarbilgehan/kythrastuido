@@ -90,7 +90,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (!isBackgroundProcessing) return;
     const interval = window.setInterval(async () => {
-      const updated = await fetchActiveStudioSong();
+      const updated = await fetchActiveStudioSong(true);
       if (!updated) return;
       setSong((prev) => {
         if (!prev) return updated;

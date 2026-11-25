@@ -109,10 +109,11 @@ class DAGPipelineOrchestrator:
         log_svc = get_log_service()
         t0 = time.time()
         amp_tag = "BF16/FP16 AMP" if MSS_USE_AMP else "TF32"
+        batch_tag = str(MSS_BATCH_SIZE) if MSS_BATCH_SIZE > 0 else "Auto"
         self.repo.update_stage_state(3, status="running", error=None)
         log_svc.emit_stage_log(
             3,
-            f"[Dal-3 · GPU] BS-RoFormer 6-Kanal Ayırma (Batch={MSS_BATCH_SIZE}, {amp_tag}) başlatıldı...",
+            f"[Dal-3 · GPU] BS-RoFormer 6-Kanal Ayırma (Batch={batch_tag}, {amp_tag}) başlatıldı...",
             session_id=self.session_id,
         )
         try:
@@ -240,6 +241,7 @@ class DAGPipelineOrchestrator:
         song_db=None,
         current_user: Optional[Dict[str, Any]] = None,
         track_key: Optional[str] = None,
+        clear_refining: bool = True,
     ) -> Optional[Dict[str, Any]]:
         """Refines structural sections via allin1 using Stage 3 stems and updates chords.json + DB."""
         log_svc = get_log_service()
@@ -280,8 +282,9 @@ class DAGPipelineOrchestrator:
         self.repo.update_stage_state(2, status="completed", timings_ms=total_s2_ms, summary=summary2, error=None)
 
         st_now = self.repo.load_state()
-        st_now["sections_refining"] = False
-        self.repo.save_state(st_now)
+        if clear_refining:
+            st_now["sections_refining"] = False
+            self.repo.save_state(st_now)
 
         if song_db is not None and track_key and d_beats:
             try:
@@ -342,8 +345,46 @@ class DAGPipelineOrchestrator:
             fut_stage3 = pool.submit(_with_session_ctx, sid, self._run_stage3_worker, ctx, state)
 
             # Await fast CPU wave (Stage 1 + BTC CQT) first to record real Web Studio TTFO
-            res1 = fut_stage1.result()
-            results[1] = res1
+            stage1_failed = False
+            try:
+                res1 = fut_stage1.result()
+                results[1] = res1
+            except Exception as e1:
+                stage1_failed = True
+                results[1] = {
+                    "stage_num": 1,
+                    "status": "error",
+                    "timings_ms": round((time.time() - t_dag_start) * 1000, 1),
+                    "summary": None,
+                    "error": str(e1),
+                    "data": None,
+                    "state": self.repo.load_state(),
+                }
+                self.repo.update_stage_state(2, status="error", error=f"Ön koşul (Aşama 1) başarısız: {e1}")
+                results[2] = {
+                    "stage_num": 2,
+                    "status": "error",
+                    "timings_ms": 0.0,
+                    "summary": None,
+                    "error": f"Ön koşul (Aşama 1) başarısız: {e1}",
+                    "data": None,
+                    "state": self.repo.load_state(),
+                }
+
+            if stage1_failed:
+                # Let Stage 3 finish cleanly under ThreadPoolExecutor without leaking GPU threads
+                results[3] = fut_stage3.result()
+                total_wall_ms = round((time.time() - t_dag_start) * 1000, 1)
+                return {
+                    "status": "error",
+                    "execution_mode": "parallel_dag",
+                    "ttfo_ms": total_wall_ms,
+                    "wall_time_ms": total_wall_ms,
+                    "sequential_sum_ms": round(sum(float(r.get("timings_ms") or 0.0) for r in results.values()), 1),
+                    "message": f"Stage 1 failed: {results[1]['error']}",
+                    "results": results,
+                    "state": self.repo.load_state(),
+                }
 
             t_s2_gpu = time.time()
             cqt_ms = 0.0
@@ -375,23 +416,33 @@ class DAGPipelineOrchestrator:
             # Now wait for GPU Stage 3 before stem-shared Wave 2b
             res3 = fut_stage3.result()
             results[3] = res3
+            stage3_ok = res3.get("status") == "completed"
 
             t_sections = time.time()
-            sections = extract_dynamic_sections(
-                ctx.audio_path,
-                ctx.beats,
-                duration,
-                separated_stems=ctx.separated_stems,
-            )
+            if stage3_ok:
+                sections = extract_dynamic_sections(
+                    ctx.audio_path,
+                    ctx.beats,
+                    duration,
+                    separated_stems=ctx.separated_stems,
+                )
+                sections_refined = True
+                engine_label = "BTC-Transformer (Batched) & allin1 (Stem-Shared)"
+            else:
+                logger.warning("Stage 3 failed; skipping allin1 Demucs fallback and using provisional sections.")
+                sections = build_provisional_sections(bars, duration)
+                sections_refined = False
+                engine_label = "BTC-Transformer (Batched) & Provisional Sections"
+
             s2_elapsed = round(cqt_ms + (time.time() - t_s2_gpu) * 1000, 1)
             data2 = {
-                "engine": "BTC-Transformer (Batched) & allin1 (Stem-Shared)",
+                "engine": engine_label,
                 "key_signature": key_signature,
                 "chord_count": len(ctx.chords),
                 "bar_count": len(bars),
                 "primary_progression": primary_progression,
                 "sections": sections,
-                "sections_refined": True,
+                "sections_refined": sections_refined,
                 "bars": bars,
                 "chords": [c.model_dump() for c in ctx.chords],
                 "pipeline_version": APP_PIPELINE_VERSION,
@@ -403,7 +454,7 @@ class DAGPipelineOrchestrator:
             )
             log_svc.emit_stage_log(
                 2,
-                f"[Dal-2b · Stem Paylaşımı] Tamamlandı ({round((time.time() - t_sections), 1)} sn) -> {summary2}",
+                f"[Dal-2b · {'Stem Paylaşımı' if sections_refined else 'Geçici Bölümler'}] Tamamlandı ({round((time.time() - t_sections), 1)} sn) -> {summary2}",
                 session_id=sid,
             )
             results[2] = {
@@ -417,27 +468,33 @@ class DAGPipelineOrchestrator:
 
         # WAVE 4: Lyrics Transcription & CTC Alignment on Isolated Vocals
         vocals_path = ctx.separated_stems.get("vocals") or (self.repo.get_stems_dir() / "vocals.wav")
-        if vocals_path.exists():
+        if stage3_ok and vocals_path.exists():
             results[4] = self._run_stage4_worker(ctx, state)
 
         total_wall_ms = round((time.time() - t_dag_start) * 1000, 1)
         sum_stages_ms = round(sum(float(r.get("timings_ms") or 0.0) for r in results.values()), 1)
+        has_any_error = any(r.get("status") == "error" for r in results.values())
+        overall_status = "completed_with_errors" if has_any_error else "completed"
         log_svc.add_entry(
-            "INFO",
+            "WARNING" if has_any_error else "INFO",
             "backend.dag",
-            f"Üretim Akışı tamamlandı! İlk Açılış (TTFO): {round(ttfo_ms / 1000, 1)} sn · "
+            f"Üretim Akışı {'kısmi hatalarla ' if has_any_error else ''}tamamlandı! İlk Açılış (TTFO): {round(ttfo_ms / 1000, 1)} sn · "
             f"Toplam Duvar Süresi: {round(total_wall_ms / 1000, 1)} sn "
             f"(Sıralı Karşılığı: {round(sum_stages_ms / 1000, 1)} sn).",
             session_id=sid,
         )
 
         return {
-            "status": "completed",
+            "status": overall_status,
             "execution_mode": "parallel_dag",
             "ttfo_ms": ttfo_ms,
             "wall_time_ms": total_wall_ms,
             "sequential_sum_ms": sum_stages_ms,
-            "message": "Production 4-stage flow executed successfully.",
+            "message": (
+                "Production 4-stage flow completed with stage errors."
+                if has_any_error
+                else "Production 4-stage flow executed successfully."
+            ),
             "results": results,
             "state": self.repo.load_state(),
         }
@@ -505,26 +562,36 @@ class DAGPipelineOrchestrator:
                                 song_db=song_db,
                                 current_user=current_user,
                                 track_key=track_key,
+                                clear_refining=False,
                             )
                         except Exception as ref_exc:
                             logger.warning("Section refinement skipped: %s", ref_exc)
-                            st_err = self.repo.load_state()
-                            st_err["sections_refining"] = False
-                            self.repo.save_state(st_err)
 
                         st_after = self.repo.load_state()
                         has_lyrics_now = bool(st_after.get("lyrics"))
                         s4_status_now = st_after.get("stages", {}).get("4", {}).get("status")
                         vocals_wav = self.repo.get_stems_dir() / "vocals.wav"
-                        if not has_lyrics_now and s4_status_now != "completed" and vocals_wav.exists():
-                            if disk_lyrics is None:
-                                self._run_stage4_worker(
-                                    bg_ctx,
-                                    st_after,
-                                    song_db=song_db,
-                                    current_user=current_user,
-                                    track_key=track_key,
-                                )
+                        will_run_stage4 = (
+                            not has_lyrics_now
+                            and s4_status_now != "completed"
+                            and vocals_wav.exists()
+                            and disk_lyrics is None
+                        )
+                        if will_run_stage4:
+                            # Mark Stage 4 running BEFORE clearing sections_refining to avoid polling gap
+                            self.repo.update_stage_state(4, status="running", error=None)
+                        st_clear = self.repo.load_state()
+                        st_clear["sections_refining"] = False
+                        self.repo.save_state(st_clear)
+
+                        if will_run_stage4:
+                            self._run_stage4_worker(
+                                bg_ctx,
+                                st_clear,
+                                song_db=song_db,
+                                current_user=current_user,
+                                track_key=track_key,
+                            )
                     else:
                         st_err = self.repo.load_state()
                         st_err["sections_refining"] = False

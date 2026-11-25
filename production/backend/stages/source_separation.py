@@ -94,10 +94,15 @@ class SourceSeparationExecutor(BaseStageExecutor):
         detected_channels = [name for name, s in stems_info.items() if s["detected"]]
         absent_channels = [name for name, s in stems_info.items() if not s["detected"]]
 
-        batch_sz = getattr(engine, "batch_size", None)
-        if batch_sz is None:
+        cfg_inf = getattr(getattr(engine, "config", None), "inference", None)
+        batch_sz = (
+            getattr(cfg_inf, "batch_size", None)
+            or getattr(engine, "effective_batch_size", None)
+            or getattr(engine, "batch_size", None)
+        )
+        if not batch_sz:
             from backend.config import MSS_BATCH_SIZE
-            batch_sz = MSS_BATCH_SIZE
+            batch_sz = MSS_BATCH_SIZE or "Auto"
         use_amp = getattr(engine, "use_amp", True)
         precision_tag = "BF16/FP16 AMP" if use_amp else "TF32"
 

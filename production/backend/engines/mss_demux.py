@@ -66,6 +66,7 @@ class MssDemuxEngine:
         self.config = None
         self.is_loaded = False
         self.batch_size = max(0, int(batch_size))
+        self.effective_batch_size = self._resolve_safe_batch_size(self.batch_size)
         self.use_amp = bool(use_amp)
 
     @staticmethod
@@ -101,6 +102,7 @@ class MssDemuxEngine:
         self.model, self.config = get_model_from_config("bs_roformer", str(BS_ROFORMER_CONFIG))
 
         effective_bs = self._resolve_safe_batch_size(self.batch_size)
+        self.effective_batch_size = effective_bs
         if hasattr(self.config, "inference"):
             self.config.inference.batch_size = effective_bs
         if hasattr(self.config, "training"):
@@ -111,10 +113,10 @@ class MssDemuxEngine:
             state = state["state_dict"]
         new_state = {k.replace("model.", ""): v for k, v in state.items()}
         self.model.load_state_dict(new_state)
-        self.model = self.model.to(DEVICE).eval()
+        self.model = self.model.to("cpu").eval()
         self.is_loaded = True
         logger.info(
-            "BS-RoFormer-SW loaded onto %s (batch_size=%d, AMP=%s, TF32=True)",
+            "BS-RoFormer-SW loaded into CPU RAM (target=%s, batch_size=%d, AMP=%s, TF32=True)",
             DEVICE,
             getattr(self.config.inference, "batch_size", effective_bs),
             self.use_amp and torch.cuda.is_available(),
@@ -137,7 +139,7 @@ class MssDemuxEngine:
                 self.model = self.model.to(device_obj)
             try:
                 while True:
-                    cur_bs = getattr(self.config.inference, "batch_size", 2)
+                    cur_bs = getattr(self.config.inference, "batch_size", self.effective_batch_size)
                     try:
                         with torch.inference_mode():
                             # MSST demix() internally manages torch.cuda.amp.autocast via config.training.use_amp
@@ -153,6 +155,7 @@ class MssDemuxEngine:
                         )
                         release_cuda_cache()
                         self.config.inference.batch_size = next_bs
+                        self.effective_batch_size = next_bs
             finally:
                 self.offload_to_cpu()
 

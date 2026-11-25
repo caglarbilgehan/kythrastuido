@@ -36,13 +36,15 @@ app.add_middleware(
 )
 
 
-def _should_skip_trace(path: str, client_app: str) -> bool:
-    """Skips high-frequency Developer polling and root health endpoints to keep trace feed noise-free."""
+def _should_skip_trace(path: str, client_app: str, *, is_poll: bool = False, status_code: int = 200) -> bool:
+    """Skips high-frequency Developer/Web polling and root health endpoints to keep trace feed noise-free."""
     if not path.startswith("/api/workbench"):
         return True
     if path.startswith("/api/workbench/telemetry") or path.startswith("/api/workbench/logs"):
         return True
     if client_app == "developer" and path in ("/api/workbench/session", "/api/workbench/state"):
+        return True
+    if is_poll and status_code < 400 and path in ("/api/workbench/studio-bundle", "/api/workbench/session", "/api/workbench/state"):
         return True
     return False
 
@@ -59,6 +61,7 @@ async def request_observability_middleware(request: Request, call_next):
             client_app = "developer"
         else:
             client_app = "api"
+    is_poll = (request.headers.get("x-request-poll") or "").strip().lower() in ("1", "true", "yes")
 
     raw_sid = request.headers.get("x-session-id") or request.query_params.get("session_id")
     auth_header = request.headers.get("authorization")
@@ -79,8 +82,8 @@ async def request_observability_middleware(request: Request, call_next):
     finally:
         duration_ms = (time.perf_counter() - t0) * 1000.0
         CURRENT_SESSION_ID.reset(ctx_tok)
-        if not _should_skip_trace(path, client_app):
-            status_code = response.status_code if response is not None else 500
+        status_code = response.status_code if response is not None else 500
+        if not _should_skip_trace(path, client_app, is_poll=is_poll, status_code=status_code):
             if error_detail is None:
                 error_detail = getattr(request.state, "kythra_error_detail", None)
             if status_code >= 400 and error_detail is None and response is not None:

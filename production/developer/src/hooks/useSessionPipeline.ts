@@ -58,8 +58,9 @@ export function useSessionPipeline(onBeforeSourceChange?: () => void) {
 
 // Observe remote background progress on the currently selected session (e.g. Web Studio upload)
 const hasRemoteRunningStage = Boolean(
-  session?.stages &&
-  Object.values(session.stages).some((st) => st?.status === 'running')
+  session?.sections_refining ||
+  (session?.stages &&
+    Object.values(session.stages).some((st) => st?.status === 'running'))
 );
 useEffect(() => {
   if (!hasRemoteRunningStage) return;
@@ -103,6 +104,7 @@ useEffect(() => {
   selectedStageMeta?.status,
   selectedStageMeta?.durationMs,
   (selectedStageMeta as any)?.timings_ms,
+  session?.sections_refining,
   loadStageData
 ]);
 

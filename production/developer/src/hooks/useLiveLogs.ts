@@ -4,12 +4,14 @@ import * as api from '../api/workbenchApi';
 
 interface UseLiveLogsOptions {
   isExecuting?: boolean;
+  activeSessionId?: string;
 }
 
-export function useLiveLogs({ isExecuting = false }: UseLiveLogsOptions = {}) {
+export function useLiveLogs({ isExecuting = false, activeSessionId }: UseLiveLogsOptions = {}) {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [filterStage, setFilterStage] = useState<number | 'all'>('all');
   const [filterLevel, setFilterLevel] = useState<'all' | 'INFO' | 'WARNING' | 'ERROR'>('all');
+  const [onlyActiveSession, setOnlyActiveSession] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
 
@@ -63,6 +65,9 @@ export function useLiveLogs({ isExecuting = false }: UseLiveLogsOptions = {}) {
 
   // Filtered views
   const filteredLogs = logs.filter((entry) => {
+    if (onlyActiveSession && activeSessionId && entry.session_id !== activeSessionId) {
+      return false;
+    }
     if (filterStage !== 'all' && entry.stage_num !== filterStage) {
       return false;
     }
@@ -73,8 +78,13 @@ export function useLiveLogs({ isExecuting = false }: UseLiveLogsOptions = {}) {
   });
 
   const stageLogs = useCallback(
-    (stageNum: number) => logs.filter((l) => l.stage_num === stageNum),
-    [logs]
+    (stageNum: number) =>
+      logs.filter(
+        (l) =>
+          l.stage_num === stageNum &&
+          (!activeSessionId || !l.session_id || l.session_id === activeSessionId)
+      ),
+    [logs, activeSessionId]
   );
 
   return {
@@ -85,6 +95,8 @@ export function useLiveLogs({ isExecuting = false }: UseLiveLogsOptions = {}) {
     setFilterStage,
     filterLevel,
     setFilterLevel,
+    onlyActiveSession,
+    setOnlyActiveSession,
     isOpen,
     setIsOpen,
     toggleOpen: () => setIsOpen((prev) => !prev),

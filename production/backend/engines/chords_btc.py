@@ -48,14 +48,14 @@ class ChordsBtcEngine:
         self.config.model['num_chords'] = 170
         self.idx_to_chord = idx2voca_chord()
 
-        self.model = BTC_model(config=self.config.model).to(DEVICE)
-        checkpoint = torch.load(str(BTC_CKPT), map_location=DEVICE, weights_only=False)
+        self.model = BTC_model(config=self.config.model).to("cpu")
+        checkpoint = torch.load(str(BTC_CKPT), map_location="cpu", weights_only=False)
         self.mean = checkpoint['mean']
         self.std = checkpoint['std']
         self.model.load_state_dict(checkpoint['model'])
         self.model.eval()
         self.is_loaded = True
-        logger.info("BTC-Transformer model loaded onto %s", DEVICE)
+        logger.info("BTC-Transformer model loaded into CPU RAM (target inference device=%s)", DEVICE)
 
     def extract_features(self, audio_path: Path) -> tuple[np.ndarray, float, int, int]:
         """
@@ -122,7 +122,7 @@ class ChordsBtcEngine:
                     del feature_tensor, self_attn_output, prediction
         finally:
             if target_device != "cpu":
-                release_cuda_cache()
+                self.offload_to_cpu()
             if acquired_gpu:
                 GPU_LOCK.release()
 
