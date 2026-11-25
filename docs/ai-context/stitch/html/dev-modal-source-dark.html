@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KythraStudio — Modal: Yeni Ses Kaynağı Yükleme Diyaloğu (Dark)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@500;600&family=Roboto:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+    rel="stylesheet"
+  />
+  <style>
+/*
+ * 100% Pure Google Material 3 System (@material/web)
+ * Zero Tailwind, zero third-party CSS frameworks.
+ * Shared Surface, Typography & Color Token Architecture with KythraStudio Web
+ */
+:root {
+  color-scheme: light;
+  --md-ref-typeface-brand: "Google Sans", "Plus Jakarta Sans", "Roboto", system-ui, sans-serif;
+  --md-ref-typeface-plain: "Google Sans Text", "Plus Jakarta Sans", "Roboto", system-ui, sans-serif;
+  --md-ref-typeface-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --md-icon-font: "Material Symbols Outlined";
+
+  /* Official Material 3 Baseline Light Scheme (Google Drive / Docs / Vids) */
+  --md-sys-color-primary: #0B57D0;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #D3E3FD;
+  --md-sys-color-on-primary-container: #041E49;
+
+  --md-sys-color-secondary: #00639B;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #C2E7FF;
+  --md-sys-color-on-secondary-container: #001D35;
+
+  --md-sys-color-tertiary: #E65100;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #FFE0B2;
+  --md-sys-color-on-tertiary-container: #4E1600;
+
+  --md-sys-color-error: #B3261E;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #F9DEDC;
+  --md-sys-color-on-error-container: #410E0B;
+
+  /* Semantic Verification / QC Pass Palette */
+  --dev-color-success: #146C2E;
+  --dev-color-on-success: #FFFFFF;
+  --dev-color-success-container: #DCFCE7;
+  --dev-color-on-success-container: #072711;
+
+  --md-sys-color-background: #F8FAFD;
+  --md-sys-color-on-background: #1F1F1F;
+  --md-sys-color-surface: #F8FAFD;
+  --md-sys-color-on-surface: #1F1F1F;
+  --md-sys-color-surface-variant: #E1E3E1;
+  --md-sys-color-on-surface-variant: #444746;
+
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #F4F5F7;
+  --md-sys-color-surface-container: #EEF0F4;
+  --md-sys-color-surface-container-high: #E3E5EA;
+  --md-sys-color-surface-container-highest: #D8DCE3;
+
+  --md-sys-color-outline: #747775;
+  --md-sys-color-outline-variant: #C4C7C5;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --md-sys-color-primary: #A8C7FA;
+  --md-sys-color-on-primary: #062E6F;
+  --md-sys-color-primary-container: #0842A0;
+  --md-sys-color-on-primary-container: #D3E3FD;
+
+  --md-sys-color-secondary: #7FCFFF;
+  --md-sys-color-on-secondary: #003355;
+  --md-sys-color-secondary-container: #004A77;
+  --md-sys-color-on-secondary-container: #C2E7FF;
+
+  --md-sys-color-tertiary: #FFB74D;
+  --md-sys-color-on-tertiary: #4E1600;
+  --md-sys-color-tertiary-container: #8C3100;
+  --md-sys-color-on-tertiary-container: #FFE0B2;
+
+  --md-sys-color-error: #F2B8B5;
+  --md-sys-color-on-error: #601410;
+  --md-sys-color-error-container: #8C1D18;
+  --md-sys-color-on-error-container: #F9DEDC;
+
+  --dev-color-success: #81C995;
+  --dev-color-on-success: #072711;
+  --dev-color-success-container: #0F5223;
+  --dev-color-on-success-container: #C4EED0;
+
+  --md-sys-color-background: #131314;
+  --md-sys-color-on-background: #E3E3E3;
+  --md-sys-color-surface: #131314;
+  --md-sys-color-on-surface: #E3E3E3;
+  --md-sys-color-surface-variant: #444746;
+  --md-sys-color-on-surface-variant: #C4C7C5;
+
+  --md-sys-color-surface-container-lowest: #0E0E0E;
+  --md-sys-color-surface-container-low: #1B1B1B;
+  --md-sys-color-surface-container: #1E1F20;
+  --md-sys-color-surface-container-high: #282A2C;
+  --md-sys-color-surface-container-highest: #333537;
+
+  --md-sys-color-outline: #8E918F;
+  --md-sys-color-outline-variant: #444746;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+pre {
+  margin: 0;
+}
+
+body {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-ref-typeface-plain);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+}
+
+/* Utilities */
+.m3-tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.m3-mono {
+  font-family: var(--md-ref-typeface-mono);
+}
+
+.m3-inline-icon-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+md-circular-progress {
+  --md-circular-progress-size: 20px;
+  --md-circular-progress-active-indicator-width: 12;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.m3-spinner-sm {
+  --md-circular-progress-size: 16px;
+  --md-circular-progress-active-indicator-width: 10;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.m3-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: var(--md-sys-color-primary);
+}
+
+.m3-status-dot.secondary {
+  background-color: var(--md-sys-color-secondary);
+}
+
+.m3-status-dot.tertiary {
+  background-color: var(--md-sys-color-tertiary);
+}
+
+.m3-status-dot.success {
+  background-color: var(--dev-color-success);
+}
+
+.m3-status-dot.neutral {
+  background-color: var(--md-sys-color-outline-variant);
+}
+
+.m3-status-dot.is-pulsing {
+  animation: m3-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes m3-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.22);
+  }
+}
+
+/* ========================================================================= */
+/* CORE M3 SURFACES, BADGES & SEGMENTED PILLS (Matching production/web)      */
+/* ========================================================================= */
+.m3-surface-card {
+  position: relative;
+  border-radius: 20px;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  --md-elevation-level: 1;
+}
+
+.m3-tonal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 11px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.m3-tonal-badge.sm {
+  height: 22px;
+  padding: 0 8px;
+  font-size: 11px;
+}
+
+.m3-tonal-badge.primary {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.m3-tonal-badge.secondary {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.m3-tonal-badge.tertiary {
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.m3-tonal-badge.success {
+  background-color: var(--dev-color-success-container);
+  color: var(--dev-color-on-success-container);
+}
+
+.m3-tonal-badge.error {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.m3-segmented-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 9999px;
+  background-color: var(--md-sys-color-surface-container);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.m3-segmented-group::-webkit-scrollbar {
+  display: none;
+}
+
+.m3-segmented-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.m3-segmented-btn md-icon {
+  font-size: 16px;
+}
+
+.m3-segmented-btn:hover:not(.is-active) {
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.m3-segmented-btn.is-active {
+  background-color: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.m3-segmented-btn.is-active.is-secondary {
+  color: var(--md-sys-color-secondary);
+}
+
+/* ========================================================================= */
+/* APP SHELL & TOP APP BAR                                                   */
+/* ========================================================================= */
+.m3-dev-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-dev-shell.has-session {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.m3-top-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  min-height: calc(64px + env(safe-area-inset-top, 0px));
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  padding: env(safe-area-inset-top, 0px) max(20px, env(safe-area-inset-right, 0px)) 0 max(20px, env(safe-area-inset-left, 0px));
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.m3-top-app-bar-inner {
+  width: 100%;
+  padding: 8px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+
+.m3-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.m3-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.m3-brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.m3-brand-title {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.m3-brand-subtitle {
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 400;
+}
+
+.m3-header-divider {
+  width: 1px;
+  height: 22px;
+  background-color: var(--md-sys-color-outline-variant);
+  flex-shrink: 0;
+}
+
+.m3-header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.m3-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.m3-error-banner {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  border-bottom: 1px solid var(--md-sys-color-error);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.m3-error-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* ========================================================================= */
+/* EMPTY STATE (INCEPTION LANDING PAGE)                                      */
+/* ========================================================================= */
+.dev-empty-main {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.dev-empty-container {
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dev-hero-card {
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.dev-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 680px;
+}
+
+.dev-hero-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dev-hero-title {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.3px;
+}
+
+.dev-body-muted {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-hero-aside {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dev-aside-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.dev-aside-copy {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dev-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.dev-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dev-grid-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.dev-ingest-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dev-card-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.dev-card-title {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.dev-section-block {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dev-section-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-low);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dev-section-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.dev-section-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dev-benchmark-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dev-benchmark-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dev-index-pill {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dev-benchmark-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================================================= */
+/* UPLOAD DROPZONE                                                           */
+/* ========================================================================= */
+.m3-upload-dropzone {
+  position: relative;
+  border: 2px dashed var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  cursor: pointer;
+  background-color: var(--md-sys-color-surface-container-low);
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.m3-upload-dropzone.is-compact {
+  padding: 22px 14px;
+}
+
+.m3-upload-dropzone:hover,
+.m3-upload-dropzone.is-dragging {
+  border-color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.m3-upload-dropzone-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dev-hidden-input {
+  display: none;
+}
+
+/* ========================================================================= */
+/* SOURCE SELECT MODAL DIALOG                                                */
+/* ========================================================================= */
+.dev-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background-color: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.dev-modal-card {
+  position: relative;
+  width: min(680px, 100%);
+  max-height: calc(100dvh - 32px);
+  border-radius: 24px;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  --md-elevation-level: 4;
+}
+
+.dev-modal-header {
+  padding: 14px 18px 12px 20px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dev-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dev-modal-icon-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dev-modal-tabs-bar {
+  padding: 14px 20px 6px;
+}
+
+.dev-modal-body {
+  padding: 14px 20px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dev-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dev-modal-track-row {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-low);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+.dev-modal-track-row:hover:not(:disabled) {
+  border-color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.dev-modal-track-row.is-active {
+  background-color: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.dev-modal-track-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dev-modal-track-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+/* ========================================================================= */
+/* WORKBENCH SPLIT LAYOUT (LEFT PIPELINE RAIL + RIGHT INSPECTOR)             */
+/* ========================================================================= */
+.dev-workbench-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.dev-pipeline-rail {
+  width: 300px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-lowest);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dev-rail-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dev-rail-list {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dev-stage-item {
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.dev-stage-item:hover:not(:disabled):not(.is-selected) {
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+.dev-stage-item.is-selected {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.dev-stage-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dev-stage-item-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dev-stage-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-stage-item.is-selected .dev-stage-num {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.dev-stage-item.is-completed:not(.is-selected) .dev-stage-num {
+  background-color: var(--dev-color-success-container);
+  color: var(--dev-color-on-success-container);
+}
+
+.dev-stage-title {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dev-stage-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-left: 32px;
+  font-size: 11.5px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-stage-item.is-selected .dev-stage-sub {
+  color: var(--md-sys-color-on-primary-container);
+  opacity: 0.88;
+}
+
+.dev-stage-op {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dev-stage-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ========================================================================= */
+/* RIGHT INSPECTOR WORKSPACE                                                 */
+/* ========================================================================= */
+.dev-inspector-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--md-sys-color-surface);
+}
+
+.dev-inspector-top {
+  padding: 14px 20px 10px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface);
+  flex-shrink: 0;
+}
+
+.dev-inspector-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 20px 128px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dev-inspector-card {
+  overflow: hidden;
+}
+
+.dev-inspector-main-row {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dev-inspector-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dev-inspector-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.dev-inspector-subbar {
+  padding: 10px 18px;
+  background-color: var(--md-sys-color-surface-container-low);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-io-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.dev-code-pill {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-ref-typeface-mono);
+  font-size: 11px;
+}
+
+.dev-code-pill.is-output {
+  background-color: var(--dev-color-success-container);
+  border-color: transparent;
+  color: var(--dev-color-on-success-container);
+  font-weight: 600;
+}
+
+.dev-missing-dep-row {
+  padding: 10px 18px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Tracker, QC Panel, Pending & Executing Cards */
+.dev-tracker-card {
+  padding: 14px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.dev-tracker-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dev-tracker-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dev-tracker-stage-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dev-tracker-stage-btn.is-current {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-color: var(--md-sys-color-secondary);
+}
+
+.dev-tracker-stage-btn.is-done {
+  background-color: var(--dev-color-success-container);
+  color: var(--dev-color-on-success-container);
+}
+
+.dev-tracker-stage-btn.is-error {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.dev-tracker-stage-btn.is-selected {
+  box-shadow: 0 0 0 2px var(--md-sys-color-primary);
+}
+
+.dev-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dev-metric-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dev-metric-card.tone-tertiary {
+  background-color: var(--md-sys-color-tertiary-container);
+  border-color: transparent;
+}
+
+.dev-metric-card.tone-error {
+  background-color: var(--md-sys-color-error-container);
+  border-color: transparent;
+}
+
+.dev-metric-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-metric-label md-icon {
+  font-size: 17px;
+}
+
+.dev-metric-value {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dev-metric-value.tone-primary {
+  color: var(--md-sys-color-primary);
+}
+
+.dev-metric-value.tone-secondary {
+  color: var(--md-sys-color-secondary);
+}
+
+.dev-metric-value.tone-tertiary {
+  color: var(--md-sys-color-tertiary);
+}
+
+.dev-metric-value.tone-error {
+  color: var(--md-sys-color-error);
+}
+
+.dev-metric-value.is-compact {
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.dev-metric-sub {
+  font-size: 11.5px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-status-banner {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dev-substep-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dev-guidance-banner {
+  padding: 14px 18px;
+  border-radius: 16px;
+  background-color: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* ========================================================================= */
+/* RAW JSON VIEWER & LIVE CONSOLE TERMINAL                                   */
+/* ========================================================================= */
+.dev-json-pre {
+  padding: 18px;
+  font-family: var(--md-ref-typeface-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container-low);
+  overflow-x: auto;
+  max-height: 580px;
+  user-select: text;
+}
+
+.dev-terminal-toolbar {
+  padding: 10px 18px;
+  background-color: var(--md-sys-color-surface-container-low);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dev-search-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px 0 12px;
+  border-radius: 9999px;
+  background-color: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.dev-search-pill:focus-within {
+  border-color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-surface-container-lowest);
+}
+
+.dev-search-pill md-icon {
+  font-size: 17px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 12px;
+  width: 150px;
+}
+
+.dev-terminal-viewport {
+  padding: 16px 18px;
+  background-color: #0D1117;
+  color: #E2E8F0;
+  font-family: var(--md-ref-typeface-mono);
+  font-size: 12px;
+  line-height: 1.55;
+  overflow-y: auto;
+  min-height: 340px;
+  max-height: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  user-select: text;
+}
+
+.dev-terminal-viewport.is-compact {
+  min-height: 160px;
+  max-height: 240px;
+}
+
+.dev-log-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border-left: 2px solid transparent;
+}
+
+.dev-log-row.is-err {
+  background-color: rgba(127, 29, 29, 0.35);
+  color: #FCA5A5;
+  border-left-color: #EF4444;
+}
+
+.dev-log-row.is-warn {
+  background-color: rgba(120, 53, 15, 0.3);
+  color: #FCD34D;
+  border-left-color: #F59E0B;
+}
+
+.dev-log-row.is-success {
+  background-color: rgba(6, 78, 59, 0.28);
+  color: #6EE7B7;
+  border-left-color: #10B981;
+}
+
+.dev-log-ts {
+  font-size: 11px;
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+.dev-log-lvl {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background-color: #1E293B;
+  color: #7DD3FC;
+  flex-shrink: 0;
+}
+
+.dev-log-msg {
+  font-family: var(--md-ref-typeface-plain);
+  word-break: break-word;
+  flex: 1;
+}
+
+.dev-terminal-footer {
+  padding: 10px 18px;
+  background-color: var(--md-sys-color-surface-container-low);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--md-ref-typeface-mono);
+  font-size: 11px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ========================================================================= */
+/* STAGE 1 (BEAT TIMELINE), STAGE 2 (SECTIONS + CHORDS) & STAGE 3 (STEMS)    */
+/* ========================================================================= */
+.dev-timeline-list {
+  max-height: 520px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.dev-beat-row {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  border-left: 4px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.dev-beat-row:hover {
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+.dev-beat-row.is-active {
+  background-color: var(--md-sys-color-tertiary-container);
+  border-left-color: var(--md-sys-color-tertiary);
+}
+
+.dev-beat-bar-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.dev-bar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dev-beat-row.is-active .dev-bar-circle {
+  background-color: var(--md-sys-color-tertiary);
+  color: var(--md-sys-color-on-tertiary);
+  border-color: var(--md-sys-color-tertiary);
+}
+
+.dev-subbeat-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dev-subbeat-chip {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-low);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+}
+
+.dev-subbeat-chip.is-downbeat {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.dev-subbeat-chip.is-sub-active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-color: var(--md-sys-color-secondary);
+  font-weight: 700;
+}
+
+.dev-section-grid {
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dev-section-tile {
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.dev-section-tile:hover {
+  transform: translateY(-1px);
+  border-color: var(--md-sys-color-primary);
+}
+
+.dev-section-tile.tone-primary {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.dev-section-tile.tone-secondary {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.dev-section-tile.tone-tertiary {
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.dev-section-tile.tone-success {
+  background-color: var(--dev-color-success-container);
+  color: var(--dev-color-on-success-container);
+}
+
+.dev-section-tile.is-active {
+  box-shadow: 0 0 0 2px var(--md-sys-color-primary);
+}
+
+.dev-section-tile.is-filtered:not(.is-active) {
+  box-shadow: 0 0 0 2px var(--md-sys-color-secondary);
+}
+
+.dev-chords-scroll {
+  padding: 18px;
+  max-height: 640px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dev-chord-group-header {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dev-chord-bar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dev-chord-bar-card {
+  text-align: left;
+  padding: 12px;
+  min-height: 82px;
+  border-radius: 14px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease, transform 120ms ease;
+}
+
+.dev-chord-bar-card:hover {
+  border-color: var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-surface-container-lowest);
+}
+
+.dev-chord-bar-card.is-active {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 1px var(--md-sys-color-primary);
+}
+
+.dev-chord-symbol {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.dev-stem-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.dev-stem-card.is-muted-stem {
+  background-color: var(--md-sys-color-surface-container-low);
+  opacity: 0.78;
+}
+
+.dev-stem-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: var(--md-sys-color-surface-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dev-stem-metrics-box {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: var(--md-sys-color-surface-container-low);
+  font-size: 12px;
+}
+
+.dev-stem-footer {
+  padding-top: 8px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+}
+
+/* ========================================================================= */
+/* BOTTOM FLOATING AUDIO DOCKER & UPWARD MIXER POPOVER (Exact web/ sibling)  */
+/* ========================================================================= */
+.m3-footer-dock-outer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 45;
+  padding: 0 16px max(12px, env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.m3-footer-dock-inner {
+  position: relative;
+  width: min(1040px, 100%);
+  pointer-events: auto;
+}
+
+.m3-footer-bar {
+  position: relative;
+  height: 66px;
+  border-radius: 9999px;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  --md-elevation-level: 3;
+}
+
+.m3-player-track-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 190px;
+  max-width: 260px;
+  flex-shrink: 0;
+}
+
+.m3-player-titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.m3-player-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m3-player-sub {
+  font-size: 11px;
+  color: var(--md-sys-color-on-surface-variant);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m3-waveform-track {
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+  height: 36px;
+  border-radius: 12px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 140ms ease;
+}
+
+.m3-waveform-track:hover {
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+.m3-waveform-bars {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+  z-index: 2;
+}
+
+.m3-waveform-playhead {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  background-color: var(--md-sys-color-secondary);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.m3-footer-bar md-filled-tonal-button[data-role="mixer-btn"] {
+  --md-filled-tonal-button-container-color: var(--md-sys-color-surface-container);
+  --md-filled-tonal-button-label-text-color: var(--md-sys-color-on-surface);
+  --md-filled-tonal-button-icon-color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-footer-bar md-filled-tonal-button[data-role="mixer-btn"][data-active="true"] {
+  --md-filled-tonal-button-container-color: var(--md-sys-color-primary-container);
+  --md-filled-tonal-button-label-text-color: var(--md-sys-color-on-primary-container);
+  --md-filled-tonal-button-icon-color: var(--md-sys-color-primary);
+}
+
+.m3-upward-card.mixer-card {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: min(560px, 100%);
+  border-radius: 24px;
+  background-color: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 50;
+  --md-elevation-level: 4;
+}
+
+.m3-mixer-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.m3-mixer-row {
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-low);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.m3-mixer-row.is-solo {
+  background-color: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.m3-mixer-row.is-muted {
+  opacity: 0.6;
+}
+
+.m3-mixer-channel-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 145px;
+  flex-shrink: 0;
+}
+
+.m3-mixer-slider-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m3-mixer-slider-wrap md-slider {
+  flex: 1;
+  min-width: 70px;
+  --md-slider-handle-color: var(--md-sys-color-primary);
+  --md-slider-active-track-color: var(--md-sys-color-primary);
+  --md-slider-inactive-track-color: var(--md-sys-color-surface-container-highest);
+}
+
+.m3-mixer-vol-pct {
+  width: 38px;
+  text-align: right;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-mixer-ms-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.m3-mixer-ms-btn.is-mute-active {
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  border-color: var(--md-sys-color-error);
+}
+
+.m3-mixer-ms-btn.is-solo-active {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+/* ========================================================================= */
+/* RESPONSIVE BREAKPOINTS                                                    */
+/* ========================================================================= */
+@media (max-width: 1024px) {
+  .m3-dev-shell.has-session {
+    height: auto;
+    overflow: visible;
+  }
+
+  .dev-workbench-layout {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .dev-pipeline-rail {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .dev-inspector-pane {
+    overflow: visible;
+  }
+
+  .dev-hero-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dev-hero-aside {
+    width: 100%;
+  }
+
+  .dev-grid-4,
+  .dev-section-grid,
+  .dev-chord-bar-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .dev-grid-2,
+  .dev-grid-3,
+  .dev-grid-4,
+  .dev-section-grid,
+  .dev-chord-bar-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dev-subbeat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .m3-player-track-meta {
+    min-width: 0;
+    max-width: 140px;
+  }
+}
+
+/* ========================================================================= */
+/* SESSION SWITCHER & LIVE REQUEST TRACE OBSERVABILITY                       */
+/* ========================================================================= */
+.dev-session-switcher {
+  position: relative;
+}
+
+.dev-session-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.dev-session-trigger:hover,
+.dev-session-trigger.is-open {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-primary);
+}
+
+.dev-session-trigger-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dev-session-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 440px;
+  max-width: 92vw;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  z-index: 60;
+  overflow: hidden;
+}
+
+.dev-session-dropdown-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.dev-mini-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+}
+
+.dev-mini-icon-btn:hover {
+  background: var(--md-sys-color-surface-container-highest);
+}
+
+.dev-session-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dev-session-row {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dev-session-row:hover {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.dev-session-row.is-selected {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.dev-session-row-top,
+.dev-session-row-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dev-session-track-name {
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+
+.dev-session-stage-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dev-session-empty {
+  padding: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.dev-trace-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dev-filter-pill {
+  padding: 5px 11px;
+  border-radius: 9999px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dev-filter-pill.is-active {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.dev-filter-pill.is-error-active {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  border-color: var(--md-sys-color-error);
+}
+
+.dev-trace-table-wrap {
+  overflow-x: auto;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+.dev-trace-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.dev-trace-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface-variant);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  position: sticky;
+  top: 0;
+  background: var(--md-sys-color-surface-container);
+}
+
+.dev-trace-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  vertical-align: middle;
+}
+
+.dev-trace-row:hover {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.dev-trace-row.is-error-row {
+  background: rgba(220, 38, 38, 0.06);
+}
+
+.dev-trace-detail-row td {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  font-family: monospace;
+  font-size: 11px;
+  padding: 8px 14px;
+}
+
+.dev-session-chip {
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-family: monospace;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.dev-session-chip.is-active {
+  border-color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.dev-trace-track {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.dev-trace-empty {
+  padding: 28px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+
+
+
+/* ========================================================================= */
+/* MATERIAL 3 LIGHT-DOM STATIC COMPATIBILITY LAYER (Zero-JS Stitch / Figma)  */
+/* ========================================================================= */
+.md-typescale-display-small {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 500;
+}
+.md-typescale-headline-large {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 500;
+}
+.md-typescale-headline-medium {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 500;
+}
+.md-typescale-headline-small {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+.md-typescale-title-large {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 500;
+}
+.md-typescale-title-medium {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+.md-typescale-title-small {
+  font-family: var(--md-ref-typeface-brand);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.md-typescale-body-large {
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+.md-typescale-body-medium {
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+}
+.md-typescale-body-small {
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}
+.md-typescale-label-large {
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+}
+.md-typescale-label-medium {
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+}
+.md-typescale-label-small {
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+md-elevation,
+md-ripple {
+  display: none !important;
+}
+
+md-icon {
+  font-family: "Material Symbols Outlined", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+md-filled-button,
+md-filled-tonal-button,
+md-outlined-button,
+md-text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 9999px;
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+md-filled-button {
+  background-color: var(--md-filled-button-container-color, var(--md-sys-color-primary));
+  color: var(--md-filled-button-label-text-color, var(--md-sys-color-on-primary));
+}
+md-filled-button md-icon {
+  font-size: 18px;
+  color: var(--md-filled-button-icon-color, currentColor);
+}
+
+md-filled-tonal-button {
+  background-color: var(
+    --md-filled-tonal-button-container-color,
+    var(--md-sys-color-secondary-container)
+  );
+  color: var(
+    --md-filled-tonal-button-label-text-color,
+    var(--md-sys-color-on-secondary-container)
+  );
+  padding: 0 16px;
+}
+md-filled-tonal-button md-icon {
+  font-size: 18px;
+  color: var(--md-filled-tonal-button-icon-color, currentColor);
+}
+
+md-outlined-button {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline);
+  padding: 0 16px;
+  height: 36px;
+}
+md-outlined-button md-icon {
+  font-size: 18px;
+  color: currentColor;
+}
+
+md-text-button {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  padding: 0 12px;
+  height: 36px;
+}
+md-text-button md-icon {
+  font-size: 18px;
+  color: currentColor;
+}
+
+md-icon-button,
+md-filled-icon-button,
+md-filled-tonal-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+md-icon-button {
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+md-filled-icon-button {
+  background-color: var(--md-filled-icon-button-container-color, var(--md-sys-color-primary));
+  color: var(--md-filled-icon-button-icon-color, var(--md-sys-color-on-primary));
+}
+
+md-filled-tonal-icon-button {
+  background-color: var(
+    --md-filled-tonal-icon-button-container-color,
+    var(--md-sys-color-surface-container)
+  );
+  color: var(
+    --md-filled-tonal-icon-button-icon-color,
+    var(--md-sys-color-on-surface-variant)
+  );
+}
+
+md-tabs {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  min-width: 100%;
+  background-color: var(--md-primary-tab-container-color, var(--md-sys-color-surface-container-lowest));
+}
+
+md-primary-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 18px;
+  font-family: var(--md-ref-typeface-plain);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--md-primary-tab-inactive-label-text-color, var(--md-sys-color-on-surface-variant));
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+md-primary-tab[active] {
+  color: var(--md-primary-tab-active-label-text-color, var(--md-sys-color-primary));
+  font-weight: 600;
+}
+
+md-primary-tab[active]::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background-color: var(--md-primary-tab-active-indicator-color, var(--md-sys-color-primary));
+}
+
+md-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+md-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Pure CSS Static Material 3 Slider */
+.m3-static-slider {
+  position: relative;
+  width: 100%;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+.m3-static-slider-track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  border-radius: 9999px;
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+.m3-static-slider-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  background-color: var(--md-sys-color-primary);
+}
+.m3-static-slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--md-sys-color-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Ensure subtle M3 card border/shadow clarity in static snapshots */
+.m3-surface-card,
+.m3-info-strip,
+.m3-unified-section-card,
+.m3-karaoke-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 1px color-mix(in srgb, var(--md-sys-color-outline-variant) 55%, transparent);
+}
+
+  </style>
+</head>
+<body class="md-typescale-body-medium">
+  <div id="root"><div class="m3-dev-shell has-session"><header class="m3-top-app-bar"><div class="m3-top-app-bar-inner"><div class="m3-header-left"><div class="m3-brand-lockup"><div class="m3-brand-logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12V7M9 17V5M13 19V3M17 15V8M21 12V10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg></div><span class="m3-brand-title">Kythra <span class="m3-brand-subtitle">Developer</span></span></div><div class="m3-header-divider" aria-hidden="true"></div><div class="dev-session-switcher"><button type="button" class="dev-session-trigger " title="Web Studio ve Developer oturumları arasında geçiş yap"><span class="m3-status-dot success" aria-hidden="true"></span><span class="dev-session-trigger-label"><span class="m3-mono" style="font-weight:700;font-size:11px">sess_web_bil</span><span class="m3-tonal-badge sm secondary">DEV</span><span class="m3-tonal-badge sm primary m3-tabular">3 oturum</span></span><md-icon style="font-size:16px">expand_more</md-icon></button></div><div class="m3-header-divider" aria-hidden="true"></div><div role="group" aria-label="Çalıştırma Modu" class="m3-segmented-group"><button type="button" class="m3-segmented-btn " title="Adım Adım Mod: Her aşamayı (01 → 04) tek tek manuel veya sıralı çalıştırıp hata ayıkla"><md-icon>commit</md-icon><span>Adım Adım</span></button><button type="button" class="m3-segmented-btn is-active is-secondary" title="Üretim Akışı Modu: Web Studio kullanıcı akışını birebir simüle et ve test et"><md-icon>bolt</md-icon><span>Üretim Akışı</span></button></div></div><div class="m3-header-center"></div><div class="m3-header-actions"><md-filled-tonal-button title="Yeni Ses Dosyası Yükle"><md-icon slot="icon">audio_file</md-icon><span>Kaynağı Değiştir</span></md-filled-tonal-button><md-outlined-button title="Oturumu ve Aşama Çıktılarını Sıfırla"><md-icon slot="icon">restart_alt</md-icon><span>Sıfırla</span></md-outlined-button><md-filled-button title="Seçili oturumda Web Studio üretim akışını birebir test et"><md-icon slot="icon">bolt</md-icon><span>Üretim Akışını Test Et</span></md-filled-button><md-icon-button aria-label="Açık Temaya Geç" title="Açık Temaya Geç"><md-icon>light_mode</md-icon></md-icon-button></div></div></header><div class="dev-modal-scrim"><div role="dialog" aria-modal="true" aria-labelledby="source-modal-title" class="dev-modal-card"><md-elevation></md-elevation><div class="dev-modal-header"><div class="dev-modal-title-wrap"><div class="dev-modal-icon-badge"><md-icon style="font-size:18px">audio_file</md-icon></div><h2 id="source-modal-title" class="md-typescale-title-medium">Ses Dosyası Yükle</h2></div><md-icon-button aria-label="Pencereyi kapat"><md-icon>close</md-icon></md-icon-button></div><div class="dev-modal-body"><input type="file" id=":Rr:" accept=".wav,.mp3,.flac,.ogg,.m4a" class="dev-hidden-input"/><div class="m3-upload-dropzone  "><div class="m3-upload-dropzone-icon"><md-icon>cloud_upload</md-icon></div><span class="md-typescale-title-small">Dosya seçmek için tıklayın veya sürükleyip bırakın</span><span class="dev-aside-copy m3-tabular">WAV, MP3, FLAC, OGG ve M4A desteklenir (Azami 100 MB)</span></div></div></div></div><main class="dev-workbench-layout"><aside class="dev-pipeline-rail"><nav aria-label="Çözümleme Akışı"><div class="dev-rail-header"><h2 class="md-typescale-title-small">Çözümleme Aşamaları</h2><span class="m3-tonal-badge sm m3-tabular">4 Aşama</span></div><div class="dev-rail-list"><button type="button" class="dev-stage-item is-completed"><div class="dev-stage-item-top"><div class="dev-stage-item-title-wrap"><span class="dev-stage-num m3-tabular">01</span><span class="dev-stage-title" title="Ölçü ve Tempo Tespiti">Ölçü ve Tempo Tespiti</span></div><div class="dev-stage-chips"><span class="m3-tonal-badge sm success"><md-icon style="font-size:14px">check_circle</md-icon><span>Tamam</span></span></div></div><div class="dev-stage-sub"><span class="dev-stage-op" title="Vuruş gücü ve metrik ızgara çıkarımı">Vuruş gücü ve metrik ızgara çıkarımı</span><span class="m3-tabular">11.4 sn</span></div></button><button type="button" class="dev-stage-item is-selected is-completed"><div class="dev-stage-item-top"><div class="dev-stage-item-title-wrap"><span class="dev-stage-num m3-tabular">02</span><span class="dev-stage-title" title="Akor Tanıma ve Şarkı Yapısı">Akor Tanıma ve Şarkı Yapısı</span></div><div class="dev-stage-chips"><span class="m3-tonal-badge sm success"><md-icon style="font-size:14px">check_circle</md-icon><span>Tamam</span></span></div></div><div class="dev-stage-sub"><span class="dev-stage-op" title="Armonik akor tahmini, şarkı tonu ve yapısal bölümleme">Armonik akor tahmini, şarkı tonu ve yapısal bölümleme</span><span class="m3-tabular">4.8 sn</span></div></button><button type="button" class="dev-stage-item is-completed"><div class="dev-stage-item-top"><div class="dev-stage-item-title-wrap"><span class="dev-stage-num m3-tabular">03</span><span class="dev-stage-title" title="Makro Kanal Ayırma (BS-RoFormer)">Makro Kanal Ayırma (BS-RoFormer)</span></div><div class="dev-stage-chips"><span class="m3-tonal-badge sm success"><md-icon style="font-size:14px">check_circle</md-icon><span>Tamam</span></span></div></div><div class="dev-stage-sub"><span class="dev-stage-op" title="Çok kanallı zaman-frekans makro kaynak ayrıştırma">Çok kanallı zaman-frekans makro kaynak ayrıştırma</span><span class="m3-tabular">27.4 sn</span></div></button><button type="button" class="dev-stage-item is-completed"><div class="dev-stage-item-top"><div class="dev-stage-item-title-wrap"><span class="dev-stage-num m3-tabular">04</span><span class="dev-stage-title" title="Otomatik Şarkı Sözü &amp; Karaoke">Otomatik Şarkı Sözü &amp; Karaoke</span></div><div class="dev-stage-chips"><span class="m3-tonal-badge sm success"><md-icon style="font-size:14px">check_circle</md-icon><span>Tamam</span></span></div></div><div class="dev-stage-sub"><span class="dev-stage-op" title="İzole vokal transkripsiyonu ve milisaniyelik CTC hizalama">İzole vokal transkripsiyonu ve milisaniyelik CTC hizalama</span><span class="m3-tabular">8.4 sn</span></div></button></div></nav></aside><div class="dev-inspector-pane"><div class="dev-inspector-top"><header class="m3-surface-card dev-inspector-card"><md-elevation></md-elevation><div class="dev-inspector-main-row"><div class="dev-inspector-title-group"><span class="dev-index-pill m3-tabular">02</span><h2 class="md-typescale-title-medium" title="Akor Tanıma ve Şarkı Yapısı">Akor Tanıma ve Şarkı Yapısı</h2></div><div class="dev-inspector-controls"><div class="m3-segmented-group" role="tablist"><button type="button" role="tab" aria-selected="true" class="m3-segmented-btn is-active">Çözümleme Görünümü</button><button type="button" role="tab" aria-selected="false" class="m3-segmented-btn ">Ham JSON</button><button type="button" role="tab" aria-selected="false" class="m3-segmented-btn "><span>Canlı Konsol</span><span class="m3-tonal-badge sm primary m3-tabular">9</span></button><button type="button" role="tab" aria-selected="false" class="m3-segmented-btn " title="Web Studio ve Developer API isteklerini &amp; hatalarını canlı izle"><span>İstekler</span></button></div><md-filled-button title="Aşama 2 adımını tek başına çalıştır"><md-icon slot="icon">play_arrow</md-icon><span>Aşama 02 Çalıştır</span></md-filled-button></div></div><div class="dev-inspector-subbar"><div class="dev-io-flow"><md-icon style="color:var(--md-sys-color-primary);font-size:17px">layers</md-icon><strong>Girdi:</strong><code class="dev-code-pill">Oturum Sesi + beats.json</code><span aria-hidden="true">→</span><strong>Çıktı:</strong><code class="dev-code-pill is-output">chords.json</code></div><div class="dev-io-flow"><span><strong>Ön Koşul:</strong> Aşama 1 (bölümler için)</span><span class="m3-tonal-badge sm m3-tabular">Süre: 4.8 sn</span></div></div></header></div><div class="dev-inspector-scroll"><div class="dev-stack"><div class="dev-grid-4"><div class="m3-surface-card dev-metric-card "><md-elevation></md-elevation><div class="dev-metric-label"><span>Şarkı Tonu (Key)</span></div><div class="dev-metric-value m3-tabular tone-primary ">Am</div><div class="dev-metric-sub">Krumhansl-Schmuckler Armonik Ton Analizi</div></div><div class="m3-surface-card dev-metric-card "><md-elevation></md-elevation><div class="dev-metric-label"><span>Metrik Ölçü Kapsamı</span></div><div class="dev-metric-value m3-tabular  ">32 <span class="dev-aside-copy">Ölçü (Bar)</span></div><div class="dev-metric-sub"><span style="color:var(--md-sys-color-primary);font-weight:600">Aşama 01 Vuruş Izgarası ile Senkronize</span></div></div><div class="m3-surface-card dev-metric-card "><md-elevation></md-elevation><div class="dev-metric-label"><span>Armonik Değişim Olayları</span></div><div class="dev-metric-value m3-tabular tone-secondary ">32 <span class="dev-aside-copy">Akor (BTC)</span></div><div class="dev-metric-sub">Majority Voting ile Barlara Kuantize Edildi</div></div><div class="m3-surface-card dev-metric-card tone-tertiary"><md-elevation></md-elevation><div class="dev-metric-label"><span>Baskın Akor Yürüyüşü</span></div><div class="dev-metric-value m3-tabular tone-tertiary is-compact"><span title="Am7 – Fmaj7 – C – G">Am7 – Fmaj7 – C – G</span></div><div class="dev-metric-sub">Şarkı Boyunca Ana Armonik Dizi</div></div></div><div class="m3-surface-card dev-section-block"><md-elevation></md-elevation><div class="dev-section-header"><div class="dev-section-header-title"><md-icon style="color:var(--md-sys-color-secondary);font-size:18px">bookmark</md-icon><span>Şarkı Formu ve Bölümleme (allin1 MSA)</span><span class="dev-aside-copy">· Tıklayarak oynatıcıyı bölüme atlatın</span></div><div class="dev-section-header-actions"><span class="m3-tonal-badge sm secondary m3-tabular">5 Bölüm Tespit Edildi</span></div></div><div class="dev-section-grid"><button type="button" class="dev-section-tile tone-primary" title="Oynatmayı Intro (0.0 sn · Ölçü 1) noktasına atlat ve filtrele"><div class="dev-benchmark-top"><span class="dev-benchmark-name-wrap" style="font-size:12.5px;font-weight:600"><md-icon style="font-size:16px">play_arrow</md-icon><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Intro</span></span><span class="m3-tonal-badge sm m3-tabular ">Ölçü 1–4</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:11.5px;opacity:0.85"><span>0.0s – 8.1s</span><span>(8.1 sn)</span></div></button><button type="button" class="dev-section-tile tone-success" title="Oynatmayı Verse 1 (8.1 sn · Ölçü 5) noktasına atlat ve filtrele"><div class="dev-benchmark-top"><span class="dev-benchmark-name-wrap" style="font-size:12.5px;font-weight:600"><md-icon style="font-size:16px">play_arrow</md-icon><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Verse 1</span></span><span class="m3-tonal-badge sm m3-tabular ">Ölçü 5–12</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:11.5px;opacity:0.85"><span>8.1s – 24.4s</span><span>(16.3 sn)</span></div></button><button type="button" class="dev-section-tile tone-tertiary is-active" title="Oynatmayı Chorus 1 (24.4 sn · Ölçü 13) noktasına atlat ve filtrele"><div class="dev-benchmark-top"><span class="dev-benchmark-name-wrap" style="font-size:12.5px;font-weight:600"><span class="m3-status-dot is-pulsing" aria-hidden="true"></span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Chorus 1</span></span><span class="m3-tonal-badge sm m3-tabular primary">Ölçü 13–20</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:11.5px;opacity:0.85"><span>24.4s – 40.7s</span><span>(16.3 sn)</span></div></button><button type="button" class="dev-section-tile tone-success" title="Oynatmayı Verse 2 (40.7 sn · Ölçü 21) noktasına atlat ve filtrele"><div class="dev-benchmark-top"><span class="dev-benchmark-name-wrap" style="font-size:12.5px;font-weight:600"><md-icon style="font-size:16px">play_arrow</md-icon><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Verse 2</span></span><span class="m3-tonal-badge sm m3-tabular ">Ölçü 21–28</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:11.5px;opacity:0.85"><span>40.7s – 56.9s</span><span>(16.3 sn)</span></div></button><button type="button" class="dev-section-tile" title="Oynatmayı Outro (56.9 sn · Ölçü 29) noktasına atlat ve filtrele"><div class="dev-benchmark-top"><span class="dev-benchmark-name-wrap" style="font-size:12.5px;font-weight:600"><md-icon style="font-size:16px">play_arrow</md-icon><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Outro</span></span><span class="m3-tonal-badge sm m3-tabular ">Ölçü 29–32</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:11.5px;opacity:0.85"><span>56.9s – 65.1s</span><span>(8.1 sn)</span></div></button></div></div><div class="m3-surface-card dev-section-block"><md-elevation></md-elevation><div class="dev-section-header"><div class="dev-section-header-title"><md-icon style="color:var(--md-sys-color-primary);font-size:18px">grid_view</md-icon><span>Ölçü Bazlı Akor Şeması (Lead Sheet Grid)</span><span class="dev-aside-copy m3-tabular">· Toplam 32 Ölçü · Standart Görünüm</span></div><div class="dev-section-header-actions"><div class="dev-search-pill"><md-icon>search</md-icon><input type="text" placeholder="Ölçü Ara (örn: 14)" class="dev-search-input m3-tabular" value=""/></div></div></div><div class="dev-chords-scroll"><div class="dev-stack" style="gap:12px"><div class="dev-chord-group-header"><div class="dev-io-flow"><span class="m3-status-dot neutral" aria-hidden="true"></span><span class="md-typescale-title-small">Intro</span><span class="dev-aside-copy m3-tabular">(Ölçü 1–4 · 0.0s–8.1s)</span></div><md-text-button><md-icon slot="icon">play_arrow</md-icon><span>Bu Bölümü Çal</span></md-text-button></div><div class="dev-chord-bar-grid"><button type="button" class="dev-chord-bar-card " title="Ölçü 1: Am7 (0.00 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 1</strong></span><span>0.0s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 2: Fmaj7 (2.03 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 2</strong></span><span>2.0s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 3: C (4.07 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 3</strong></span><span>4.1s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">C</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 4: G (6.10 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 4</strong></span><span>6.1s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">G</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button></div></div><div class="dev-stack" style="gap:12px"><div class="dev-chord-group-header"><div class="dev-io-flow"><span class="m3-status-dot neutral" aria-hidden="true"></span><span class="md-typescale-title-small">Verse 1</span><span class="dev-aside-copy m3-tabular">(Ölçü 5–12 · 8.1s–24.4s)</span></div><md-text-button><md-icon slot="icon">play_arrow</md-icon><span>Bu Bölümü Çal</span></md-text-button></div><div class="dev-chord-bar-grid"><button type="button" class="dev-chord-bar-card " title="Ölçü 5: Am (8.14 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 5</strong></span><span>8.1s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 6: Em7 (10.17 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 6</strong></span><span>10.2s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Em7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 7: Fmaj7 (12.20 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 7</strong></span><span>12.2s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 8: G (14.24 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 8</strong></span><span>14.2s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">G</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 9: Am (16.27 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 9</strong></span><span>16.3s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 10: Em7 (18.30 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 10</strong></span><span>18.3s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Em7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 11: Fmaj7 (20.34 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 11</strong></span><span>20.3s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 12: G (22.37 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 12</strong></span><span>22.4s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">G</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button></div></div><div class="dev-stack" style="gap:12px"><div class="dev-chord-group-header"><div class="dev-io-flow"><span class="m3-status-dot is-pulsing" aria-hidden="true"></span><span class="md-typescale-title-small">Chorus 1</span><span class="dev-aside-copy m3-tabular">(Ölçü 13–20 · 24.4s–40.7s)</span></div><md-text-button><md-icon slot="icon">play_arrow</md-icon><span>Bu Bölümü Çal</span></md-text-button></div><div class="dev-chord-bar-grid"><button type="button" class="dev-chord-bar-card is-active" title="Ölçü 13: Fmaj7 (24.41 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><span class="m3-status-dot is-pulsing" aria-hidden="true"></span><strong>Ölçü 13</strong></span><span>24.4s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 14: Am7 (26.44 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 14</strong></span><span>26.4s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 15: G (28.48 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 15</strong></span><span>28.5s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">G</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 16: C (30.51 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 16</strong></span><span>30.5s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">C</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 17: Fmaj7 (32.54 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 17</strong></span><span>32.5s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 18: Am7 (34.58 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 18</strong></span><span>34.6s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 19: G (36.61 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 19</strong></span><span>36.6s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">G</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 20: C (38.64 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 20</strong></span><span>38.6s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">C</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button></div></div><div class="dev-stack" style="gap:12px"><div class="dev-chord-group-header"><div class="dev-io-flow"><span class="m3-status-dot neutral" aria-hidden="true"></span><span class="md-typescale-title-small">Verse 2</span><span class="dev-aside-copy m3-tabular">(Ölçü 21–28 · 40.7s–56.9s)</span></div><md-text-button><md-icon slot="icon">play_arrow</md-icon><span>Bu Bölümü Çal</span></md-text-button></div><div class="dev-chord-bar-grid"><button type="button" class="dev-chord-bar-card " title="Ölçü 21: Am (40.68 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 21</strong></span><span>40.7s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 22: Dm7 (42.71 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 22</strong></span><span>42.7s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Dm7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 23: Fmaj7 (44.75 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 23</strong></span><span>44.7s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 24: E7 (46.78 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 24</strong></span><span>46.8s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">E7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 25: Am (48.81 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 25</strong></span><span>48.8s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 26: Dm7 (50.85 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 26</strong></span><span>50.8s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Dm7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 27: Fmaj7 (52.88 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 27</strong></span><span>52.9s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 28: E7 (54.91 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 28</strong></span><span>54.9s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">E7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button></div></div><div class="dev-stack" style="gap:12px"><div class="dev-chord-group-header"><div class="dev-io-flow"><span class="m3-status-dot neutral" aria-hidden="true"></span><span class="md-typescale-title-small">Outro</span><span class="dev-aside-copy m3-tabular">(Ölçü 29–32 · 56.9s–65.1s)</span></div><md-text-button><md-icon slot="icon">play_arrow</md-icon><span>Bu Bölümü Çal</span></md-text-button></div><div class="dev-chord-bar-grid"><button type="button" class="dev-chord-bar-card " title="Ölçü 29: Am7 (56.95 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 29</strong></span><span>56.9s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Am7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 30: Fmaj7 (58.98 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 30</strong></span><span>59.0s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">Fmaj7</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 31: C (61.02 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 31</strong></span><span>61.0s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">C</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button><button type="button" class="dev-chord-bar-card " title="Ölçü 32: G (63.05 sn) noktasına atlat"><div class="dev-benchmark-top m3-tabular" style="font-size:11px;opacity:0.85"><span class="dev-io-flow"><strong>Ölçü 32</strong></span><span>63.1s</span></div><div class="dev-benchmark-top"><span class="dev-chord-symbol">G</span></div><div class="dev-benchmark-top m3-tabular" style="font-size:10.5px;opacity:0.78;padding-top:4px;border-top:1px solid var(--md-sys-color-outline-variant)"><span>2.03 sn</span><md-icon style="font-size:14px">play_arrow</md-icon></div></button></div></div></div></div></div></div></div><div class="m3-footer-dock-outer"><div class="m3-footer-dock-inner"><footer aria-label="Ana Ses Oynatıcısı" class="m3-footer-bar"><md-elevation></md-elevation><div class="m3-player-track-meta"><md-filled-icon-button aria-label="Sesi oynat" title="Sesi oynat"><md-icon>play_arrow</md-icon></md-filled-icon-button><div class="m3-player-titles"><span class="m3-player-title" title="Duman — Senden Daha Güzel (Stüdyo Kaydı)">Duman — Senden Daha Güzel (Stüdyo Kaydı)</span><span class="m3-player-sub">Kanallar Ayrıştırıldı · Mikser Aktif</span></div></div><span class="m3-tabular md-typescale-label-medium" style="color:var(--md-sys-color-primary)">00:25.1</span><div role="slider" aria-label="Dalga Formu İlerleme Çubuğu" aria-valuemin="0" aria-valuemax="65" aria-valuenow="25" tabindex="0" class="m3-waveform-track" title="İlerlemek için dalga formuna tıklayın"><div class="m3-waveform-playhead" style="left:38.51578704770685%"></div><div class="m3-waveform-bars"><div style="flex:1;height:5px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:8px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:7px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:16px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:22px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:11px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:19px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:24px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:15px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:9px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:17px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:21px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:6px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:18px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:23px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:10px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:14px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:20px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:13px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:8px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:16px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:24px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:18px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:11px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:20px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:24px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:14px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:8px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:18px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:5px;border-radius:9999px;background-color:var(--md-sys-color-primary)"></div><div style="flex:1;height:8px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:7px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:16px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:22px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:11px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:19px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:24px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:15px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:9px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:17px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:21px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:6px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:18px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:23px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:10px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:14px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:20px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:13px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:8px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:16px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:24px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:18px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:11px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:20px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:24px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:14px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:8px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:18px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:5px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:8px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:7px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:16px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:22px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:11px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:19px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:24px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:15px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:9px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:17px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:21px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:12px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:6px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:18px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:23px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:10px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:14px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div><div style="flex:1;height:20px;border-radius:9999px;background-color:var(--md-sys-color-outline-variant)"></div></div></div><span class="m3-tabular md-typescale-label-medium" style="color:var(--md-sys-color-on-surface-variant)">01:05.1</span><md-filled-tonal-button data-role="mixer-btn" data-active="false" title="Stüdyo Mikserini Aç / Kapat"><md-icon slot="icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><g style="fill:none"><line x1="6" y1="4" x2="6" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="fill:none"></line><line x1="12" y1="4" x2="12" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="fill:none"></line><line x1="18" y1="4" x2="18" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="fill:none"></line><rect x="3.7" y="7.6" width="4.6" height="2.8" rx="1.1" fill="currentColor" stroke="none" style="fill:currentColor"></rect><rect x="9.7" y="13.6" width="4.6" height="2.8" rx="1.1" fill="currentColor" stroke="none" style="fill:currentColor"></rect><rect x="15.7" y="6.6" width="4.6" height="2.8" rx="1.1" fill="currentColor" stroke="none" style="fill:currentColor"></rect></g></svg></md-icon><span>Mikser</span></md-filled-tonal-button></footer></div></div></main></div></div>
+</body>
+</html>

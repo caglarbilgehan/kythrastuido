@@ -6,6 +6,7 @@ interface SessionSwitcherProps {
   sessions: TelemetrySessionSummary[];
   onSelectSession: (sessionId: string) => void;
   onRefresh: () => void;
+  initialOpen?: boolean;
 }
 
 function formatRelativeTime(iso?: string | null): string {
@@ -42,9 +43,10 @@ export const SessionSwitcher: React.FC<SessionSwitcherProps> = ({
   activeSessionId,
   sessions,
   onSelectSession,
-  onRefresh
+  onRefresh,
+  initialOpen = false
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

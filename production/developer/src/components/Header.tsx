@@ -18,6 +18,7 @@ interface HeaderProps {
   onModeChange: (mode: 'sequential' | 'parallel') => void;
   isDarkMode: boolean;
   onToggleTheme: () => void;
+  initialSessionMenuOpen?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -34,7 +35,8 @@ export const Header: React.FC<HeaderProps> = ({
   mode,
   onModeChange,
   isDarkMode,
-  onToggleTheme
+  onToggleTheme,
+  initialSessionMenuOpen = false
 }) => {
   const hasSession = Boolean(session?.has_session);
 
@@ -59,6 +61,7 @@ export const Header: React.FC<HeaderProps> = ({
             sessions={telemetrySessions}
             onSelectSession={onSelectSession}
             onRefresh={onRefreshSessions}
+            initialOpen={initialSessionMenuOpen}
           />
 
           <div className="m3-header-divider" aria-hidden="true" />

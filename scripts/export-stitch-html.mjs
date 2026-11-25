@@ -2,10 +2,10 @@
 /**
  * KythraStudio — Google Stitch Direct HTML/CSS Exporter
  *
- * Renders the REAL Web Studio React components (via Vite SSR) into 6 standalone,
- * zero-JavaScript, self-contained HTML files (Active Studio, 6-Stem Mixer,
- * Welcome/Library x Light & Dark themes) with exact Material 3 CSS tokens and
- * Light-DOM compatibility styling for all <md-*> custom elements.
+ * Renders the REAL Web Studio (6 screens) AND Developer Workbench (8 screens)
+ * React components via Vite SSR into 14 standalone, zero-JavaScript,
+ * self-contained HTML files (Light & Dark Material 3 themes) with exact CSS
+ * tokens and Light-DOM compatibility styling for all <md-*> custom elements.
  *
  * Usage: npm run export:stitch
  */
@@ -19,9 +19,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 const WEB_ROOT = path.join(ROOT, 'production', 'web');
+const DEV_ROOT = path.join(ROOT, 'production', 'developer');
 const OUT_DIR = path.join(ROOT, 'docs', 'ai-context', 'stitch', 'html');
 
-// Load Vite from workspace dependencies
 const requireFromWeb = createRequire(path.join(WEB_ROOT, 'package.json'));
 const vitePath = requireFromWeb.resolve('vite');
 const { createServer } = await import(pathToFileURL(vitePath).href);
@@ -141,6 +141,7 @@ md-icon {
 
 md-filled-button,
 md-filled-tonal-button,
+md-outlined-button,
 md-text-button {
   display: inline-flex;
   align-items: center;
@@ -184,11 +185,27 @@ md-filled-tonal-button md-icon {
   color: var(--md-filled-tonal-button-icon-color, currentColor);
 }
 
+md-outlined-button {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline);
+  padding: 0 16px;
+  height: 36px;
+}
+md-outlined-button md-icon {
+  font-size: 18px;
+  color: currentColor;
+}
+
 md-text-button {
   background: transparent;
   color: var(--md-sys-color-primary);
   padding: 0 12px;
   height: 36px;
+}
+md-text-button md-icon {
+  font-size: 18px;
+  color: currentColor;
 }
 
 md-icon-button,
@@ -322,10 +339,6 @@ md-list-item {
 }
 `;
 
-/**
- * Replaces empty <md-slider ... value="N"></md-slider> tags with pure HTML/CSS
- * Material 3 track + active fill + thumb markup so Stitch/Figma sees exact sliders.
- */
 function hydrateStaticSliders(html) {
   return html.replace(/<md-slider\b([^>]*)><\/md-slider>/g, (_match, attrs) => {
     const valMatch = attrs.match(/\bvalue="([^"]+)"/);
@@ -376,59 +389,82 @@ ${M3_STATIC_POLYFILL_CSS}
 `;
 }
 
-function buildGalleryIndex(screens) {
-  const cards = screens
-    .map(
-      (s) => `
-      <a class="card" href="./${s.slug}.html" target="_blank" rel="noopener">
+function renderGroupedSections(screens, portHint) {
+  const groups = new Map();
+  for (const s of screens) {
+    const key = s.group || 'Genel';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
+  }
+  let html = '';
+  for (const [groupName, items] of groups.entries()) {
+    html += `
+    <h3>${groupName} <span class="subcount">${items.length}</span></h3>
+    <div class="grid">
+${items
+  .map(
+    (s) => `
+      <a class="card" data-theme-card="${s.theme}" href="./${s.slug}.html" target="_blank" rel="noopener">
         <div class="badge ${s.theme}">${s.theme.toUpperCase()}</div>
-        <h3>${s.title}</h3>
+        <h4>${s.title}</h4>
         <code>${s.slug}.html</code>
-        <span class="hint">Canlı URL: ?showcase=${s.view}&amp;theme=${s.theme}</span>
+        <span class="hint">Canlı URL (${portHint}): ?showcase=${s.view}&amp;theme=${s.theme}</span>
       </a>`
-    )
-    .join('\n');
+  )
+  .join('\n')}
+    </div>`;
+  }
+  return html;
+}
 
+function buildGalleryIndex(webScreens, devScreens) {
+  const total = webScreens.length + devScreens.length;
   return `<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KythraStudio — Google Stitch Statik HTML Ekran Paketleri</title>
+  <title>KythraStudio — Google Stitch Tam Arayüz & Modal Katalogu (${total} Ekran)</title>
   <style>
-    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: #F8FAFD; color: #1F1F1F; padding: 36px 24px; }
-    .wrap { max-width: 980px; margin: 0 auto; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: #F8FAFD; color: #1F1F1F; padding: 36px 24px 64px; }
+    .wrap { max-width: 1180px; margin: 0 auto; }
     h1 { margin: 0 0 8px; font-size: 26px; }
-    p { margin: 0 0 24px; color: #444746; line-height: 1.5; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .card { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 18px; background: #FFFFFF; border: 1px solid #C4C7C5; text-decoration: none; color: inherit; transition: border-color 140ms ease, transform 140ms ease; }
+    h2 { margin: 36px 0 8px; font-size: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #C4C7C5; padding-bottom: 10px; }
+    h3 { margin: 20px 0 10px; font-size: 14px; font-weight: 600; color: #444746; display: flex; align-items: center; gap: 8px; }
+    p { margin: 0 0 18px; color: #444746; line-height: 1.5; }
+    .count { font-size: 12px; font-weight: 600; background: #D3E3FD; color: #041E49; padding: 3px 10px; border-radius: 999px; }
+    .subcount { font-size: 11px; font-weight: 600; background: #EEF0F4; color: #444746; padding: 2px 8px; border-radius: 999px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .card { display: flex; flex-direction: column; gap: 7px; padding: 16px; border-radius: 16px; background: #FFFFFF; border: 1px solid #C4C7C5; text-decoration: none; color: inherit; transition: border-color 140ms ease, transform 140ms ease; }
     .card:hover { border-color: #0B57D0; transform: translateY(-2px); }
-    .card h3 { margin: 0; font-size: 16px; }
-    .card code { font-size: 12px; color: #0B57D0; background: #D3E3FD; padding: 4px 8px; border-radius: 8px; width: fit-content; }
-    .hint { font-size: 12px; color: #444746; font-family: ui-monospace, monospace; }
-    .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; width: fit-content; }
+    .card h4 { margin: 0; font-size: 14px; line-height: 1.35; }
+    .card code { font-size: 11.5px; color: #0B57D0; background: #D3E3FD; padding: 3px 8px; border-radius: 8px; width: fit-content; }
+    .hint { font-size: 11px; color: #444746; font-family: ui-monospace, monospace; }
+    .badge { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; width: fit-content; }
     .badge.light { background: #EEF0F4; color: #1F1F1F; }
     .badge.dark { background: #1E1F20; color: #A8C7FA; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>KythraStudio — Google Stitch Ekran Paketleri</h1>
-    <p>Aşağıdaki 6 tek-dosya HTML çıktısı gerçek Web Studio React bileşenlerinden ve Material 3 CSS token'larından otomatik üretilmiştir. Doğrudan Google Stitch'e veya Figma <code>html.to.design</code> eklentisine yükleyebilirsin.</p>
-    <div class="grid">
-${cards}
-    </div>
+    <h1>KythraStudio — Google Stitch Tam Arayüz, Modal &amp; Bileşen Katalogu</h1>
+    <p>Toplam <strong>${total} tek-dosya HTML çıktısı</strong> (${webScreens.length} Web Studio + ${devScreens.length} Developer Workbench). Tüm ana ekranlar, tıklanınca açılan modallar, açılır menüler, alt docker popover'ları, söz editörü ve 4 aşama görünümleri birebir gerçek Material 3 bileşenlerinden üretildi.</p>
+
+    <h2>Web Studio <span class="count">${webScreens.length} ekran</span></h2>
+${renderGroupedSections(webScreens, 'Web :3000')}
+
+    <h2>Developer Workbench <span class="count">${devScreens.length} ekran</span></h2>
+${renderGroupedSections(devScreens, 'Dev :5174')}
   </div>
 </body>
 </html>
 `;
 }
 
-async function main() {
-  const webCss = fs.readFileSync(path.join(WEB_ROOT, 'src', 'index.css'), 'utf8');
-
+async function exportWorkspaceScreens({ rootDir, cssRelPath, entryRelPath, exportFnName }) {
+  const css = fs.readFileSync(path.join(rootDir, cssRelPath), 'utf8');
   const vite = await createServer({
-    root: WEB_ROOT,
+    root: rootDir,
     configFile: false,
     logLevel: 'error',
     server: { middlewareMode: true, hmr: false },
@@ -436,17 +472,15 @@ async function main() {
   });
 
   try {
-    const mod = await vite.ssrLoadModule('/src/showcase/renderStaticScreens.tsx');
-    const screens = mod.renderAllStitchScreens();
-
-    fs.mkdirSync(OUT_DIR, { recursive: true });
+    const mod = await vite.ssrLoadModule(entryRelPath);
+    const screens = mod[exportFnName]();
 
     for (const screen of screens) {
       const hydratedBody = hydrateStaticSliders(screen.markup);
       const html = wrapDocument({
         title: screen.title,
         theme: screen.theme,
-        css: webCss,
+        css,
         bodyHtml: hydratedBody
       });
       const outPath = path.join(OUT_DIR, `${screen.slug}.html`);
@@ -454,13 +488,39 @@ async function main() {
       const kb = (fs.statSync(outPath).size / 1024).toFixed(1);
       console.log(`Generated ${path.relative(ROOT, outPath)} (${kb} KB)`);
     }
-
-    const indexPath = path.join(OUT_DIR, 'index.html');
-    fs.writeFileSync(indexPath, buildGalleryIndex(screens), 'utf8');
-    console.log(`Generated ${path.relative(ROOT, indexPath)}`);
+    return screens;
   } finally {
     await vite.close();
   }
+}
+
+async function main() {
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  for (const file of fs.readdirSync(OUT_DIR)) {
+    if (file.endsWith('.html')) {
+      fs.unlinkSync(path.join(OUT_DIR, file));
+    }
+  }
+
+  const webScreens = await exportWorkspaceScreens({
+    rootDir: WEB_ROOT,
+    cssRelPath: path.join('src', 'index.css'),
+    entryRelPath: '/src/showcase/renderStaticScreens.tsx',
+    exportFnName: 'renderAllStitchScreens'
+  });
+
+  const devScreens = await exportWorkspaceScreens({
+    rootDir: DEV_ROOT,
+    cssRelPath: path.join('src', 'index.css'),
+    entryRelPath: '/src/showcase/renderStaticScreens.tsx',
+    exportFnName: 'renderAllDeveloperStitchScreens'
+  });
+
+  const indexPath = path.join(OUT_DIR, 'index.html');
+  fs.writeFileSync(indexPath, buildGalleryIndex(webScreens, devScreens), 'utf8');
+  console.log(
+    `Generated ${path.relative(ROOT, indexPath)} (${webScreens.length} Web + ${devScreens.length} Developer = ${webScreens.length + devScreens.length} screens)`
+  );
 }
 
 main().catch((err) => {

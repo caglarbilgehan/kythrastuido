@@ -6,6 +6,7 @@ import {
   InstrumentType,
   LibrarySongItem,
   LyricLineItem,
+  LyricRevisionItem,
   PrivateUploadedSongItem,
   SongSection,
   StemChannelState,
@@ -13,7 +14,26 @@ import {
   StudioUser
 } from '../types/studio';
 
-export type ShowcaseView = 'studio' | 'mixer' | 'welcome';
+export type ShowcaseView =
+  | 'studio'
+  | 'piano'
+  | 'ukulele'
+  | 'welcome'
+  | 'upload'
+  | 'upload-loading'
+  | 'omnibox'
+  | 'account-auth'
+  | 'account-signup'
+  | 'account-user'
+  | 'account-uploads'
+  | 'account-profile'
+  | 'mixer'
+  | 'instrument'
+  | 'speed'
+  | 'settings'
+  | 'lyrics-editor'
+  | 'inline-rename'
+  | 'confirm-delete';
 export type ShowcaseTheme = 'light' | 'dark';
 
 export interface ShowcaseConfig {
@@ -503,11 +523,54 @@ export const SHOWCASE_MIXER_CHANNELS: StemChannelState[] = [
   }
 ];
 
+export const SHOWCASE_LYRIC_REVISIONS: LyricRevisionItem[] = [
+  {
+    id: 12,
+    track_key: 'upload_showcase_midnight_echoes',
+    version_num: 2,
+    user_id: 'dev-user-01',
+    username: 'Bilgehan',
+    change_summary: 'Nakarat zaman damgaları 25. ölçüye hassas hizalandı',
+    created_at: '2026-11-25T11:32:00Z'
+  },
+  {
+    id: 11,
+    track_key: 'upload_showcase_midnight_echoes',
+    version_num: 1,
+    user_id: null,
+    username: 'AI Hybrid (Whisper + MMS_FA)',
+    change_summary: 'İzole vokal kanalından otomatik kelime hizalama oluşturuldu',
+    created_at: '2026-11-25T11:30:12Z'
+  }
+];
+
+const VALID_SHOWCASE_VIEWS = new Set<ShowcaseView>([
+  'studio',
+  'piano',
+  'ukulele',
+  'welcome',
+  'upload',
+  'upload-loading',
+  'omnibox',
+  'account-auth',
+  'account-signup',
+  'account-user',
+  'account-uploads',
+  'account-profile',
+  'mixer',
+  'instrument',
+  'speed',
+  'settings',
+  'lyrics-editor',
+  'inline-rename',
+  'confirm-delete'
+]);
+
 export function parseShowcaseFromSearch(search: string): ShowcaseConfig | null {
   if (!search) return null;
   const params = new URLSearchParams(search);
-  const rawView = (params.get('showcase') || '').trim().toLowerCase();
-  if (rawView !== 'studio' && rawView !== 'mixer' && rawView !== 'welcome') {
+  const rawView = (params.get('showcase') || '').trim().toLowerCase() as ShowcaseView;
+  if (!VALID_SHOWCASE_VIEWS.has(rawView)) {
     return null;
   }
 
@@ -517,7 +580,9 @@ export function parseShowcaseFromSearch(search: string): ShowcaseConfig | null {
   const rawLang = (params.get('lang') || 'tr').trim().toLowerCase();
   const language: AppLanguage = rawLang === 'en' ? 'en' : 'tr';
 
-  const rawInst = (params.get('instrument') || 'guitar').trim().toLowerCase();
+  const defaultInst: InstrumentType =
+    rawView === 'piano' ? 'piano' : rawView === 'ukulele' ? 'ukulele' : 'guitar';
+  const rawInst = (params.get('instrument') || defaultInst).trim().toLowerCase();
   const instrument: InstrumentType =
     rawInst === 'piano' || rawInst === 'ukulele' ? rawInst : 'guitar';
 

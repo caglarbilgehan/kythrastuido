@@ -17,6 +17,7 @@ interface MasterAudioPlayerProps {
   onToggleMute?: (id: string) => void;
   onSetVolume?: (id: string, vol: number) => void;
   onResetStems?: () => void;
+  initialMixerOpen?: boolean;
 }
 
 function formatTime(sec: number): string {
@@ -37,9 +38,10 @@ export const MasterAudioPlayer: React.FC<MasterAudioPlayerProps> = ({
   onToggleSolo,
   onToggleMute,
   onSetVolume,
-  onResetStems
+  onResetStems,
+  initialMixerOpen = false
 }) => {
-  const [isMixerOpen, setIsMixerOpen] = useState(false);
+  const [isMixerOpen, setIsMixerOpen] = useState(initialMixerOpen);
 
   const displayName = (trackName || 'Oturum Sesi (Hafıza)').replace(
     /\s*\(\d+(\.\d+)?\s*BPM\)/i,

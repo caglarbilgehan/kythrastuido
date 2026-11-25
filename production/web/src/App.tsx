@@ -31,6 +31,7 @@ import {
 import {
   SHOWCASE_FAVORITES,
   SHOWCASE_LIBRARY_SONGS,
+  SHOWCASE_LYRIC_REVISIONS,
   SHOWCASE_PRIVATE_UPLOADS,
   SHOWCASE_STUDIO_SONG,
   SHOWCASE_USER,
@@ -53,24 +54,43 @@ export const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() =>
     showcaseConfig ? showcaseConfig.theme === 'dark' : false
   );
+  const isGuestShowcase =
+    showcaseConfig?.view === 'account-auth' || showcaseConfig?.view === 'account-signup';
   const [user, setUser] = useState<StudioUser | null>(() =>
-    isShowcaseMode ? SHOWCASE_USER : null
+    isShowcaseMode && !isGuestShowcase ? SHOWCASE_USER : null
   );
   const [favorites, setFavorites] = useState<FavoriteSongItem[]>(() =>
-    isShowcaseMode ? SHOWCASE_FAVORITES : []
+    isShowcaseMode && !isGuestShowcase ? SHOWCASE_FAVORITES : []
   );
   const [privateUploads, setPrivateUploads] = useState<PrivateUploadedSongItem[]>(() =>
-    isShowcaseMode ? SHOWCASE_PRIVATE_UPLOADS : []
+    isShowcaseMode && !isGuestShowcase ? SHOWCASE_PRIVATE_UPLOADS : []
   );
-  const [isAccountCardOpen, setIsAccountCardOpen] = useState<boolean>(false);
-  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
+  const [isAccountCardOpen, setIsAccountCardOpen] = useState<boolean>(() =>
+    Boolean(
+      showcaseConfig &&
+        (showcaseConfig.view === 'account-auth' ||
+          showcaseConfig.view === 'account-signup' ||
+          showcaseConfig.view === 'account-user' ||
+          showcaseConfig.view === 'account-uploads' ||
+          showcaseConfig.view === 'account-profile')
+    )
+  );
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(
+    () => showcaseConfig?.view === 'upload' || showcaseConfig?.view === 'upload-loading'
+  );
 
   const [instrument, setInstrument] = useState<InstrumentType>(() =>
     showcaseConfig ? showcaseConfig.instrument : 'guitar'
   );
-  const [transposeSemitones, setTransposeSemitones] = useState<number>(0);
-  const [capo, setCapo] = useState<number>(0);
-  const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
+  const [transposeSemitones, setTransposeSemitones] = useState<number>(() =>
+    showcaseConfig?.view === 'settings' ? 2 : 0
+  );
+  const [capo, setCapo] = useState<number>(() =>
+    showcaseConfig?.view === 'ukulele' || showcaseConfig?.view === 'settings' ? 2 : 0
+  );
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(() =>
+    showcaseConfig?.view === 'speed' ? 0.85 : 1.0
+  );
   const [chordComplexity, setChordComplexity] = useState<ChordComplexityMode>('all');
   const [autoFollowSection, setAutoFollowSection] = useState<boolean>(true);
   const [manualSectionId, setManualSectionId] = useState<string | null>(() =>
@@ -82,10 +102,21 @@ export const App: React.FC = () => {
   const [isLoopActive, setIsLoopActive] = useState<boolean>(() =>
     Boolean(showcaseConfig && showcaseConfig.view !== 'welcome')
   );
-  const [customBarLoopRange, setCustomBarLoopRange] = useState<[number, number] | null>(null);
-  const [openPopover, setOpenPopover] = useState<DockerPopoverId>(() =>
-    showcaseConfig?.view === 'mixer' ? 'mixer' : null
+  const [customBarLoopRange, setCustomBarLoopRange] = useState<[number, number] | null>(() =>
+    showcaseConfig?.view === 'inline-rename' ? [9, 12] : null
   );
+  const [openPopover, setOpenPopover] = useState<DockerPopoverId>(() => {
+    if (!showcaseConfig) return null;
+    if (
+      showcaseConfig.view === 'mixer' ||
+      showcaseConfig.view === 'instrument' ||
+      showcaseConfig.view === 'speed' ||
+      showcaseConfig.view === 'settings'
+    ) {
+      return showcaseConfig.view;
+    }
+    return null;
+  });
 
   const activeSong = song ?? EMPTY_STUDIO_SONG;
 
@@ -370,6 +401,12 @@ return (
       favorites={favorites}
       privateUploads={privateUploads}
       initialLibrarySongs={isShowcaseMode ? SHOWCASE_LIBRARY_SONGS : undefined}
+      initialOmniboxOpen={showcaseConfig?.view === 'omnibox'}
+      initialProfileSettingsOpen={showcaseConfig?.view === 'account-profile'}
+      initialAuthTab={showcaseConfig?.view === 'account-signup' ? 'signup' : 'signin'}
+      initialAccountSectionTab={
+        showcaseConfig?.view === 'account-uploads' ? 'uploads' : 'favorites'
+      }
       isAccountCardOpen={isAccountCardOpen}
       isUploadDialogOpen={isUploadDialogOpen}
       onSetAccountCardOpen={setIsAccountCardOpen}
@@ -387,6 +424,12 @@ return (
       onClose={() => setIsUploadDialogOpen(false)}
       onSongLoaded={handleSongLoaded}
       onAuthChanged={refreshAccountOverview}
+      initialLoading={showcaseConfig?.view === 'upload-loading'}
+      initialLoadingMessage={
+        showcaseConfig?.view === 'upload-loading'
+          ? 'Harmonik akorlar ve ritim ızgarası hazırlanıyor...'
+          : ''
+      }
     />
 
     {!song || !activeBar ? (
@@ -438,6 +481,8 @@ return (
             onToggleFavorite={handleToggleFavorite}
             onRenameTrack={handleRenameTrack}
             onDeleteTrack={handleDeleteTrack}
+            initialEditingTitle={showcaseConfig?.view === 'inline-rename'}
+            initialConfirmDelete={showcaseConfig?.view === 'confirm-delete'}
           />
 
           <FocusedChordWorkspace
@@ -480,6 +525,9 @@ return (
             lyricsVersion={song.lyricsVersion}
             lyricsUpdatedBy={song.lyricsUpdatedBy}
             currentTimeSec={stemAudio.currentTimeSec}
+            initialEditorOpen={showcaseConfig?.view === 'lyrics-editor'}
+            initialShowRevisions={showcaseConfig?.view === 'lyrics-editor'}
+            initialRevisions={isShowcaseMode ? SHOWCASE_LYRIC_REVISIONS : undefined}
             onSeekSec={(sec) => {
               if (!isLoopActive) {
                 stemAudio.seekToSec(sec);

@@ -37,6 +37,8 @@ interface SongInfoStripProps {
   onToggleFavorite?: () => void;
   onRenameTrack?: (trackKey: string, newTitle: string) => Promise<void>;
   onDeleteTrack?: (trackKey: string) => Promise<void>;
+  initialEditingTitle?: boolean;
+  initialConfirmDelete?: boolean;
 }
 
 export const SongInfoStrip: React.FC<SongInfoStripProps> = ({
@@ -63,7 +65,9 @@ export const SongInfoStrip: React.FC<SongInfoStripProps> = ({
   isFavorite = false,
   onToggleFavorite,
   onRenameTrack,
-  onDeleteTrack
+  onDeleteTrack,
+  initialEditingTitle = false,
+  initialConfirmDelete = false
 }) => {
   const t = TRANSLATIONS[language].infoStrip;
   const hT = TRANSLATIONS[language].header;
@@ -72,16 +76,16 @@ export const SongInfoStrip: React.FC<SongInfoStripProps> = ({
   const formattedKey = transposeKeySignature(song.keySignature, transposeSemitones, language);
   const waveformRef = useRef<HTMLDivElement>(null);
 
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(initialEditingTitle);
   const [titleDraft, setTitleDraft] = useState(song.title);
-  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+  const [isConfirmDelete, setIsConfirmDelete] = useState(initialConfirmDelete);
   const [isMutating, setIsMutating] = useState(false);
 
   useEffect(() => {
-    setIsEditingTitle(false);
-    setIsConfirmDelete(false);
+    setIsEditingTitle(initialEditingTitle);
+    setIsConfirmDelete(initialConfirmDelete);
     setTitleDraft(song.title);
-  }, [song.trackKey, song.title]);
+  }, [song.trackKey, song.title, initialEditingTitle, initialConfirmDelete]);
 
   const submitRename = async () => {
     const clean = titleDraft.trim();

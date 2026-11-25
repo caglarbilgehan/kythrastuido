@@ -20,6 +20,9 @@ interface KaraokeLyricsStageProps {
   lyricsVersion?: number;
   lyricsUpdatedBy?: string | null;
   currentTimeSec: number;
+  initialEditorOpen?: boolean;
+  initialShowRevisions?: boolean;
+  initialRevisions?: LyricRevisionItem[];
   onSeekSec?: (sec: number) => void;
   onLyricsUpdated?: (
     nextLyrics: LyricLineItem[],
@@ -38,6 +41,9 @@ export const KaraokeLyricsStage: React.FC<KaraokeLyricsStageProps> = ({
   lyricsVersion = 1,
   lyricsUpdatedBy = null,
   currentTimeSec,
+  initialEditorOpen = false,
+  initialShowRevisions = false,
+  initialRevisions,
   onSeekSec,
   onLyricsUpdated
 }) => {
@@ -48,11 +54,15 @@ export const KaraokeLyricsStage: React.FC<KaraokeLyricsStageProps> = ({
   const windowThirdRef = useRef<HTMLDivElement>(null);
 
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
-  const [draftLines, setDraftLines] = useState<LyricLineItem[]>([]);
+  const [isEditorOpen, setIsEditorOpen] = useState(initialEditorOpen);
+  const [draftLines, setDraftLines] = useState<LyricLineItem[]>(() =>
+    initialEditorOpen ? lyrics.map((l) => ({ ...l })) : []
+  );
   const [selectedSectionId, setSelectedSectionId] = useState<string>(sections[0]?.id || '');
-  const [revisions, setRevisions] = useState<LyricRevisionItem[]>([]);
-  const [showRevisions, setShowRevisions] = useState(false);
+  const [revisions, setRevisions] = useState<LyricRevisionItem[]>(
+    () => initialRevisions || []
+  );
+  const [showRevisions, setShowRevisions] = useState(initialShowRevisions);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 

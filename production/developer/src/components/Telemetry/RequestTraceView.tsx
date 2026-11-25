@@ -5,16 +5,22 @@ import * as api from '../../api/workbenchApi';
 interface RequestTraceViewProps {
   activeSessionId: string;
   onSelectSession: (sessionId: string) => void;
+  initialRequests?: RequestTraceEntry[];
+  initialExpandedId?: number | null;
 }
 
 export const RequestTraceView: React.FC<RequestTraceViewProps> = ({
   activeSessionId,
-  onSelectSession
+  onSelectSession,
+  initialRequests,
+  initialExpandedId = null
 }) => {
-  const [requests, setRequests] = useState<RequestTraceEntry[]>([]);
+  const [requests, setRequests] = useState<RequestTraceEntry[]>(
+    () => initialRequests || []
+  );
   const [onlyErrors, setOnlyErrors] = useState(false);
   const [onlyActiveSession, setOnlyActiveSession] = useState(false);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(initialExpandedId);
   const lastIdRef = useRef(0);
 
   const fetchTraces = useCallback(async (reset = false) => {
@@ -42,13 +48,19 @@ export const RequestTraceView: React.FC<RequestTraceViewProps> = ({
   }, []);
 
   useEffect(() => {
+    if (initialRequests) {
+      setRequests(initialRequests);
+      return;
+    }
     fetchTraces(true);
     const id = window.setInterval(() => fetchTraces(false), 1500);
     return () => window.clearInterval(id);
-  }, [fetchTraces]);
+  }, [fetchTraces, initialRequests]);
 
   const handleClear = async () => {
-    await api.clearTelemetryRequests().catch(() => undefined);
+    if (!initialRequests) {
+      await api.clearTelemetryRequests().catch(() => undefined);
+    }
     setRequests([]);
     lastIdRef.current = 0;
   };

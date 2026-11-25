@@ -27,6 +27,10 @@ interface StudioHeaderProps {
   favorites: FavoriteSongItem[];
   privateUploads: PrivateUploadedSongItem[];
   initialLibrarySongs?: LibrarySongItem[];
+  initialOmniboxOpen?: boolean;
+  initialProfileSettingsOpen?: boolean;
+  initialAuthTab?: 'signin' | 'signup';
+  initialAccountSectionTab?: 'favorites' | 'uploads';
   isAccountCardOpen: boolean;
   isUploadDialogOpen: boolean;
   onSetAccountCardOpen: (open: boolean) => void;
@@ -56,6 +60,10 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   favorites,
   privateUploads,
   initialLibrarySongs,
+  initialOmniboxOpen = false,
+  initialProfileSettingsOpen = false,
+  initialAuthTab = 'signin',
+  initialAccountSectionTab = 'favorites',
   isAccountCardOpen,
   isUploadDialogOpen,
   onSetAccountCardOpen,
@@ -69,7 +77,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   const t = TRANSLATIONS[language].header;
 
   const [query, setQuery] = useState('');
-  const [isOmniboxOpen, setIsOmniboxOpen] = useState(false);
+  const [isOmniboxOpen, setIsOmniboxOpen] = useState(initialOmniboxOpen);
   const [librarySongs, setLibrarySongs] = useState<LibrarySongItem[]>(
     () => initialLibrarySongs || []
   );
@@ -82,8 +90,10 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   const [mutatingTrackKey, setMutatingTrackKey] = useState<string | null>(null);
 
   // Account & Auth card states
-  const [authTab, setAuthTab] = useState<'signin' | 'signup'>('signin');
-  const [accountSectionTab, setAccountSectionTab] = useState<'favorites' | 'uploads'>('favorites');
+  const [authTab, setAuthTab] = useState<'signin' | 'signup'>(initialAuthTab);
+  const [accountSectionTab, setAccountSectionTab] = useState<'favorites' | 'uploads'>(
+    initialAccountSectionTab
+  );
   const [emailInput, setEmailInput] = useState('');
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -94,9 +104,13 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
 
   // Account profile settings form state
-  const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState(false);
-  const [profileNameInput, setProfileNameInput] = useState('');
-  const [profileEmailInput, setProfileEmailInput] = useState('');
+  const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState(initialProfileSettingsOpen);
+  const [profileNameInput, setProfileNameInput] = useState(() =>
+    initialProfileSettingsOpen && user ? user.username : ''
+  );
+  const [profileEmailInput, setProfileEmailInput] = useState(() =>
+    initialProfileSettingsOpen && user ? user.email : ''
+  );
   const [profileNewPassword, setProfileNewPassword] = useState('');
   const [profileConfirmPassword, setProfileConfirmPassword] = useState('');
   const [showProfilePassword, setShowProfilePassword] = useState(false);

@@ -3,69 +3,529 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KythraStudio — Google Stitch Statik HTML Ekran Paketleri</title>
+  <title>KythraStudio — Google Stitch Tam Arayüz & Modal Katalogu (68 Ekran)</title>
   <style>
-    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: #F8FAFD; color: #1F1F1F; padding: 36px 24px; }
-    .wrap { max-width: 980px; margin: 0 auto; }
+    body { margin: 0; font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: #F8FAFD; color: #1F1F1F; padding: 36px 24px 64px; }
+    .wrap { max-width: 1180px; margin: 0 auto; }
     h1 { margin: 0 0 8px; font-size: 26px; }
-    p { margin: 0 0 24px; color: #444746; line-height: 1.5; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .card { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 18px; background: #FFFFFF; border: 1px solid #C4C7C5; text-decoration: none; color: inherit; transition: border-color 140ms ease, transform 140ms ease; }
+    h2 { margin: 36px 0 8px; font-size: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #C4C7C5; padding-bottom: 10px; }
+    h3 { margin: 20px 0 10px; font-size: 14px; font-weight: 600; color: #444746; display: flex; align-items: center; gap: 8px; }
+    p { margin: 0 0 18px; color: #444746; line-height: 1.5; }
+    .count { font-size: 12px; font-weight: 600; background: #D3E3FD; color: #041E49; padding: 3px 10px; border-radius: 999px; }
+    .subcount { font-size: 11px; font-weight: 600; background: #EEF0F4; color: #444746; padding: 2px 8px; border-radius: 999px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .card { display: flex; flex-direction: column; gap: 7px; padding: 16px; border-radius: 16px; background: #FFFFFF; border: 1px solid #C4C7C5; text-decoration: none; color: inherit; transition: border-color 140ms ease, transform 140ms ease; }
     .card:hover { border-color: #0B57D0; transform: translateY(-2px); }
-    .card h3 { margin: 0; font-size: 16px; }
-    .card code { font-size: 12px; color: #0B57D0; background: #D3E3FD; padding: 4px 8px; border-radius: 8px; width: fit-content; }
-    .hint { font-size: 12px; color: #444746; font-family: ui-monospace, monospace; }
-    .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; width: fit-content; }
+    .card h4 { margin: 0; font-size: 14px; line-height: 1.35; }
+    .card code { font-size: 11.5px; color: #0B57D0; background: #D3E3FD; padding: 3px 8px; border-radius: 8px; width: fit-content; }
+    .hint { font-size: 11px; color: #444746; font-family: ui-monospace, monospace; }
+    .badge { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; width: fit-content; }
     .badge.light { background: #EEF0F4; color: #1F1F1F; }
     .badge.dark { background: #1E1F20; color: #A8C7FA; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>KythraStudio — Google Stitch Ekran Paketleri</h1>
-    <p>Aşağıdaki 6 tek-dosya HTML çıktısı gerçek Web Studio React bileşenlerinden ve Material 3 CSS token'larından otomatik üretilmiştir. Doğrudan Google Stitch'e veya Figma <code>html.to.design</code> eklentisine yükleyebilirsin.</p>
+    <h1>KythraStudio — Google Stitch Tam Arayüz, Modal &amp; Bileşen Katalogu</h1>
+    <p>Toplam <strong>68 tek-dosya HTML çıktısı</strong> (38 Web Studio + 30 Developer Workbench). Tüm ana ekranlar, tıklanınca açılan modallar, açılır menüler, alt docker popover'ları, söz editörü ve 4 aşama görünümleri birebir gerçek Material 3 bileşenlerinden üretildi.</p>
+
+    <h2>Web Studio <span class="count">38 ekran</span></h2>
+
+    <h3>Ana Ekranlar <span class="subcount">8</span></h3>
     <div class="grid">
 
-      <a class="card" href="./web-studio-active-light.html" target="_blank" rel="noopener">
+      <a class="card" data-theme-card="light" href="./web-studio-active-light.html" target="_blank" rel="noopener">
         <div class="badge light">LIGHT</div>
-        <h3>Web Studio — Aktif Stüdyo (Light)</h3>
+        <h4>Aktif Stüdyo — Gitar Diyagramları & Karaoke (Light)</h4>
         <code>web-studio-active-light.html</code>
-        <span class="hint">Canlı URL: ?showcase=studio&amp;theme=light</span>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=studio&amp;theme=light</span>
       </a>
 
-      <a class="card" href="./web-studio-active-dark.html" target="_blank" rel="noopener">
+      <a class="card" data-theme-card="dark" href="./web-studio-active-dark.html" target="_blank" rel="noopener">
         <div class="badge dark">DARK</div>
-        <h3>Web Studio — Aktif Stüdyo (Dark)</h3>
+        <h4>Aktif Stüdyo — Gitar Diyagramları & Karaoke (Dark)</h4>
         <code>web-studio-active-dark.html</code>
-        <span class="hint">Canlı URL: ?showcase=studio&amp;theme=dark</span>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=studio&amp;theme=dark</span>
       </a>
 
-      <a class="card" href="./web-studio-mixer-light.html" target="_blank" rel="noopener">
+      <a class="card" data-theme-card="light" href="./web-studio-piano-light.html" target="_blank" rel="noopener">
         <div class="badge light">LIGHT</div>
-        <h3>Web Studio — 6-Kanal Stem Mikser (Light)</h3>
-        <code>web-studio-mixer-light.html</code>
-        <span class="hint">Canlı URL: ?showcase=mixer&amp;theme=light</span>
+        <h4>Aktif Stüdyo — Piyano 2-Oktav Diyagramı (Light)</h4>
+        <code>web-studio-piano-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=piano&amp;theme=light</span>
       </a>
 
-      <a class="card" href="./web-studio-mixer-dark.html" target="_blank" rel="noopener">
+      <a class="card" data-theme-card="dark" href="./web-studio-piano-dark.html" target="_blank" rel="noopener">
         <div class="badge dark">DARK</div>
-        <h3>Web Studio — 6-Kanal Stem Mikser (Dark)</h3>
-        <code>web-studio-mixer-dark.html</code>
-        <span class="hint">Canlı URL: ?showcase=mixer&amp;theme=dark</span>
+        <h4>Aktif Stüdyo — Piyano 2-Oktav Diyagramı (Dark)</h4>
+        <code>web-studio-piano-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=piano&amp;theme=dark</span>
       </a>
 
-      <a class="card" href="./web-studio-welcome-light.html" target="_blank" rel="noopener">
+      <a class="card" data-theme-card="light" href="./web-studio-ukulele-light.html" target="_blank" rel="noopener">
         <div class="badge light">LIGHT</div>
-        <h3>Web Studio — Karşılama & Kütüphane (Light)</h3>
+        <h4>Aktif Stüdyo — Ukulele (Capo 2) (Light)</h4>
+        <code>web-studio-ukulele-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=ukulele&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-studio-ukulele-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Aktif Stüdyo — Ukulele (Capo 2) (Dark)</h4>
+        <code>web-studio-ukulele-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=ukulele&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-studio-welcome-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Karşılama & Kütüphane Ekranı (Light)</h4>
         <code>web-studio-welcome-light.html</code>
-        <span class="hint">Canlı URL: ?showcase=welcome&amp;theme=light</span>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=welcome&amp;theme=light</span>
       </a>
 
-      <a class="card" href="./web-studio-welcome-dark.html" target="_blank" rel="noopener">
+      <a class="card" data-theme-card="dark" href="./web-studio-welcome-dark.html" target="_blank" rel="noopener">
         <div class="badge dark">DARK</div>
-        <h3>Web Studio — Karşılama & Kütüphane (Dark)</h3>
+        <h4>Karşılama & Kütüphane Ekranı (Dark)</h4>
         <code>web-studio-welcome-dark.html</code>
-        <span class="hint">Canlı URL: ?showcase=welcome&amp;theme=dark</span>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=welcome&amp;theme=dark</span>
+      </a>
+    </div>
+    <h3>Modallar & Açılır Menüler <span class="subcount">16</span></h3>
+    <div class="grid">
+
+      <a class="card" data-theme-card="light" href="./web-modal-upload-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Modal: Ses Dosyası Yükleme Diyaloğu (Light)</h4>
+        <code>web-modal-upload-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=upload&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-modal-upload-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Modal: Ses Dosyası Yükleme Diyaloğu (Dark)</h4>
+        <code>web-modal-upload-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=upload&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-modal-upload-loading-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Modal: Ses Dosyası Analiz Ediliyor (Yükleme İlerlemesi) (Light)</h4>
+        <code>web-modal-upload-loading-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=upload-loading&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-modal-upload-loading-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Modal: Ses Dosyası Analiz Ediliyor (Yükleme İlerlemesi) (Dark)</h4>
+        <code>web-modal-upload-loading-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=upload-loading&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-dropdown-omnibox-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Açılır Menü: Omnibox Kütüphane Arama (Light)</h4>
+        <code>web-dropdown-omnibox-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=omnibox&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-dropdown-omnibox-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Açılır Menü: Omnibox Kütüphane Arama (Dark)</h4>
+        <code>web-dropdown-omnibox-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=omnibox&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-dropdown-account-auth-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Açılır Kart: Giriş Yap (Misafir) (Light)</h4>
+        <code>web-dropdown-account-auth-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-auth&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-dropdown-account-auth-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Açılır Kart: Giriş Yap (Misafir) (Dark)</h4>
+        <code>web-dropdown-account-auth-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-auth&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-dropdown-account-signup-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Açılır Kart: Kayıt Ol (Yeni Hesap) (Light)</h4>
+        <code>web-dropdown-account-signup-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-signup&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-dropdown-account-signup-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Açılır Kart: Kayıt Ol (Yeni Hesap) (Dark)</h4>
+        <code>web-dropdown-account-signup-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-signup&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-dropdown-account-user-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Açılır Kart: Hesabım — Favorilerim (Light)</h4>
+        <code>web-dropdown-account-user-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-user&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-dropdown-account-user-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Açılır Kart: Hesabım — Favorilerim (Dark)</h4>
+        <code>web-dropdown-account-user-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-user&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-dropdown-account-uploads-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Açılır Kart: Hesabım — Özel Yüklemelerim (Light)</h4>
+        <code>web-dropdown-account-uploads-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-uploads&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-dropdown-account-uploads-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Açılır Kart: Hesabım — Özel Yüklemelerim (Dark)</h4>
+        <code>web-dropdown-account-uploads-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-uploads&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-dropdown-account-profile-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Açılır Kart: Profil & Şifre Ayarları (Light)</h4>
+        <code>web-dropdown-account-profile-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-profile&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-dropdown-account-profile-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Açılır Kart: Profil & Şifre Ayarları (Dark)</h4>
+        <code>web-dropdown-account-profile-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=account-profile&amp;theme=dark</span>
+      </a>
+    </div>
+    <h3>Alt Docker Popover & Editörler <span class="subcount">14</span></h3>
+    <div class="grid">
+
+      <a class="card" data-theme-card="light" href="./web-popover-mixer-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Popover: 6-Kanal BS-RoFormer Stem Mikser (Light)</h4>
+        <code>web-popover-mixer-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=mixer&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-popover-mixer-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Popover: 6-Kanal BS-RoFormer Stem Mikser (Dark)</h4>
+        <code>web-popover-mixer-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=mixer&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-popover-instrument-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Popover: Enstrüman Seçici (Gitar / Piyano / Ukulele) (Light)</h4>
+        <code>web-popover-instrument-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=instrument&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-popover-instrument-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Popover: Enstrüman Seçici (Gitar / Piyano / Ukulele) (Dark)</h4>
+        <code>web-popover-instrument-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=instrument&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-popover-speed-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Popover: Oynatma Hızı Kontrolü (Light)</h4>
+        <code>web-popover-speed-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=speed&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-popover-speed-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Popover: Oynatma Hızı Kontrolü (Dark)</h4>
+        <code>web-popover-speed-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=speed&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-popover-settings-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Popover: Transpoze, Kapo, Akor Modu & Dil Ayarları (Light)</h4>
+        <code>web-popover-settings-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=settings&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-popover-settings-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Popover: Transpoze, Kapo, Akor Modu & Dil Ayarları (Dark)</h4>
+        <code>web-popover-settings-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=settings&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-panel-lyrics-editor-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Panel: Şarkı Sözü Düzenleyici & Revizyon Geçmişi (Light)</h4>
+        <code>web-panel-lyrics-editor-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=lyrics-editor&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-panel-lyrics-editor-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Panel: Şarkı Sözü Düzenleyici & Revizyon Geçmişi (Dark)</h4>
+        <code>web-panel-lyrics-editor-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=lyrics-editor&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-inline-rename-loop-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Satır İçi: Parça Adı Düzenleme + Özel Ölçü Döngüsü (9–12) (Light)</h4>
+        <code>web-inline-rename-loop-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=inline-rename&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-inline-rename-loop-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Satır İçi: Parça Adı Düzenleme + Özel Ölçü Döngüsü (9–12) (Dark)</h4>
+        <code>web-inline-rename-loop-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=inline-rename&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./web-inline-confirm-delete-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Satır İçi: Parça Silme Onayı (Light)</h4>
+        <code>web-inline-confirm-delete-light.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=confirm-delete&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./web-inline-confirm-delete-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Satır İçi: Parça Silme Onayı (Dark)</h4>
+        <code>web-inline-confirm-delete-dark.html</code>
+        <span class="hint">Canlı URL (Web :3000): ?showcase=confirm-delete&amp;theme=dark</span>
+      </a>
+    </div>
+
+    <h2>Developer Workbench <span class="count">30 ekran</span></h2>
+
+    <h3>Ana Ekranlar & Modallar <span class="subcount">10</span></h3>
+    <div class="grid">
+
+      <a class="card" data-theme-card="light" href="./dev-empty-home-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Başlangıç Ekranı & Canlı İstek Akışı (Light)</h4>
+        <code>dev-empty-home-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=empty&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-empty-home-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Başlangıç Ekranı & Canlı İstek Akışı (Dark)</h4>
+        <code>dev-empty-home-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=empty&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-modal-source-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Modal: Yeni Ses Kaynağı Yükleme Diyaloğu (Light)</h4>
+        <code>dev-modal-source-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=source-modal&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-modal-source-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Modal: Yeni Ses Kaynağı Yükleme Diyaloğu (Dark)</h4>
+        <code>dev-modal-source-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=source-modal&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-modal-source-loading-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Modal: Ses Kaynağı Yükleniyor (İşleniyor) (Light)</h4>
+        <code>dev-modal-source-loading-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=source-modal-loading&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-modal-source-loading-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Modal: Ses Kaynağı Yükleniyor (İşleniyor) (Dark)</h4>
+        <code>dev-modal-source-loading-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=source-modal-loading&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-dropdown-sessions-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Açılır Menü: Çoklu Canlı Oturum Seçici (Session Switcher) (Light)</h4>
+        <code>dev-dropdown-sessions-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=sessions-menu&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-dropdown-sessions-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Açılır Menü: Çoklu Canlı Oturum Seçici (Session Switcher) (Dark)</h4>
+        <code>dev-dropdown-sessions-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=sessions-menu&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-popover-mixer-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Popover: Master Oynatıcı 6-Kanal Stem Mikser (Light)</h4>
+        <code>dev-popover-mixer-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=mixer-popover&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-popover-mixer-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Popover: Master Oynatıcı 6-Kanal Stem Mikser (Dark)</h4>
+        <code>dev-popover-mixer-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=mixer-popover&amp;theme=dark</span>
+      </a>
+    </div>
+    <h3>4 Aşama Tanı Görünümleri <span class="subcount">8</span></h3>
+    <div class="grid">
+
+      <a class="card" data-theme-card="light" href="./dev-stage1-beats-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Aşama 1: Ölçü & Tempo Zaman Çizelgesi (madmom) (Light)</h4>
+        <code>dev-stage1-beats-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage1&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-stage1-beats-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Aşama 1: Ölçü & Tempo Zaman Çizelgesi (madmom) (Dark)</h4>
+        <code>dev-stage1-beats-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage1&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-stage2-chords-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Aşama 2: Bölüm Haritası & Akor Izgarası (BTC + allin1) (Light)</h4>
+        <code>dev-stage2-chords-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage2&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-stage2-chords-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Aşama 2: Bölüm Haritası & Akor Izgarası (BTC + allin1) (Dark)</h4>
+        <code>dev-stage2-chords-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage2&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-stage3-stems-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Aşama 3: 6-Kanal Stem & SDR Analizi (BS-RoFormer) (Light)</h4>
+        <code>dev-stage3-stems-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage3&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-stage3-stems-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Aşama 3: 6-Kanal Stem & SDR Analizi (BS-RoFormer) (Dark)</h4>
+        <code>dev-stage3-stems-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage3&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-stage4-lyrics-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Aşama 4: Kelime Bazlı Söz & Hizalama (Whisper + MMS_FA) (Light)</h4>
+        <code>dev-stage4-lyrics-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage4&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-stage4-lyrics-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Aşama 4: Kelime Bazlı Söz & Hizalama (Whisper + MMS_FA) (Dark)</h4>
+        <code>dev-stage4-lyrics-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=stage4&amp;theme=dark</span>
+      </a>
+    </div>
+    <h3>Gözlemleme & Çalışma Durumları <span class="subcount">12</span></h3>
+    <div class="grid">
+
+      <a class="card" data-theme-card="light" href="./dev-tab-raw-json-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Sekme: Ham JSON Çıktı İnceleyici (Light)</h4>
+        <code>dev-tab-raw-json-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=json&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-tab-raw-json-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Sekme: Ham JSON Çıktı İnceleyici (Dark)</h4>
+        <code>dev-tab-raw-json-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=json&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-tab-console-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Sekme: Canlı Sistem Konsolu (Oturum Filtreli Loglar) (Light)</h4>
+        <code>dev-tab-console-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=console&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-tab-console-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Sekme: Canlı Sistem Konsolu (Oturum Filtreli Loglar) (Dark)</h4>
+        <code>dev-tab-console-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=console&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-tab-requests-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Sekme: Canlı API İstek & Hata Takibi (Telemetry) (Light)</h4>
+        <code>dev-tab-requests-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=requests&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-tab-requests-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Sekme: Canlı API İstek & Hata Takibi (Telemetry) (Dark)</h4>
+        <code>dev-tab-requests-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=requests&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-state-running-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Durum: Aşama Çalışıyor (Canlı İlerleme & Log) (Light)</h4>
+        <code>dev-state-running-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=running&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-state-running-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Durum: Aşama Çalışıyor (Canlı İlerleme & Log) (Dark)</h4>
+        <code>dev-state-running-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=running&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-state-pending-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Durum: Aşama Beklemede / Eksik Bağımlılık Uyarısı (Light)</h4>
+        <code>dev-state-pending-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=pending&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-state-pending-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Durum: Aşama Beklemede / Eksik Bağımlılık Uyarısı (Dark)</h4>
+        <code>dev-state-pending-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=pending&amp;theme=dark</span>
+      </a>
+
+      <a class="card" data-theme-card="light" href="./dev-state-error-light.html" target="_blank" rel="noopener">
+        <div class="badge light">LIGHT</div>
+        <h4>Durum: Hata Şeridi & Başarısız Aşama Tanısı (Light)</h4>
+        <code>dev-state-error-light.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=error&amp;theme=light</span>
+      </a>
+
+      <a class="card" data-theme-card="dark" href="./dev-state-error-dark.html" target="_blank" rel="noopener">
+        <div class="badge dark">DARK</div>
+        <h4>Durum: Hata Şeridi & Başarısız Aşama Tanısı (Dark)</h4>
+        <code>dev-state-error-dark.html</code>
+        <span class="hint">Canlı URL (Dev :5174): ?showcase=error&amp;theme=dark</span>
       </a>
     </div>
   </div>

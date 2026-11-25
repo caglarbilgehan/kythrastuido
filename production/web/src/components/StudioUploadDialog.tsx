@@ -13,6 +13,8 @@ interface StudioUploadDialogProps {
   onClose: () => void;
   onSongLoaded: (song: StudioSong) => void;
   onAuthChanged: () => void;
+  initialLoading?: boolean;
+  initialLoadingMessage?: string;
 }
 
 const SUPPORTED_FORMATS = ['WAV', 'MP3', 'FLAC', 'OGG', 'M4A'];
@@ -22,13 +24,15 @@ export const StudioUploadDialog: React.FC<StudioUploadDialogProps> = ({
   language,
   onClose,
   onSongLoaded,
-  onAuthChanged
+  onAuthChanged,
+  initialLoading = false,
+  initialLoadingMessage = ''
 }) => {
   const t = TRANSLATIONS[language].header;
 
   const [isDragOver, setIsDragOver] = useState(false);
-  const [isLoadingSong, setIsLoadingSong] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('');
+  const [isLoadingSong, setIsLoadingSong] = useState(initialLoading);
+  const [loadingMessage, setLoadingMessage] = useState(initialLoadingMessage);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   const singleFileInputRef = useRef<HTMLInputElement>(null);

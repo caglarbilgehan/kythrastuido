@@ -21,29 +21,49 @@ import { Stage1BeatView } from './components/Inspector/stages/Stage1BeatView';
 import { Stage2ChordView } from './components/Inspector/stages/Stage2ChordView';
 import { Stage3MixerView } from './components/Inspector/stages/Stage3MixerView';
 import { Stage4LyricsView } from './components/Inspector/stages/Stage4LyricsView';
+import {
+  DEV_SHOWCASE_CURRENT_TIME,
+  DEV_SHOWCASE_LOGS,
+  DEV_SHOWCASE_REQUESTS,
+  DEV_SHOWCASE_SESSION,
+  DEV_SHOWCASE_SESSION_ID,
+  DEV_SHOWCASE_STAGE_OUTPUTS,
+  DEV_SHOWCASE_STEM_CHANNELS,
+  DEV_SHOWCASE_TELEMETRY_SESSIONS,
+  parseDeveloperShowcaseFromSearch
+} from './showcase/showcaseData';
 
 export const App: React.FC = () => {
+  const showcaseConfig = useMemo(
+    () =>
+      typeof window !== 'undefined'
+        ? parseDeveloperShowcaseFromSearch(window.location.search)
+        : null,
+    []
+  );
+  const isShowcaseMode = showcaseConfig !== null;
+
   const {
-    activeSessionId,
-    telemetrySessions,
-    switchSession,
+    activeSessionId: liveSessionId,
+    telemetrySessions: liveTelemetrySessions,
+    switchSession: liveSwitchSession,
     refreshTelemetrySessions,
-    session,
-    selectedStageId,
-    setSelectedStageId,
-    activeInspectorTab,
-    setActiveInspectorTab,
-    stageOutputs,
-    isLoading,
-    runningStage,
-    error,
+    session: liveSession,
+    selectedStageId: liveSelectedStageId,
+    setSelectedStageId: setLiveSelectedStageId,
+    activeInspectorTab: liveInspectorTab,
+    setActiveInspectorTab: setLiveInspectorTab,
+    stageOutputs: liveStageOutputs,
+    isLoading: liveIsLoading,
+    runningStage: liveRunningStage,
+    error: liveError,
     clearError,
     isPlaying,
-    currentTime,
-    audioDuration,
-    seekAudio,
+    currentTime: liveCurrentTime,
+    audioDuration: liveAudioDuration,
+    seekAudio: liveSeekAudio,
     toggleMasterPlay,
-    stemChannels,
+    stemChannels: liveStemChannels,
     toggleStemSolo,
     toggleStemMute,
     setStemVolume,
@@ -56,8 +76,59 @@ export const App: React.FC = () => {
     setExecutionMode
   } = useWorkbench();
 
-  const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
+  const [showcaseStageId, setShowcaseStageId] = useState<number>(
+    () => showcaseConfig?.stageId ?? 2
+  );
+  const [showcaseTab, setShowcaseTab] = useState(
+    () => showcaseConfig?.tab ?? 'diagnostic'
+  );
+  const [showcaseSessionId, setShowcaseSessionId] = useState<string>(
+    DEV_SHOWCASE_SESSION_ID
+  );
+  const [showcaseTime, setShowcaseTime] = useState<number>(DEV_SHOWCASE_CURRENT_TIME);
+
+  const activeSessionId = isShowcaseMode ? showcaseSessionId : liveSessionId;
+  const telemetrySessions = isShowcaseMode
+    ? DEV_SHOWCASE_TELEMETRY_SESSIONS
+    : liveTelemetrySessions;
+  const switchSession = isShowcaseMode ? setShowcaseSessionId : liveSwitchSession;
+  const session = isShowcaseMode
+    ? showcaseConfig.view === 'empty'
+      ? null
+      : DEV_SHOWCASE_SESSION
+    : liveSession;
+  const selectedStageId = isShowcaseMode ? showcaseStageId : liveSelectedStageId;
+  const setSelectedStageId = isShowcaseMode ? setShowcaseStageId : setLiveSelectedStageId;
+  const activeInspectorTab = isShowcaseMode ? showcaseTab : liveInspectorTab;
+  const setActiveInspectorTab = isShowcaseMode ? setShowcaseTab : setLiveInspectorTab;
+  const stageOutputs = isShowcaseMode ? DEV_SHOWCASE_STAGE_OUTPUTS : liveStageOutputs;
+  const isLoading = isShowcaseMode ? showcaseConfig.view === 'running' : liveIsLoading;
+  const runningStage = isShowcaseMode
+    ? showcaseConfig.view === 'running'
+      ? 3
+      : null
+    : liveRunningStage;
+  const error = isShowcaseMode
+    ? showcaseConfig.view === 'error'
+      ? 'Aşama 3 (BS-RoFormer 6-Stem) CUDA bellek sınırı aşıldı — batch_size=1 ile yeniden denenebilir.'
+      : null
+    : liveError;
+  const currentTime = isShowcaseMode ? showcaseTime : liveCurrentTime;
+  const audioDuration = isShowcaseMode
+    ? DEV_SHOWCASE_SESSION.duration_sec || 65
+    : liveAudioDuration;
+  const seekAudio = isShowcaseMode ? setShowcaseTime : liveSeekAudio;
+  const stemChannels = isShowcaseMode ? DEV_SHOWCASE_STEM_CHANNELS : liveStemChannels;
+
+  const [isSourceModalOpen, setIsSourceModalOpen] = useState(
+    () =>
+      showcaseConfig?.view === 'source-modal' ||
+      showcaseConfig?.view === 'source-modal-loading'
+  );
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (showcaseConfig) {
+      return showcaseConfig.theme === 'dark';
+    }
     try {
       return window.localStorage.getItem('kythra_dev_theme') === 'dark';
     } catch {
@@ -68,12 +139,13 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    if (isShowcaseMode) return;
     try {
       window.localStorage.setItem('kythra_dev_theme', isDarkMode ? 'dark' : 'light');
     } catch {
       // ignore storage errors
     }
-  }, [isDarkMode]);
+  }, [isDarkMode, isShowcaseMode]);
 
   useEffect(() => {
     if (contentScrollRef.current) {
@@ -84,7 +156,7 @@ export const App: React.FC = () => {
   const isPipelineExecuting = Boolean(isLoading || runningStage !== null);
 
   const {
-    logs,
+    logs: liveLogs,
     stageLogs,
     filterStage,
     setFilterStage,
@@ -100,8 +172,30 @@ export const App: React.FC = () => {
     activeSessionId
   });
 
+  const logs = useMemo(() => {
+    if (!isShowcaseMode) return liveLogs;
+    return DEV_SHOWCASE_LOGS.filter((entry) => {
+      if (onlyActiveSession && entry.session_id && entry.session_id !== activeSessionId) {
+        return false;
+      }
+      if (filterStage !== 'all' && entry.stage_num !== filterStage) return false;
+      if (filterLevel !== 'all' && entry.level !== filterLevel) return false;
+      return true;
+    });
+  }, [isShowcaseMode, liveLogs, onlyActiveSession, activeSessionId, filterStage, filterLevel]);
+
   const stagesList: StageMetadata[] = useMemo(() => {
     return DEFAULT_STAGES.map((def) => {
+      if (isShowcaseMode && showcaseConfig?.view === 'pending' && (def.id === 3 || def.id === 4)) {
+        return { ...def, status: 'pending', durationMs: 0 };
+      }
+      if (isShowcaseMode && showcaseConfig?.view === 'running' && def.id === 4) {
+        return { ...def, status: 'pending', durationMs: 0 };
+      }
+      if (isShowcaseMode && showcaseConfig?.view === 'error') {
+        if (def.id === 3) return { ...def, status: 'error', durationMs: 4120 };
+        if (def.id === 4) return { ...def, status: 'pending', durationMs: 0 };
+      }
       const backendStage = session?.stages?.[String(def.id)];
       const isRunningNow = runningStage === def.id;
       if (!backendStage) {
@@ -119,7 +213,7 @@ export const App: React.FC = () => {
         error: backendStage.error || def.error
       };
     });
-  }, [session?.stages, runningStage]);
+  }, [session?.stages, runningStage, isShowcaseMode, showcaseConfig?.view]);
 
   const currentStage: StageMetadata = useMemo(() => {
     return stagesList.find((s) => s.id === selectedStageId) || stagesList[0] || DEFAULT_STAGES[0];
@@ -153,6 +247,7 @@ export const App: React.FC = () => {
         onModeChange={setExecutionMode}
         isDarkMode={isDarkMode}
         onToggleTheme={() => setIsDarkMode((prev) => !prev)}
+        initialSessionMenuOpen={showcaseConfig?.view === 'sessions-menu'}
       />
 
       {error && (
@@ -168,7 +263,7 @@ export const App: React.FC = () => {
       <SourceSelectModal
         isOpen={isSourceModalOpen}
         onClose={() => setIsSourceModalOpen(false)}
-        isLoading={isLoading}
+        isLoading={isLoading || showcaseConfig?.view === 'source-modal-loading'}
         onUpload={handleUpload}
       />
 
@@ -176,7 +271,16 @@ export const App: React.FC = () => {
         <main className="dev-empty-main">
           <div style={{ width: '100%', maxWidth: '1060px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <EmptyState onUpload={handleUpload} />
-            <RequestTraceView activeSessionId={activeSessionId} onSelectSession={switchSession} />
+            <RequestTraceView
+              activeSessionId={activeSessionId}
+              onSelectSession={switchSession}
+              initialRequests={isShowcaseMode ? DEV_SHOWCASE_REQUESTS : undefined}
+              initialExpandedId={
+                isShowcaseMode
+                  ? DEV_SHOWCASE_REQUESTS.find((r) => Boolean(r.error_detail))?.id ?? null
+                  : null
+              }
+            />
           </div>
         </main>
       ) : (
@@ -218,6 +322,12 @@ export const App: React.FC = () => {
                   <RequestTraceView
                     activeSessionId={activeSessionId}
                     onSelectSession={switchSession}
+                    initialRequests={isShowcaseMode ? DEV_SHOWCASE_REQUESTS : undefined}
+                    initialExpandedId={
+                      isShowcaseMode
+                        ? DEV_SHOWCASE_REQUESTS.find((r) => Boolean(r.error_detail))?.id ?? null
+                        : null
+                    }
                   />
                 ) : activeInspectorTab === 'console' ? (
                   <StudioConsoleView
@@ -299,6 +409,7 @@ export const App: React.FC = () => {
             onToggleMute={toggleStemMute}
             onSetVolume={setStemVolume}
             onResetStems={resetStemMixer}
+            initialMixerOpen={showcaseConfig?.view === 'mixer-popover'}
           />
         </main>
       )}

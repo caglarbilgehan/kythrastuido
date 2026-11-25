@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KythraStudio — Web Studio — Karşılama & Kütüphane (Dark)</title>
+  <title>KythraStudio — Karşılama & Kütüphane Ekranı (Dark)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -3738,6 +3738,7 @@ md-icon {
 
 md-filled-button,
 md-filled-tonal-button,
+md-outlined-button,
 md-text-button {
   display: inline-flex;
   align-items: center;
@@ -3781,11 +3782,27 @@ md-filled-tonal-button md-icon {
   color: var(--md-filled-tonal-button-icon-color, currentColor);
 }
 
+md-outlined-button {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline);
+  padding: 0 16px;
+  height: 36px;
+}
+md-outlined-button md-icon {
+  font-size: 18px;
+  color: currentColor;
+}
+
 md-text-button {
   background: transparent;
   color: var(--md-sys-color-primary);
   padding: 0 12px;
   height: 36px;
+}
+md-text-button md-icon {
+  font-size: 18px;
+  color: currentColor;
 }
 
 md-icon-button,
