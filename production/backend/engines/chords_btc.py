@@ -3,16 +3,18 @@ Kythra Engine: Automatic Chord Recognition (BTC-Transformer)
 Optimized with Decoupled CPU CQT Feature Extraction & Vectorized Batched GPU Forward Pass.
 """
 
+import logging
+import threading
+import time
 from pathlib import Path
 import sys
-import time
-import logging
 import numpy as np
 import torch
 
 from backend.config import BTC_DIR, BTC_CKPT, BTC_CONFIG, DEVICE
 from backend.engines.base import PipelineContext
 from backend.models import ChordEvent
+from backend.services.gpu_guard import GPU_LOCK, release_cuda_cache
 
 logger = logging.getLogger("backend.chords")
 
@@ -28,6 +30,7 @@ class ChordsBtcEngine:
         self.std = None
         self.idx_to_chord = None
         self.is_loaded = False
+        self._model_lock = threading.RLock()
 
     def load(self) -> None:
         if self.is_loaded:
@@ -78,16 +81,26 @@ class ChordsBtcEngine:
 
         return feature, time_unit, n_timestep, orig_frames
 
+    def offload_to_cpu(self) -> None:
+        """Moves cached BTC model weights to CPU RAM and clears CUDA cache."""
+        with self._model_lock:
+            if self.model is not None:
+                self.model = self.model.to("cpu")
+            release_cuda_cache()
+
     def infer_from_features(
         self,
         feature: np.ndarray,
         time_unit: float,
         n_timestep: int,
-        orig_frames: int
+        orig_frames: int,
+        allow_cpu_fallback: bool = False,
     ) -> list[ChordEvent]:
         """
         Single Batched GPU Forward Pass + Vectorized NumPy Run-Length Decoding.
-        Eliminates thousands of per-frame .item() CUDA synchronization stalls.
+        When `allow_cpu_fallback=True` and another heavy GPU task (e.g. BS-RoFormer) holds
+        `GPU_LOCK`, temporarily executes the lightweight forward pass on CPU (~0.3s)
+        without blocking Studio launch.
         """
         self.load()
         num_instance = feature.shape[0] // n_timestep
@@ -96,11 +109,22 @@ class ChordsBtcEngine:
 
         batched = feature.reshape(num_instance, n_timestep, feature.shape[1])
 
-        with torch.inference_mode():
-            feature_tensor = torch.as_tensor(batched, dtype=torch.float32, device=DEVICE)
-            self_attn_output, _ = self.model.self_attn_layers(feature_tensor)
-            prediction, _ = self.model.output_layer(self_attn_output)
-            pred_flat = prediction.view(-1).detach().cpu().numpy()[:orig_frames]
+        acquired_gpu = GPU_LOCK.acquire(blocking=not allow_cpu_fallback)
+        target_device = DEVICE if (acquired_gpu and DEVICE.startswith("cuda") and torch.cuda.is_available()) else "cpu"
+        try:
+            with self._model_lock:
+                self.model = self.model.to(target_device)
+                with torch.inference_mode():
+                    feature_tensor = torch.as_tensor(batched, dtype=torch.float32, device=target_device)
+                    self_attn_output, _ = self.model.self_attn_layers(feature_tensor)
+                    prediction, _ = self.model.output_layer(self_attn_output)
+                    pred_flat = prediction.view(-1).detach().cpu().numpy()[:orig_frames]
+                    del feature_tensor, self_attn_output, prediction
+        finally:
+            if target_device != "cpu":
+                release_cuda_cache()
+            if acquired_gpu:
+                GPU_LOCK.release()
 
         if len(pred_flat) == 0:
             return []

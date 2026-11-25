@@ -1,6 +1,8 @@
-"""Lazy engine cache for Production pipeline."""
+"""Lazy engine cache & re-exported GPU guard for Production pipeline."""
 
 from typing import Any, Dict
+
+from backend.services.gpu_guard import GPU_LOCK, release_cuda_cache  # noqa: F401
 
 _ENGINE_CACHE: Dict[str, Any] = {}
 

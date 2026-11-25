@@ -1,5 +1,7 @@
 export type StageStatus = 'pending' | 'running' | 'completed' | 'error';
 
+export type InspectorTab = 'diagnostic' | 'json' | 'console' | 'requests';
+
 export interface StageMetadata {
   id: number;
   title: string;
@@ -22,9 +24,17 @@ export interface SongSection {
   color?: string;
 }
 
+export interface SessionUserInfo {
+  id?: string | null;
+  username?: string | null;
+  email?: string | null;
+  role?: 'user' | 'developer' | string;
+}
+
 export interface SessionState {
   has_session: boolean;
   track_name: string | null;
+  track_key?: string | null;
   duration_sec: number | null;
   sample_rate: number | null;
   channels: number | null;
@@ -32,6 +42,39 @@ export interface SessionState {
   stages: Record<string, StageMetadata>;
   audio_url: string | null;
   sections?: SongSection[];
+  sections_refining?: boolean;
+  client_app?: string;
+  last_active_at?: string;
+  session_user?: SessionUserInfo | null;
+}
+
+export interface TelemetrySessionSummary {
+  session_id: string;
+  has_session: boolean;
+  track_name?: string | null;
+  track_key?: string | null;
+  duration_sec: number;
+  last_active_at?: string | null;
+  client_app?: string;
+  user?: SessionUserInfo | null;
+  is_running: boolean;
+  sections_refining?: boolean;
+  stages: Record<string, { status: StageStatus; timings_ms: number }>;
+}
+
+export interface RequestTraceEntry {
+  id: number;
+  timestamp: string;
+  method: string;
+  path: string;
+  query: string;
+  status_code: number;
+  duration_ms: number;
+  session_id?: string | null;
+  client_app: string;
+  user?: SessionUserInfo | null;
+  track_name?: string | null;
+  error_detail?: string | null;
 }
 
 export interface StemChannel {
@@ -59,6 +102,5 @@ export interface LogEntry {
   logger: string;
   stage_num?: number | null;
   message: string;
+  session_id?: string | null;
 }
-
-

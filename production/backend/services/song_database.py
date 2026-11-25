@@ -13,6 +13,7 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 from pathlib import Path
 import secrets
 import sqlite3
@@ -118,10 +119,15 @@ class SongDatabase:
                         email TEXT UNIQUE NOT NULL,
                         username TEXT NOT NULL,
                         password_hash TEXT NOT NULL,
+                        role TEXT NOT NULL DEFAULT 'user',
                         created_at TEXT NOT NULL
                     )
                     """
                 )
+                try:
+                    conn.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'")
+                except sqlite3.OperationalError:
+                    pass
                 conn.execute(
                     """
                     CREATE TABLE IF NOT EXISTS auth_tokens (
@@ -870,6 +876,24 @@ class SongDatabase:
     # =========================================================================
     # AUTHENTICATION, FAVORITES & CUSTOM PLAYLISTS
     # =========================================================================
+    @staticmethod
+    def _is_env_developer(email: str) -> bool:
+        raw = os.getenv("KYTHRA_DEVELOPER_EMAILS", "")
+        dev_emails = {e.strip().lower() for e in raw.split(",") if e.strip()}
+        return email.strip().lower() in dev_emails
+
+    def set_user_role(self, email_or_username: str, role: str) -> bool:
+        clean_role = "developer" if role == "developer" else "user"
+        ident = email_or_username.strip().lower()
+        with _DB_LOCK:
+            with self._connect() as conn:
+                cur = conn.execute(
+                    "UPDATE users SET role = ? WHERE lower(email) = ? OR lower(username) = ?",
+                    (clean_role, ident, ident),
+                )
+                conn.commit()
+                return cur.rowcount > 0
+
     def register_user(self, email: str, username: str, password: str) -> Dict[str, Any]:
         clean_email = email.strip().lower()
         clean_name = username.strip() or clean_email.split("@")[0]
@@ -878,6 +902,7 @@ class SongDatabase:
 
         user_id = f"usr_{uuid.uuid4().hex[:12]}"
         pw_hash = _hash_password(password)
+        role = "developer" if self._is_env_developer(clean_email) else "user"
         now_iso = datetime.now(timezone.utc).isoformat()
         token = secrets.token_urlsafe(32)
 
@@ -887,8 +912,8 @@ class SongDatabase:
                 if existing:
                     raise ValueError("Email is already registered.")
                 conn.execute(
-                    "INSERT INTO users (id, email, username, password_hash, created_at) VALUES (?, ?, ?, ?, ?)",
-                    (user_id, clean_email, clean_name, pw_hash, now_iso),
+                    "INSERT INTO users (id, email, username, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                    (user_id, clean_email, clean_name, pw_hash, role, now_iso),
                 )
                 conn.execute(
                     "INSERT INTO auth_tokens (token, user_id, created_at) VALUES (?, ?, ?)",
@@ -898,7 +923,7 @@ class SongDatabase:
 
         return {
             "token": token,
-            "user": {"id": user_id, "email": clean_email, "username": clean_name},
+            "user": {"id": user_id, "email": clean_email, "username": clean_name, "role": role},
         }
 
     def login_user(self, email: str, password: str) -> Dict[str, Any]:
@@ -908,11 +933,15 @@ class SongDatabase:
         with _DB_LOCK:
             with self._connect() as conn:
                 row = conn.execute(
-                    "SELECT id, email, username, password_hash FROM users WHERE lower(email) = ?",
+                    "SELECT id, email, username, password_hash, role FROM users WHERE lower(email) = ?",
                     (ident,),
                 ).fetchone()
                 if not row or not _verify_password(password, row["password_hash"]):
                     raise ValueError("Invalid email or password.")
+                role = row["role"] or "user"
+                if role != "developer" and self._is_env_developer(row["email"]):
+                    role = "developer"
+                    conn.execute("UPDATE users SET role = 'developer' WHERE id = ?", (row["id"],))
                 token = secrets.token_urlsafe(32)
                 conn.execute(
                     "INSERT INTO auth_tokens (token, user_id, created_at) VALUES (?, ?, ?)",
@@ -921,7 +950,7 @@ class SongDatabase:
                 conn.commit()
                 return {
                     "token": token,
-                    "user": {"id": row["id"], "email": row["email"], "username": row["username"]},
+                    "user": {"id": row["id"], "email": row["email"], "username": row["username"], "role": role},
                 }
 
     def get_user_by_token(self, token: Optional[str]) -> Optional[Dict[str, Any]]:
@@ -934,7 +963,7 @@ class SongDatabase:
             with self._connect() as conn:
                 row = conn.execute(
                     """
-                    SELECT u.id, u.email, u.username
+                    SELECT u.id, u.email, u.username, u.role
                     FROM auth_tokens t
                     JOIN users u ON u.id = t.user_id
                     WHERE t.token = ?
@@ -943,7 +972,12 @@ class SongDatabase:
                 ).fetchone()
                 if not row:
                     return None
-                return {"id": row["id"], "email": row["email"], "username": row["username"]}
+                return {
+                    "id": row["id"],
+                    "email": row["email"],
+                    "username": row["username"],
+                    "role": row["role"] or "user",
+                }
 
     def update_user_profile(
         self,
@@ -980,9 +1014,11 @@ class SongDatabase:
                         "UPDATE users SET email = ?, username = ? WHERE id = ?",
                         (clean_email, clean_name, user_id),
                     )
+                row = conn.execute("SELECT role FROM users WHERE id = ?", (user_id,)).fetchone()
                 conn.commit()
+                role = (row["role"] if row else "user") or "user"
 
-        return {"id": user_id, "email": clean_email, "username": clean_name}
+        return {"id": user_id, "email": clean_email, "username": clean_name, "role": role}
 
     def toggle_favorite(
         self,

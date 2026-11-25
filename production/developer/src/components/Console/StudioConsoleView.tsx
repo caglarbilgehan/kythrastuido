@@ -17,7 +17,8 @@ interface StudioConsoleViewProps {
 const CONSOLE_STAGES: Array<{ id: number; label: string }> = [
   { id: 1, label: '01 Ölçü' },
   { id: 2, label: '02 Akor' },
-  { id: 3, label: '03 Kanal' }
+  { id: 3, label: '03 Kanal' },
+  { id: 4, label: '04 Sözler' }
 ];
 
 export const StudioConsoleView: React.FC<StudioConsoleViewProps> = ({
@@ -191,6 +192,11 @@ export const StudioConsoleView: React.FC<StudioConsoleViewProps> = ({
               <div key={log.id} className={rowClass}>
                 <span className="dev-log-ts m3-tabular">[{log.timestamp}]</span>
                 <span className="dev-log-lvl">{log.level}</span>
+                {log.session_id && (
+                  <span className="m3-tonal-badge sm m3-mono" title={`Oturum: ${log.session_id}`}>
+                    {log.session_id === 'default' ? 'default' : log.session_id.slice(0, 10)}
+                  </span>
+                )}
                 {log.stage_num && (
                   <span className="m3-tonal-badge sm primary">Aşama {log.stage_num}</span>
                 )}

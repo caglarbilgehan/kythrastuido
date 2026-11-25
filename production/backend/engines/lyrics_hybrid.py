@@ -22,6 +22,7 @@ import torch
 
 from backend.config import DEVICE, WHISPER_BEAM_SIZE, WHISPER_MODEL_SIZE
 from backend.engines.base import PipelineContext
+from backend.services.gpu_guard import GPU_LOCK, release_cuda_cache
 
 logger = logging.getLogger("backend.engines.lyrics_hybrid")
 
@@ -203,33 +204,47 @@ class LyricsHybridEngine:
         self._loaded = False
 
     def load(self) -> None:
-        if self._loaded:
-            return
-
         import stable_whisper
         import torchaudio
 
-        compute_type = "int8_float16" if self.device_str == "cuda" else "int8"
-        logger.info(
-            "Loading stable-ts (%s, beam=%d, %s, %s)...",
-            self.model_size,
-            self.beam_size,
-            self.device_str,
-            compute_type,
-        )
-        self._asr_model = stable_whisper.load_faster_whisper(
-            self.model_size,
-            device=self.device_str,
-            compute_type=compute_type,
-        )
+        if self._asr_model is None:
+            compute_type = "int8_float16" if self.device_str == "cuda" else "int8"
+            logger.info(
+                "Loading stable-ts (%s, beam=%d, %s, %s)...",
+                self.model_size,
+                self.beam_size,
+                self.device_str,
+                compute_type,
+            )
+            self._asr_model = stable_whisper.load_faster_whisper(
+                self.model_size,
+                device=self.device_str,
+                compute_type=compute_type,
+            )
 
-        logger.info("Loading Meta MMS_FA CTC Forced Aligner on %s...", self.device_str)
-        self._fa_bundle = torchaudio.pipelines.MMS_FA
-        self._fa_sr = self._fa_bundle.sample_rate
-        self._fa_model = self._fa_bundle.get_model(with_star=True).to(self.torch_device).eval()
-        self._fa_tokenizer = self._fa_bundle.get_tokenizer()
-        self._fa_aligner = self._fa_bundle.get_aligner()
+        if self._fa_model is None:
+            logger.info("Loading Meta MMS_FA CTC Forced Aligner on %s...", self.device_str)
+            self._fa_bundle = torchaudio.pipelines.MMS_FA
+            self._fa_sr = self._fa_bundle.sample_rate
+            self._fa_model = self._fa_bundle.get_model(with_star=True).to(self.torch_device).eval()
+            self._fa_tokenizer = self._fa_bundle.get_tokenizer()
+            self._fa_aligner = self._fa_bundle.get_aligner()
+        else:
+            self._fa_model = self._fa_model.to(self.torch_device).eval()
+
         self._loaded = True
+
+    def offload_gpu_resources(self) -> None:
+        """Releases Whisper/CTranslate2 CUDA allocations and moves MMS_FA to CPU RAM."""
+        if self._fa_model is not None:
+            try:
+                self._fa_model = self._fa_model.to("cpu")
+            except Exception:
+                pass
+        if self.device_str == "cuda" and self._asr_model is not None:
+            self._asr_model = None
+        self._loaded = False
+        release_cuda_cache()
 
     def _extract_full_emission(self, waveform_16k: torch.Tensor) -> Tuple[torch.Tensor, float]:
         """Extracts full-song CTC log-emissions in bounded 24s chunks (+3s context padding)."""
@@ -589,58 +604,61 @@ class LyricsHybridEngine:
                 "words": [],
             }
 
-        self.load()
+        with GPU_LOCK:
+            self.load()
+            try:
+                # Trim long silent intro/outro so Whisper's first 30s window starts right at sustained vocal onset.
+                import torchaudio
 
-        # Trim long silent intro/outro so Whisper's first 30s window starts right at sustained vocal onset.
-        import torchaudio
+                win_start, win_end = self._detect_active_vocal_window(mono, sr)
+                offset_sec = win_start / float(sr)
+                active_mono = np.ascontiguousarray(mono[win_start:win_end])
+                active_16k = torchaudio.functional.resample(
+                    torch.from_numpy(active_mono).unsqueeze(0), sr, 16000
+                )[0].numpy()
 
-        win_start, win_end = self._detect_active_vocal_window(mono, sr)
-        offset_sec = win_start / float(sr)
-        active_mono = np.ascontiguousarray(mono[win_start:win_end])
-        active_16k = torchaudio.functional.resample(
-            torch.from_numpy(active_mono).unsqueeze(0), sr, 16000
-        )[0].numpy()
+                asr_res = self._transcribe_with_anti_hallucination(active_16k)
+                detected_language = getattr(asr_res, "language", None)
+                asr_words, filtered_hallucinations = self._filter_hallucinated_segments(
+                    getattr(asr_res, "segments", []),
+                    active_mono,
+                    sr,
+                )
+                if filtered_hallucinations > 0:
+                    logger.info(
+                        "Filtered %d hallucinated/silent ASR segment(s) prior to MMS_FA alignment.",
+                        filtered_hallucinations,
+                    )
 
-        asr_res = self._transcribe_with_anti_hallucination(active_16k)
-        detected_language = getattr(asr_res, "language", None)
-        asr_words, filtered_hallucinations = self._filter_hallucinated_segments(
-            getattr(asr_res, "segments", []),
-            active_mono,
-            sr,
-        )
-        if filtered_hallucinations > 0:
-            logger.info(
-                "Filtered %d hallucinated/silent ASR segment(s) prior to MMS_FA alignment.",
-                filtered_hallucinations,
-            )
+                if not asr_words:
+                    return {
+                        "engine": self.name,
+                        "transcription_engine": f"stable-ts ({self.model_size})",
+                        "alignment_engine": "none_detected",
+                        "detected_language": detected_language,
+                        "is_instrumental": True,
+                        "vocal_rms_dbfs": round(float(rms_db), 1),
+                        "active_vocal_window_sec": [round(offset_sec, 2), round(win_end / float(sr), 2)],
+                        "filtered_hallucinations": filtered_hallucinations,
+                        "word_count": 0,
+                        "line_count": 0,
+                        "inference_sec": round(time.time() - t0, 3),
+                        "lines": [],
+                        "words": [],
+                    }
 
-        if not asr_words:
-            return {
-                "engine": self.name,
-                "transcription_engine": f"stable-ts ({self.model_size})",
-                "alignment_engine": "none_detected",
-                "detected_language": detected_language,
-                "is_instrumental": True,
-                "vocal_rms_dbfs": round(float(rms_db), 1),
-                "active_vocal_window_sec": [round(offset_sec, 2), round(win_end / float(sr), 2)],
-                "filtered_hallucinations": filtered_hallucinations,
-                "word_count": 0,
-                "line_count": 0,
-                "inference_sec": round(time.time() - t0, 3),
-                "lines": [],
-                "words": [],
-            }
-
-        alignment_engine = "torchaudio.MMS_FA_CTC"
-        try:
-            aligned_words = self._align_with_mms_fa(active_mono, sr, asr_words)
-            if not aligned_words:
-                aligned_words = asr_words
-                alignment_engine = "stable-ts-dtw-fallback"
-        except Exception as exc:
-            logger.warning("MMS_FA alignment fallback triggered (%s); keeping stable-ts timestamps.", exc)
-            aligned_words = asr_words
-            alignment_engine = "stable-ts-dtw-fallback"
+                alignment_engine = "torchaudio.MMS_FA_CTC"
+                try:
+                    aligned_words = self._align_with_mms_fa(active_mono, sr, asr_words)
+                    if not aligned_words:
+                        aligned_words = asr_words
+                        alignment_engine = "stable-ts-dtw-fallback"
+                except Exception as exc:
+                    logger.warning("MMS_FA alignment fallback triggered (%s); keeping stable-ts timestamps.", exc)
+                    aligned_words = asr_words
+                    alignment_engine = "stable-ts-dtw-fallback"
+            finally:
+                self.offload_gpu_resources()
 
         # Shift timestamps from trimmed-window time back to absolute song time.
         for w in aligned_words:

@@ -10,7 +10,7 @@ Includes:
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, File, Header, HTTPException, Query, Request, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from starlette.concurrency import run_in_threadpool
@@ -22,7 +22,9 @@ from backend.schemas.workbench import (
     SessionResponse,
     StageRunResponse,
 )
-from backend.services.log_service import get_log_service
+from backend.services.log_service import CURRENT_SESSION_ID, get_log_service
+from backend.services.request_trace_service import get_request_trace_service
+from backend.services.session_repository import SessionRepository
 from backend.services.song_database import get_song_database
 from backend.services.workbench_service import WorkbenchService
 
@@ -86,12 +88,23 @@ def get_current_user_optional(
 
 
 def get_workbench_service(
+    request: Request,
     x_session_id: Optional[str] = Header(default=None, alias="X-Session-Id"),
+    x_client_app: Optional[str] = Header(default=None, alias="X-Client-App"),
     session_id: Optional[str] = Query(default=None),
     current_user: Optional[Dict[str, Any]] = Depends(get_current_user_optional),
 ) -> WorkbenchService:
     effective_sid = x_session_id or session_id or (f"usr_{current_user['id']}" if current_user else "default")
-    return WorkbenchService(session_id=effective_sid, current_user=current_user)
+    CURRENT_SESSION_ID.set(effective_sid)
+    service = WorkbenchService(session_id=effective_sid, current_user=current_user)
+    path = request.url.path
+    if not path.startswith("/api/workbench/telemetry") and "/logs" not in path:
+        if request.method != "GET" or path.endswith(("/studio-bundle", "/session", "/state")):
+            client_tag = (x_client_app or "api").strip().lower()
+            # Avoid marking Developer's passive observation peeks as ownership of a Web user session
+            if client_tag != "developer" or request.method != "GET":
+                service.repo.touch_session_metadata(client_app=client_tag, user=current_user)
+    return service
 
 
 # ============================================================================
@@ -145,9 +158,10 @@ async def run_stage_endpoint(
 
 @router.post("/run-all")
 async def run_all_stages_endpoint(
+    force: bool = Query(default=True),
     service: WorkbenchService = Depends(get_workbench_service),
 ):
-    return await run_in_threadpool(service.run_all_stages)
+    return await run_in_threadpool(service.run_all_stages, force)
 
 
 @router.get("/stage/{stage_num}/data")
@@ -469,16 +483,53 @@ async def list_lyric_revisions_endpoint(track_key: str = Query(...)):
 
 
 # ============================================================================
-# 5. LOGS & STREAMING
+# 5. LOGS, TELEMETRY OBSERVABILITY & STREAMING
 # ============================================================================
+@router.get("/telemetry/sessions")
+async def list_telemetry_sessions_endpoint():
+    """Lists all active/recent Web Studio and Developer sessions for live debugging."""
+    sessions = await run_in_threadpool(SessionRepository.list_all_sessions)
+    return {"sessions": sessions}
+
+
+@router.get("/telemetry/requests")
+async def list_telemetry_requests_endpoint(
+    since_id: int = 0,
+    session_id: Optional[str] = None,
+    only_errors: bool = False,
+    limit: int = 200,
+):
+    """Returns captured HTTP requests & errors for live observability."""
+    trace_svc = get_request_trace_service()
+    entries = trace_svc.get_entries(
+        since_id=since_id,
+        session_id=session_id or None,
+        only_errors=only_errors,
+        limit=limit,
+    )
+    return {"requests": entries, "last_id": trace_svc.latest_id}
+
+
+@router.post("/telemetry/requests/clear")
+async def clear_telemetry_requests_endpoint():
+    get_request_trace_service().clear()
+    return {"status": "ok", "message": "Request traces cleared."}
+
+
 @router.get("/logs", response_model=LogsResponse)
 async def get_system_logs(
     since_id: int = 0,
     stage_num: Optional[int] = None,
+    filter_session_id: Optional[str] = None,
     limit: int = 200,
 ):
     log_svc = get_log_service()
-    entries = log_svc.get_logs(since_id=since_id, stage_num=stage_num, limit=limit)
+    entries = log_svc.get_logs(
+        since_id=since_id,
+        stage_num=stage_num,
+        limit=limit,
+        session_id=filter_session_id or None,
+    )
     return LogsResponse(logs=[LogEntryDTO(**e) for e in entries], last_id=log_svc.latest_id)
 
 

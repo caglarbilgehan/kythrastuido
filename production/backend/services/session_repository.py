@@ -5,6 +5,7 @@ persistent track artifacts (beats.json, chords.json, stems.json, lyrics.json),
 and PipelineContext reconstruction.
 """
 
+from datetime import datetime, timezone
 import hashlib
 import json
 import logging
@@ -15,7 +16,7 @@ import shutil
 import tempfile
 import threading
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import weakref
 
 from backend.config import DEVICE, SESSION_DIR, SESSIONS_DIR, TRACKS_DIR
@@ -243,6 +244,111 @@ class SessionRepository:
         with self._lock:
             payload = json.dumps(state, indent=2, ensure_ascii=False)
             self._atomic_write_text(self.state_file, payload)
+
+    def touch_session_metadata(
+        self,
+        *,
+        client_app: Optional[str] = None,
+        user: Optional[Dict[str, Any]] = None,
+        force: bool = False,
+    ) -> None:
+        """Records last_active_at, client_app, and user summary onto state.json for Developer observability."""
+        with self._lock:
+            state = self.load_state()
+            now_dt = datetime.now(timezone.utc)
+            now_iso = now_dt.isoformat()
+            prev_ts = state.get("last_active_at")
+            elapsed_too_recent = False
+            if not force and prev_ts:
+                try:
+                    prev_dt = datetime.fromisoformat(str(prev_ts))
+                    if (now_dt - prev_dt).total_seconds() < 10.0:
+                        elapsed_too_recent = True
+                except Exception:
+                    pass
+
+            user_summary = (
+                {
+                    "id": user.get("id"),
+                    "username": user.get("username"),
+                    "email": user.get("email"),
+                    "role": user.get("role", "user"),
+                }
+                if isinstance(user, dict)
+                else state.get("session_user")
+            )
+            new_client = (client_app or state.get("client_app") or "api").lower()
+
+            meta_changed = (
+                new_client != state.get("client_app")
+                or user_summary != state.get("session_user")
+                or not prev_ts
+            )
+            if not meta_changed and elapsed_too_recent:
+                return
+
+            state["last_active_at"] = now_iso
+            state["client_app"] = new_client
+            if user_summary is not None:
+                state["session_user"] = user_summary
+            self.save_state(state)
+
+    @staticmethod
+    def list_all_sessions(sessions_dir: Path = SESSIONS_DIR) -> List[Dict[str, Any]]:
+        """Scans active/recent sessions under sessions_dir and returns compact telemetry summaries."""
+        if not sessions_dir.exists():
+            return []
+
+        summaries: List[Dict[str, Any]] = []
+        for child in sessions_dir.iterdir():
+            if not child.is_dir():
+                continue
+            state_path = child / "state.json"
+            data: Dict[str, Any] = {}
+            mtime_iso = datetime.fromtimestamp(child.stat().st_mtime, tz=timezone.utc).isoformat()
+            if state_path.exists():
+                try:
+                    data = json.loads(state_path.read_text(encoding="utf-8"))
+                    mtime_iso = datetime.fromtimestamp(
+                        state_path.stat().st_mtime, tz=timezone.utc
+                    ).isoformat()
+                except Exception:
+                    data = {}
+            elif child.name != "default":
+                continue
+
+            stages_raw = data.get("stages") or {}
+            compact_stages: Dict[str, Dict[str, Any]] = {}
+            is_running = bool(data.get("sections_refining"))
+            for key in ("1", "2", "3", "4"):
+                st = stages_raw.get(key) or {}
+                status = str(st.get("status") or "pending")
+                if status == "running":
+                    is_running = True
+                compact_stages[key] = {
+                    "status": status,
+                    "timings_ms": float(st.get("timings_ms") or 0.0),
+                }
+
+            summaries.append({
+                "session_id": child.name,
+                "has_session": bool(data.get("has_session")),
+                "track_name": data.get("track_name"),
+                "track_key": data.get("track_key"),
+                "duration_sec": float(data.get("duration_sec") or 0.0),
+                "last_active_at": data.get("last_active_at") or mtime_iso,
+                "client_app": data.get("client_app") or ("developer" if child.name == "default" else "web"),
+                "user": data.get("session_user"),
+                "is_running": is_running,
+                "sections_refining": bool(data.get("sections_refining")),
+                "stages": compact_stages,
+            })
+
+        summaries.sort(
+            key=lambda s: (s.get("last_active_at") or "", s.get("session_id") == "default"),
+            reverse=True,
+        )
+        return summaries
 
     def update_stage_state(self, stage_num: int, **updates: Any) -> Dict[str, Any]:
         """Atomically merges updates into a single stage without clobbering parallel sibling updates."""

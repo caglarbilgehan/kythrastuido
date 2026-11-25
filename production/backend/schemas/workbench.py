@@ -57,6 +57,7 @@ class LogEntryDTO(BaseModel):
     logger: str
     stage_num: Optional[int] = None
     message: str
+    session_id: Optional[str] = None
 
 
 class LogsResponse(BaseModel):

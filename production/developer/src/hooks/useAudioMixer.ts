@@ -2,13 +2,15 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { SessionState, StemChannel } from '../types/workbench';
 import { Stage3MssData } from '../types/stages';
 import { DEFAULT_STEMS } from '../constants/instruments';
+import { buildStreamUrl } from '../api/httpClient';
 
 interface UseAudioMixerOptions {
   session: SessionState | null;
   stage3Output?: Stage3MssData;
+  activeSessionId?: string;
 }
 
-export function useAudioMixer({ session, stage3Output }: UseAudioMixerOptions) {
+export function useAudioMixer({ session, stage3Output, activeSessionId = 'default' }: UseAudioMixerOptions) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [stemChannels, setStemChannels] = useState<StemChannel[]>(DEFAULT_STEMS);
@@ -85,8 +87,8 @@ export function useAudioMixer({ session, stage3Output }: UseAudioMixerOptions) {
 
     const audio = audioRef.current;
     if (session?.has_session) {
-      const srcUrl = `/api/workbench/stream/master?track=${encodeURIComponent(session.track_name || 'track')}`;
-      if (!audio.src.includes('/api/workbench/stream/master')) {
+      const srcUrl = buildStreamUrl('master', session.track_name);
+      if (!audio.src.endsWith(srcUrl)) {
         audio.src = srcUrl;
         audio.load();
       }
@@ -96,7 +98,7 @@ export function useAudioMixer({ session, stage3Output }: UseAudioMixerOptions) {
       setIsPlaying(false);
       setCurrentTime(0);
     }
-  }, [session?.has_session, session?.track_name, safePause]);
+  }, [session?.has_session, session?.track_name, activeSessionId, safePause]);
 
   // Bind isolated stem audio elements and remove obsolete ones
   useEffect(() => {
@@ -122,8 +124,8 @@ export function useAudioMixer({ session, stage3Output }: UseAudioMixerOptions) {
       }
       const audio = stemAudioRefs.current[stemId];
       if (isStage3Done) {
-        const srcUrl = `/api/workbench/stream/${stemId}?track=${encodeURIComponent(session?.track_name || 'stem')}`;
-        if (!audio.src.includes(srcUrl)) {
+        const srcUrl = buildStreamUrl(stemId, session?.track_name || 'stem');
+        if (!audio.src.endsWith(srcUrl)) {
           audio.src = srcUrl;
           audio.load();
         }
@@ -132,7 +134,7 @@ export function useAudioMixer({ session, stage3Output }: UseAudioMixerOptions) {
         audio.src = '';
       }
     });
-  }, [stemChannels, isStage3Done, session?.track_name, safePause]);
+  }, [stemChannels, isStage3Done, session?.track_name, activeSessionId, safePause]);
 
   // Update stem metadata: standart BS-RoFormer 6 kanal
   useEffect(() => {

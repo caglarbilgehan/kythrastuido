@@ -100,6 +100,8 @@ export interface StudioSong {
   lyricsUpdatedBy?: string | null;
   waveformPeaks: number[];
   stage3Status: 'pending' | 'running' | 'completed' | 'error';
+  stage4Status?: 'pending' | 'running' | 'completed' | 'error';
+  sectionsRefining?: boolean;
   pipelineVersion?: string;
   cacheHit?: boolean;
   masterAudioUrl?: string;
@@ -118,6 +120,7 @@ export interface StudioUser {
   id: string;
   email: string;
   username: string;
+  role?: 'user' | 'developer';
 }
 
 export interface FavoriteSongItem {

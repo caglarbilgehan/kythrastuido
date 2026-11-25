@@ -5,6 +5,7 @@ Enables real-time log streaming and console monitoring in the developer workbenc
 """
 
 from collections import deque
+from contextvars import ContextVar
 from dataclasses import asdict, dataclass
 from datetime import datetime
 import logging
@@ -14,6 +15,10 @@ import re
 
 MAX_LOG_ENTRIES = 2000
 
+# Tracks active HTTP / background thread session_id for live developer filtering
+CURRENT_SESSION_ID: ContextVar[Optional[str]] = ContextVar("kythra_session_id", default=None)
+
+
 @dataclass
 class LogEntry:
     id: int
@@ -22,6 +27,7 @@ class LogEntry:
     logger: str
     stage_num: Optional[int]
     message: str
+    session_id: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -29,24 +35,17 @@ class LogEntry:
 
 _STAGE_LOGGER_MAP = {
     "backend.stages.stage1_beat": 1,
+    "backend.stages.beat_tracking": 1,
     "backend.beat": 1,
     "backend.stages.stage2_chord": 2,
+    "backend.stages.chord_recognition": 2,
     "backend.chords": 2,
     "backend.domain.chords": 2,
     "backend.stages.stage3_mss": 3,
+    "backend.stages.source_separation": 3,
     "backend.mss": 3,
-    "backend.stages.stage4_segregation": 4,
-    "backend.intra_demux": 4,
-    "backend.stages.stage5_amt": 5,
-    "backend.amt": 5,
-    "backend.stages.stage6_quantize": 6,
-    "backend.quantize": 6,
-    "backend.stages.stage7_spelling": 7,
-    "backend.spelling": 7,
-    "backend.stages.stage8_tab": 8,
-    "backend.fsa": 8,
-    "backend.stages.stage9_score": 9,
-    "backend.serializer": 9,
+    "backend.stages.lyrics_alignment": 4,
+    "backend.engines.lyrics_hybrid": 4,
 }
 
 _STAGE_MSG_REGEX = re.compile(r"\[Aşama\s*([1-9])\]|\[Stage\s*([1-9])\]|Aşama\s*([1-9])", re.IGNORECASE)
@@ -120,7 +119,9 @@ class LogService:
         logger: str,
         message: str,
         stage_num: Optional[int] = None,
+        session_id: Optional[str] = None,
     ) -> LogEntry:
+        eff_session = session_id if session_id is not None else CURRENT_SESSION_ID.get()
         with self._buffer_lock:
             self._counter += 1
             now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
@@ -131,12 +132,17 @@ class LogService:
                 logger=logger,
                 stage_num=stage_num,
                 message=message,
+                session_id=eff_session,
             )
             self._entries.append(entry)
             return entry
 
     def emit_stage_log(
-        self, stage_num: int, message: str, level: str = "INFO"
+        self,
+        stage_num: int,
+        message: str,
+        level: str = "INFO",
+        session_id: Optional[str] = None,
     ) -> LogEntry:
         """Explicitly records a human-readable stage progress log."""
         full_message = f"[Aşama 0{stage_num}] {message}"
@@ -149,6 +155,7 @@ class LogService:
             logger=f"backend.stages.stage{stage_num}",
             message=full_message,
             stage_num=stage_num,
+            session_id=session_id,
         )
 
     def get_logs(
@@ -156,12 +163,15 @@ class LogService:
         since_id: int = 0,
         stage_num: Optional[int] = None,
         limit: int = 200,
+        session_id: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         with self._buffer_lock:
             results: List[Dict[str, Any]] = []
             for entry in self._entries:
                 if entry.id > since_id:
                     if stage_num is not None and entry.stage_num != stage_num:
+                        continue
+                    if session_id and entry.session_id != session_id:
                         continue
                     results.append(entry.to_dict())
             if limit and len(results) > limit:

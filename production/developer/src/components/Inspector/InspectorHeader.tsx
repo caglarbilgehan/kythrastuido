@@ -1,5 +1,5 @@
 import React from 'react';
-import { StageMetadata } from '../../types/workbench';
+import { InspectorTab, StageMetadata } from '../../types/workbench';
 import { formatStageDuration } from '../../constants/stages';
 
 interface InspectorHeaderProps {
@@ -7,8 +7,8 @@ interface InspectorHeaderProps {
   isRunning: boolean;
   onRunStage: () => void;
   rawJsonData: any;
-  activeTab: 'diagnostic' | 'json' | 'console';
-  onTabChange: (tab: 'diagnostic' | 'json' | 'console') => void;
+  activeTab: InspectorTab;
+  onTabChange: (tab: InspectorTab) => void;
   missingDependency?: string | null;
   onRunMissingPrerequisites?: () => void;
   logCount?: number;
@@ -68,6 +68,16 @@ export const InspectorHeader: React.FC<InspectorHeaderProps> = ({
               {logCount > 0 && (
                 <span className="m3-tonal-badge sm primary m3-tabular">{logCount}</span>
               )}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'requests'}
+              onClick={() => onTabChange('requests')}
+              className={`m3-segmented-btn ${activeTab === 'requests' ? 'is-active' : ''}`}
+              title="Web Studio ve Developer API isteklerini & hatalarını canlı izle"
+            >
+              <span>İstekler</span>
             </button>
           </div>
 

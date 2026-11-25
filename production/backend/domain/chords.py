@@ -5,10 +5,12 @@ Pure musicological logic decoupled from HTTP handlers and frontend styling class
 
 import logging
 import shutil
+import threading
 from pathlib import Path
 from typing import Any, Dict, List
 
 from backend.models import BeatEvent, ChordEvent
+from backend.services.gpu_guard import GPU_LOCK, release_cuda_cache
 
 logger = logging.getLogger("backend.domain.chords")
 
@@ -380,6 +382,49 @@ def align_chords_to_bars(
     return aligned_bars
 
 
+def build_provisional_sections(
+    bars: List[Dict[str, Any]],
+    duration: float,
+) -> List[Dict[str, Any]]:
+    """
+    Fast <1ms structural skeleton built immediately from bar boundaries while Stage 3
+    (BS-RoFormer) runs in background. Replaced by real allin1 MSA sections once stems finish.
+    """
+    total_bars = len(bars)
+    dur = max(1.0, float(duration or (bars[-1]["end_sec"] if bars else 180.0)))
+    if total_bars >= 16:
+        b1 = max(2, min(total_bars - 6, int(round(total_bars * 0.12))))
+        b2 = max(b1 + 2, min(total_bars - 4, int(round(total_bars * 0.45))))
+        b3 = max(b2 + 2, min(total_bars - 2, int(round(total_bars * 0.80))))
+        ranges = [
+            ("Intro", "intro", 1, b1),
+            ("Verse A", "verse", b1 + 1, b2),
+            ("Chorus", "chorus", b2 + 1, b3),
+            ("Outro", "outro", b3 + 1, total_bars),
+        ]
+        sections: List[Dict[str, Any]] = []
+        for name, raw_lbl, sb, eb in ranges:
+            s_sec = float(bars[sb - 1].get("start_sec", 0.0))
+            e_sec = float(bars[eb - 1].get("end_sec", dur))
+            sections.append({
+                "name": name,
+                "raw_label": raw_lbl,
+                "start_bar": sb,
+                "end_bar": eb,
+                "start_sec": round(s_sec, 2),
+                "end_sec": round(e_sec, 2),
+            })
+        return sections
+
+    end_bar = max(1, total_bars)
+    return [
+        {"name": "Intro", "raw_label": "intro", "start_bar": 1, "end_bar": max(1, end_bar // 4), "start_sec": 0.0, "end_sec": round(dur * 0.15, 2)},
+        {"name": "Verse A", "raw_label": "verse", "start_bar": max(1, end_bar // 4 + 1), "end_bar": max(1, end_bar // 2), "start_sec": round(dur * 0.15, 2), "end_sec": round(dur * 0.50, 2)},
+        {"name": "Chorus", "raw_label": "chorus", "start_bar": max(1, end_bar // 2 + 1), "end_bar": max(1, int(end_bar * 0.8)), "start_sec": round(dur * 0.50, 2), "end_sec": round(dur * 0.82, 2)},
+        {"name": "Outro", "raw_label": "outro", "start_bar": max(1, int(end_bar * 0.8) + 1), "end_bar": end_bar, "start_sec": round(dur * 0.82, 2), "end_sec": round(dur, 2)},
+    ]
+
+
 def extract_dynamic_sections(
     audio_path: Path,
     beats: List[BeatEvent],
@@ -392,6 +437,7 @@ def extract_dynamic_sections(
     directly via `stems_input` to completely bypass redundant htdemucs source separation (~90s saved).
     """
     sections: List[Dict[str, Any]] = []
+    tmp_dir: str | None = None
     try:
         import tempfile
         import allin1_infer
@@ -402,6 +448,7 @@ def extract_dynamic_sections(
 
         device = "cuda" if "cuda" in DEVICE and torch.cuda.is_available() else "cpu"
         tmp_dir = tempfile.mkdtemp()
+        use_mp = threading.current_thread() is threading.main_thread()
 
         # Check if pre-separated stems from Stage 3 exist on disk
         stems_dir = audio_path.parent / "stems"
@@ -433,33 +480,35 @@ def extract_dynamic_sections(
                 composite_other = other_p
 
             logger.info("Executing allin1 MSA using pre-separated Stage 3 stems (Skipping Demucs!)")
-            res = allin1_infer.analyze(
-                stems_input=[{
-                    "bass": str(bass_p),
-                    "drums": str(drums_p),
-                    "vocals": str(vocals_p),
-                    "other": str(composite_other),
-                    "name": audio_path.stem or "session",
-                }],
-                demix_dir=tmp_dir,
-                spec_dir=tmp_dir,
-                keep_byproducts=False,
-                multiprocess=True,
-                device=device,
-            )
+            with GPU_LOCK:
+                res = allin1_infer.analyze(
+                    stems_input=[{
+                        "bass": str(bass_p),
+                        "drums": str(drums_p),
+                        "vocals": str(vocals_p),
+                        "other": str(composite_other),
+                        "name": audio_path.stem or "session",
+                    }],
+                    demix_dir=tmp_dir,
+                    spec_dir=tmp_dir,
+                    keep_byproducts=False,
+                    multiprocess=use_mp,
+                    device=device,
+                )
             if isinstance(res, list):
                 res = res[0]
         else:
             logger.info("Executing allin1 Transformer MSA on %s (device=%s, fp16=True)", audio_path, device)
-            res = allin1_infer.analyze(
-                paths=audio_path,
-                demix_dir=tmp_dir,
-                spec_dir=tmp_dir,
-                keep_byproducts=False,
-                multiprocess=True,
-                device=device,
-                demucs_fp16=(device == "cuda"),
-            )
+            with GPU_LOCK:
+                res = allin1_infer.analyze(
+                    paths=audio_path,
+                    demix_dir=tmp_dir,
+                    spec_dir=tmp_dir,
+                    keep_byproducts=False,
+                    multiprocess=use_mp,
+                    device=device,
+                    demucs_fp16=(device == "cuda"),
+                )
 
         counts: Dict[str, int] = {}
         for seg in res.segments:
@@ -493,7 +542,6 @@ def extract_dynamic_sections(
                 "end_sec": round(float(seg.end), 2),
             })
 
-        shutil.rmtree(tmp_dir, ignore_errors=True)
         if sections:
             coalesced = coalesce_consecutive_sections(sections)
             logger.info(
@@ -504,6 +552,10 @@ def extract_dynamic_sections(
             return coalesced
     except Exception as e:
         logger.warning("allin1 MSA analysis error (%s). Using fallback segmentation.", e)
+    finally:
+        if tmp_dir:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+        release_cuda_cache()
 
     return [
         {"name": "Intro", "raw_label": "intro", "start_bar": 1, "end_bar": 4, "start_sec": 0.0, "end_sec": round(duration * 0.15, 1)},

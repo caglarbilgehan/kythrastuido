@@ -8,15 +8,16 @@ export { DEFAULT_STAGES };
 export function useWorkbench() {
   const stopAudioRef = useRef<(() => void) | null>(null);
 
-      const pipeline = useSessionPipeline(() => stopAudioRef.current?.());
-      const audio = useAudioMixer({
-        session: pipeline.session,
-        stage3Output: pipeline.stageOutputs[3]
-      });
-      stopAudioRef.current = audio.stopAndResetAudio;
+  const pipeline = useSessionPipeline(() => stopAudioRef.current?.());
+  const audio = useAudioMixer({
+    session: pipeline.session,
+    stage3Output: pipeline.stageOutputs[3],
+    activeSessionId: pipeline.activeSessionId
+  });
+  stopAudioRef.current = audio.stopAndResetAudio;
 
-      return {
+  return {
     ...pipeline,
-        ...audio
-      };
-    }
+    ...audio
+  };
+}

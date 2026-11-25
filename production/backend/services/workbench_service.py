@@ -27,7 +27,7 @@ from backend.exceptions import (
 )
 from backend.models import ChordEvent
 from backend.services.ingestion_service import IngestionService
-from backend.services.log_service import get_log_service
+from backend.services.log_service import CURRENT_SESSION_ID, get_log_service
 from backend.services.lyrics_service import (
     fetch_synchronized_lyrics_with_source,
 )
@@ -377,17 +377,15 @@ class WorkbenchService:
                 f"Şarkı disk önbelleğinden (beats.json & chords.json) anında yüklendi: {state.get('track_name')}",
             )
         else:
-            # Execute Stage 1 and Stage 2 so the screen can open immediately!
+            # Cache Miss: Launch Unified Progressive Parallel DAG!
+            # Runs CPU Stage 1 + CPU Stage 2a + Background GPU Stage 3 concurrently from t=0,
+            # returns studio in ~12-15s, then refines sections via stem-shared allin1 & runs Stage 4.
             log_svc.add_entry(
                 "INFO",
                 "backend.pipeline",
-                f"Yeni şarkı veya yeni versiyon (v{APP_PIPELINE_VERSION}): Aşama 1 & 2 çözümleniyor...",
+                f"Yeni şarkı veya yeni versiyon (v{APP_PIPELINE_VERSION}): Üretim Akışı (Paralel DAG) başlatılıyor...",
+                session_id=self.session_id,
             )
-            self.run_stage(1)
-            self.run_stage(2)
-            s1_data = self.repo.load_stage_data(1) or {}
-            s2_data = self.repo.load_stage_data(2) or {}
-
             if is_private_upload:
                 lyrics = []
                 lyrics_source = "user"
@@ -405,27 +403,33 @@ class WorkbenchService:
             state["is_private"] = is_private_upload
             self.repo.save_state(state)
 
-            if track_key and s1_data and s2_data:
-                s3_data = self.repo.load_stage_data(3) or {}
-                self.song_db.save_song_analysis(
-                    track_key=track_key,
-                    title=str(state.get("track_name") or "Kythra Track"),
-                    duration_sec=float(state.get("duration_sec") or 180.0),
-                    stage1=s1_data,
-                    stage2=s2_data,
-                    waveform_peaks=waveform_peaks,
-                    lyrics=lyrics,
-                    lyrics_source=lyrics_source,
-                    pipeline_version=APP_PIPELINE_VERSION,
-                    owner_user_id=user_id,
-                    is_private_upload=is_private_upload,
-                    stage3=s3_data,
-                )
+            disk_stems_existing = self._get_valid_disk_stems()
+            if disk_stems_existing is not None:
+                s3_sum = self._format_cached_stems_summary(disk_stems_existing)
+                self.repo.update_stage_state(3, status="completed", timings_ms=1.0, summary=s3_sum, error=None)
+            disk_lyrics_existing = self._get_valid_disk_lyrics()
+            if disk_lyrics_existing is not None:
+                s4_sum = self._format_cached_lyrics_summary(disk_lyrics_existing)
+                self.repo.update_stage_state(4, status="completed", timings_ms=1.0, summary=s4_sum, error=None)
+                self._hydrate_lyrics_from_disk(disk_lyrics_existing, track_key)
+
+            from backend.services.dag_orchestrator import DAGPipelineOrchestrator
+
+            orchestrator = DAGPipelineOrchestrator(self.repo)
+            orchestrator.execute_progressive_studio_load(
+                song_db=self.song_db,
+                current_user=self.current_user,
+                background_stems=background_stems,
+                disk_stems=disk_stems_existing,
+                disk_lyrics=disk_lyrics_existing,
+                lyrics=lyrics,
+                lyrics_source=lyrics_source,
+            )
 
         # Check persistent disk cache for Stage 3 (stems.json + stems/*.wav) before running BS-RoFormer
         current_state = self.repo.load_state()
         s3_status = current_state.get("stages", {}).get("3", {}).get("status")
-        if s3_status != "completed":
+        if s3_status not in ("completed", "running"):
             disk_stems = self._get_valid_disk_stems()
             if disk_stems is not None:
                 s3_summary = self._format_cached_stems_summary(disk_stems)
@@ -446,13 +450,14 @@ class WorkbenchService:
                     "INFO",
                     "backend.cache",
                     f"Aşama 3 (6-Kanal Stems) disk önbelleğinden anında yüklendi -> {s3_summary}",
+                    session_id=self.session_id,
                 )
                 s3_status = "completed"
 
         # Check persistent disk cache for Stage 4 (lyrics.json) before running ASR/MMS_FA
         current_state = self.repo.load_state()
         s4_status = current_state.get("stages", {}).get("4", {}).get("status")
-        if s4_status != "completed":
+        if s4_status not in ("completed", "running"):
             disk_lyrics = self._get_valid_disk_lyrics()
             if disk_lyrics is not None:
                 s4_summary = self._format_cached_lyrics_summary(disk_lyrics)
@@ -468,11 +473,12 @@ class WorkbenchService:
                     "INFO",
                     "backend.cache",
                     f"Aşama 4 (Söz & Karaoke) disk önbelleğinden anında yüklendi -> {s4_summary}",
+                    session_id=self.session_id,
                 )
                 s4_status = "completed"
 
-        # Spawn missing Stage 3 (and/or Stage 4) in background only when not already cached on disk
-        if s3_status != "completed":
+        # Spawn missing Stage 3 (and/or Stage 4) in background only when not already running/completed
+        if s3_status not in ("completed", "running"):
             if background_stems:
                 self.repo.update_stage_state(
                     3,
@@ -482,6 +488,7 @@ class WorkbenchService:
                 )
 
                 def _bg_stage3():
+                    tok = CURRENT_SESSION_ID.set(self.session_id)
                     try:
                         self.run_stage(3)
                         st_after = self.repo.load_state()
@@ -505,11 +512,13 @@ class WorkbenchService:
                                     logger.warning("Background Stage 4 (Lyrics) skipped/failed: %s", e4)
                     except Exception as e:
                         logger.error("Background Stage 3 failed: %s", e)
+                    finally:
+                        CURRENT_SESSION_ID.reset(tok)
 
                 threading.Thread(target=_bg_stage3, daemon=True, name="bg-stage3-mss").start()
             else:
                 self.run_stage(3)
-        elif s4_status != "completed":
+        elif s3_status == "completed" and s4_status not in ("completed", "running"):
             current_state = self.repo.load_state()
             has_lyrics = bool(current_state.get("lyrics"))
             vocals_wav = self.repo.get_stems_dir() / "vocals.wav"
@@ -523,10 +532,13 @@ class WorkbenchService:
                     )
 
                     def _bg_stage4():
+                        tok = CURRENT_SESSION_ID.set(self.session_id)
                         try:
                             self.run_stage(4)
                         except Exception as e4:
                             logger.warning("Background Stage 4 (Lyrics) skipped/failed: %s", e4)
+                        finally:
+                            CURRENT_SESSION_ID.reset(tok)
 
                     threading.Thread(target=_bg_stage4, daemon=True, name="bg-stage4-lyrics").start()
                 else:
@@ -540,8 +552,8 @@ class WorkbenchService:
         bundle["pipeline_version"] = APP_PIPELINE_VERSION
         return bundle
 
-    def run_all_stages(self) -> Dict[str, Any]:
-        """Executes production pipeline stages 1, 2, 3 via the Parallel DAG Orchestrator."""
+    def run_all_stages(self, force: bool = True) -> Dict[str, Any]:
+        """Executes unified 4-stage Production flow via DAGPipelineOrchestrator."""
         if not self.repo.has_source_audio():
             raise SessionAudioNotFoundError(
                 "No audio source loaded. Please upload or ingest a source first."
@@ -549,15 +561,18 @@ class WorkbenchService:
         from backend.services.dag_orchestrator import DAGPipelineOrchestrator
 
         orchestrator = DAGPipelineOrchestrator(self.repo)
-        res = orchestrator.execute_dag()
+        res = orchestrator.execute_dag(force=force)
 
-        # Also persist Stage 1 & Stage 2 to SQLite SongDatabase with APP_PIPELINE_VERSION
+        # Persist Stages 1..4 & lyrics to SQLite SongDatabase with APP_PIPELINE_VERSION
         try:
             state = self.repo.load_state()
             track_key = state.get("track_key") or f"title:{state.get('track_name')}"
             s1 = self.repo.load_stage_data(1)
             s2 = self.repo.load_stage_data(2)
+            s3 = self.repo.load_stage_data(3) or {}
             wf = state.get("waveform_peaks") or extract_waveform_peaks(self.repo.get_source_audio_path())
+            user_id = self.current_user["id"] if self.current_user else None
+            is_priv = bool(state.get("is_private") or (track_key and str(track_key).startswith("sha256:")))
             if track_key and s1 and s2:
                 self.song_db.save_song_analysis(
                     track_key=track_key,
@@ -566,7 +581,12 @@ class WorkbenchService:
                     stage1=s1,
                     stage2=s2,
                     waveform_peaks=wf,
+                    lyrics=state.get("lyrics") or [],
+                    lyrics_source=str(state.get("lyrics_source") or "none"),
                     pipeline_version=APP_PIPELINE_VERSION,
+                    owner_user_id=user_id,
+                    is_private_upload=is_priv,
+                    stage3=s3,
                 )
         except Exception as e:
             logger.warning("Failed to persist DAG result to SQLite DB: %s", e)
@@ -686,6 +706,7 @@ class WorkbenchService:
             "lyrics_version": lyrics_version,
             "lyrics_updated_by": lyrics_updated_by,
             "is_private": is_private,
+            "sections_refining": bool(state.get("sections_refining")),
             "pipeline_version": APP_PIPELINE_VERSION,
         }
 

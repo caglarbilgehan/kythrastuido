@@ -22,6 +22,7 @@ from backend.config import (
     MSST_DIR,
 )
 from backend.engines.base import PipelineContext
+from backend.services.gpu_guard import GPU_LOCK, release_cuda_cache
 
 logger = logging.getLogger("backend.mss")
 
@@ -64,13 +65,24 @@ class MssDemuxEngine:
         self.model = None
         self.config = None
         self.is_loaded = False
-        self.batch_size = max(1, int(batch_size))
+        self.batch_size = max(0, int(batch_size))
         self.use_amp = bool(use_amp)
 
-    def _resolve_amp_dtype(self) -> torch.dtype:
-        if torch.cuda.is_available() and getattr(torch.cuda, "is_bf16_supported", lambda: False)():
-            return torch.bfloat16
-        return torch.float16
+    @staticmethod
+    def _resolve_safe_batch_size(requested: int) -> int:
+        if requested > 0:
+            return requested
+        if not torch.cuda.is_available():
+            return 1
+        try:
+            vram_gb = torch.cuda.get_device_properties(0).total_memory / float(1024 ** 3)
+            if vram_gb <= 9.5:
+                return 2
+            if vram_gb <= 16.5:
+                return 4
+            return 8
+        except Exception:
+            return 2
 
     def load(self) -> None:
         if self.is_loaded:
@@ -88,10 +100,11 @@ class MssDemuxEngine:
         from utils.settings import get_model_from_config
         self.model, self.config = get_model_from_config("bs_roformer", str(BS_ROFORMER_CONFIG))
 
-        # Saturate GPU Tensor Cores with configurable batch size (default 8 on CUDA with AMP)
+        effective_bs = self._resolve_safe_batch_size(self.batch_size)
         if hasattr(self.config, "inference"):
-            effective_bs = self.batch_size if torch.cuda.is_available() else min(2, self.batch_size)
             self.config.inference.batch_size = effective_bs
+        if hasattr(self.config, "training"):
+            self.config.training.use_amp = bool(self.use_amp and torch.cuda.is_available())
 
         state = torch.load(str(BS_ROFORMER_CKPT), map_location="cpu")
         if "state_dict" in state:
@@ -103,34 +116,45 @@ class MssDemuxEngine:
         logger.info(
             "BS-RoFormer-SW loaded onto %s (batch_size=%d, AMP=%s, TF32=True)",
             DEVICE,
-            getattr(self.config.inference, "batch_size", self.batch_size),
+            getattr(self.config.inference, "batch_size", effective_bs),
             self.use_amp and torch.cuda.is_available(),
         )
 
+    def offload_to_cpu(self) -> None:
+        """Moves BS-RoFormer weights off 8GB VRAM back to CPU RAM after stage completion."""
+        if self.model is not None:
+            try:
+                self.model = self.model.to("cpu")
+            except Exception as exc:
+                logger.debug("BS-RoFormer offload skipped: %s", exc)
+        release_cuda_cache()
+
     def _run_demix_with_backoff(self, demix_fn, mix: np.ndarray):
         device_obj = torch.device(DEVICE)
-        use_cuda_amp = bool(self.use_amp and DEVICE.startswith("cuda") and torch.cuda.is_available())
-        amp_dtype = self._resolve_amp_dtype() if use_cuda_amp else torch.float32
 
-        while True:
-            cur_bs = getattr(self.config.inference, "batch_size", self.batch_size)
+        with GPU_LOCK:
+            if self.model is not None:
+                self.model = self.model.to(device_obj)
             try:
-                with torch.inference_mode():
-                    if use_cuda_amp:
-                        with torch.amp.autocast("cuda", dtype=amp_dtype):
+                while True:
+                    cur_bs = getattr(self.config.inference, "batch_size", 2)
+                    try:
+                        with torch.inference_mode():
+                            # MSST demix() internally manages torch.cuda.amp.autocast via config.training.use_amp
                             return demix_fn(self.config, self.model, mix, device_obj, "bs_roformer", pbar=False)
-                    return demix_fn(self.config, self.model, mix, device_obj, "bs_roformer", pbar=False)
-            except torch.cuda.OutOfMemoryError:
-                if cur_bs <= 1 or not hasattr(self.config, "inference"):
-                    raise
-                next_bs = max(1, cur_bs // 2)
-                logger.warning(
-                    "CUDA OOM in BS-RoFormer at batch_size=%d; clearing cache and retrying with batch_size=%d",
-                    cur_bs,
-                    next_bs,
-                )
-                torch.cuda.empty_cache()
-                self.config.inference.batch_size = next_bs
+                    except torch.cuda.OutOfMemoryError:
+                        if cur_bs <= 1 or not hasattr(self.config, "inference"):
+                            raise
+                        next_bs = max(1, cur_bs // 2)
+                        logger.warning(
+                            "CUDA OOM in BS-RoFormer at batch_size=%d; clearing cache and retrying with batch_size=%d",
+                            cur_bs,
+                            next_bs,
+                        )
+                        release_cuda_cache()
+                        self.config.inference.batch_size = next_bs
+            finally:
+                self.offload_to_cpu()
 
     def run(self, ctx: PipelineContext, output_stems_dir: Path) -> None:
         t0 = time.time()

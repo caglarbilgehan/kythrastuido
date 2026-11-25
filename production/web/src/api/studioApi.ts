@@ -71,6 +71,7 @@ export function setStoredAuthToken(token: string | null): void {
 export function buildStudioHeaders(extra?: Record<string, string>): Record<string, string> {
   const headers: Record<string, string> = {
     'X-Session-Id': getOrCreateClientSessionId(),
+    'X-Client-App': 'web',
     ...(extra || {})
   };
   const token = getStoredAuthToken();
@@ -103,6 +104,8 @@ export const EMPTY_STUDIO_SONG: StudioSong = {
   lyricsVersion: 1,
   waveformPeaks: DEFAULT_WAVEFORM,
   stage3Status: 'pending',
+  stage4Status: 'pending',
+  sectionsRefining: false,
   stems: {}
 };
 
@@ -132,6 +135,12 @@ export function bundleToStudioSong(bundle: any): StudioSong | null {
   const timeSignature = String(s1.time_signature || '4/4');
   const keySignature = String(s2.key_signature || 'C major');
   const stage3Status = (state?.stages?.['3']?.status || 'pending') as StudioSong['stage3Status'];
+  const stage4Status = (state?.stages?.['4']?.status || 'pending') as NonNullable<StudioSong['stage4Status']>;
+  const sectionsRefining = Boolean(
+    bundle?.sections_refining ??
+      state?.sections_refining ??
+      (s2 && s2.sections_refined === false)
+  );
 
   const beats: BeatItem[] = Array.from(Array.isArray(s1.beats) ? s1.beats : []).map((b: any, idx: number) => ({
     beatNumber: Number(b.beat_number || (idx % 4) + 1),
@@ -307,6 +316,8 @@ export function bundleToStudioSong(bundle: any): StudioSong | null {
     lyricsUpdatedBy,
     waveformPeaks,
     stage3Status,
+    stage4Status,
+    sectionsRefining,
     pipelineVersion: bundle?.pipeline_version,
     cacheHit: Boolean(bundle?.cache_hit),
     masterAudioUrl: hasSourceAudio

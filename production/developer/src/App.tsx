@@ -13,6 +13,7 @@ import { StagePendingView } from './components/Inspector/StagePendingView';
 import { StageExecutingView } from './components/Inspector/StageExecutingView';
 import { GlobalPipelineTracker } from './components/Inspector/GlobalPipelineTracker';
 import { StudioConsoleView } from './components/Console/StudioConsoleView';
+import { RequestTraceView } from './components/Telemetry/RequestTraceView';
 import { useLiveLogs } from './hooks/useLiveLogs';
 
 // Production 4-Stage Diagnostic Views
@@ -23,6 +24,10 @@ import { Stage4LyricsView } from './components/Inspector/stages/Stage4LyricsView
 
 export const App: React.FC = () => {
   const {
+    activeSessionId,
+    telemetrySessions,
+    switchSession,
+    refreshTelemetrySessions,
     session,
     selectedStageId,
     setSelectedStageId,
@@ -132,6 +137,10 @@ export const App: React.FC = () => {
     <div className={`m3-dev-shell ${hasSource ? 'has-session' : ''}`}>
       <Header
         session={session}
+        activeSessionId={activeSessionId}
+        telemetrySessions={telemetrySessions}
+        onSelectSession={switchSession}
+        onRefreshSessions={refreshTelemetrySessions}
         isLoading={isLoading}
         runningStage={runningStage}
         onRunAll={handleRunAll}
@@ -162,7 +171,10 @@ export const App: React.FC = () => {
 
       {!hasSource ? (
         <main className="dev-empty-main">
-          <EmptyState onUpload={handleUpload} />
+          <div style={{ width: '100%', maxWidth: '1060px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <EmptyState onUpload={handleUpload} />
+            <RequestTraceView activeSessionId={activeSessionId} onSelectSession={switchSession} />
+          </div>
         </main>
       ) : (
         <main className="dev-workbench-layout">
@@ -199,7 +211,12 @@ export const App: React.FC = () => {
                 onOpenConsole={() => setActiveInspectorTab('console')}
               />
 
-              {activeInspectorTab === 'console' ? (
+              {activeInspectorTab === 'requests' ? (
+                <RequestTraceView
+                  activeSessionId={activeSessionId}
+                  onSelectSession={switchSession}
+                />
+              ) : activeInspectorTab === 'console' ? (
                 <StudioConsoleView
                   logs={logs}
                   filterStage={filterStage}

@@ -59,7 +59,8 @@ BS_ROFORMER_CONFIG = BS_ROFORMER_DIR / "BS-Roformer-SW.yaml"
 MSST_DIR = BENCHMARKS_DIR / "07-Music-Source-Separation" / "repos" / "MSST"
 
 # Inference Tuning (Stages 3 & 4)
-MSS_BATCH_SIZE = max(1, int(os.getenv("KYTHRA_MSS_BATCH_SIZE", "8")))
+# KYTHRA_MSS_BATCH_SIZE=0 -> auto-select by GPU VRAM (<=9.5GB -> 2, <=16.5GB -> 4, >16.5GB -> 8)
+MSS_BATCH_SIZE = max(0, int(os.getenv("KYTHRA_MSS_BATCH_SIZE", "0")))
 MSS_USE_AMP = os.getenv("KYTHRA_MSS_USE_AMP", "1").strip().lower() not in ("0", "false", "no")
 
 WHISPER_MODEL_SIZE = os.getenv("KYTHRA_WHISPER_MODEL", "large-v3-turbo").strip() or "large-v3-turbo"

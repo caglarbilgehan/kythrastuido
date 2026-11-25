@@ -79,17 +79,32 @@ export const App: React.FC = () => {
     refreshAccountOverview();
   }, [refreshAccountOverview]);
 
+  const isBackgroundProcessing = Boolean(
+    song &&
+      song.source === 'live' &&
+      (song.stage3Status === 'running' ||
+        song.stage4Status === 'running' ||
+        song.sectionsRefining)
+  );
+
   useEffect(() => {
-    if (!song || song.source !== 'live' || song.stage3Status !== 'running') return;
+    if (!isBackgroundProcessing) return;
     const interval = window.setInterval(async () => {
       const updated = await fetchActiveStudioSong();
       if (!updated) return;
       setSong((prev) => {
         if (!prev) return updated;
+        const prevSecSig = prev.sections.map((s) => `${s.name}:${s.startSec}`).join('|');
+        const nextSecSig = updated.sections.map((s) => `${s.name}:${s.startSec}`).join('|');
         if (
           prev.id === updated.id &&
           prev.stage3Status === updated.stage3Status &&
-          Object.keys(prev.stems).length === Object.keys(updated.stems).length
+          prev.stage4Status === updated.stage4Status &&
+          prev.sectionsRefining === updated.sectionsRefining &&
+          Object.keys(prev.stems).length === Object.keys(updated.stems).length &&
+          prevSecSig === nextSecSig &&
+          prev.lyrics.length === updated.lyrics.length &&
+          prev.lyricsSource === updated.lyricsSource
         ) {
           return prev;
         }
@@ -97,7 +112,7 @@ export const App: React.FC = () => {
       });
     }, 1500);
     return () => window.clearInterval(interval);
-  }, [song?.source, song?.stage3Status]);
+  }, [isBackgroundProcessing]);
 
   const [currentSectionForLoop, setCurrentSectionForLoop] = useState<SongSection | undefined>(
     activeSong.sections[0]

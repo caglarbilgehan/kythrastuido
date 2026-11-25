@@ -1,9 +1,14 @@
 import React from 'react';
-import { SessionState } from '../types/workbench';
+import { SessionState, TelemetrySessionSummary } from '../types/workbench';
 import { BrandLogoIcon } from './icons';
+import { SessionSwitcher } from './SessionSwitcher';
 
 interface HeaderProps {
   session: SessionState | null;
+  activeSessionId: string;
+  telemetrySessions: TelemetrySessionSummary[];
+  onSelectSession: (sessionId: string) => void;
+  onRefreshSessions: () => void;
   onRunAll: () => void;
   onReset: () => void;
   onOpenSourceModal: () => void;
@@ -17,6 +22,10 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   session,
+  activeSessionId,
+  telemetrySessions,
+  onSelectSession,
+  onRefreshSessions,
   onRunAll,
   onReset,
   onOpenSourceModal,
@@ -32,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="m3-top-app-bar">
       <div className="m3-top-app-bar-inner">
-        {/* 1. Brand Lockup + Segmented Execution Mode */}
+        {/* 1. Brand Lockup + Live Session Switcher + Segmented Execution Mode */}
         <div className="m3-header-left">
           <div className="m3-brand-lockup">
             <div className="m3-brand-logo">
@@ -45,25 +54,34 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="m3-header-divider" aria-hidden="true" />
 
+          <SessionSwitcher
+            activeSessionId={activeSessionId}
+            sessions={telemetrySessions}
+            onSelectSession={onSelectSession}
+            onRefresh={onRefreshSessions}
+          />
+
+          <div className="m3-header-divider" aria-hidden="true" />
+
           <div role="group" aria-label="Çalıştırma Modu" className="m3-segmented-group">
             <button
               type="button"
               onClick={() => onModeChange('sequential')}
               className={`m3-segmented-btn ${mode === 'sequential' ? 'is-active' : ''}`}
-              title="Sıralı Mod: Aşamaları adım adım (01 -> 03) çalıştır"
+              title="Adım Adım Mod: Her aşamayı (01 → 04) tek tek manuel veya sıralı çalıştırıp hata ayıkla"
             >
               <md-icon>commit</md-icon>
-              <span>Sıralı</span>
+              <span>Adım Adım</span>
             </button>
 
             <button
               type="button"
               onClick={() => onModeChange('parallel')}
               className={`m3-segmented-btn ${mode === 'parallel' ? 'is-active is-secondary' : ''}`}
-              title="Paralel DAG Modu: Bağımsız aşamaları eşzamanlı çalıştır"
+              title="Üretim Akışı Modu: Web Studio kullanıcı akışını birebir simüle et ve test et"
             >
               <md-icon>bolt</md-icon>
-              <span>Paralel DAG</span>
+              <span>Üretim Akışı</span>
             </button>
           </div>
         </div>
@@ -75,8 +93,8 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="m3-status-dot secondary is-pulsing" aria-hidden="true" />
               <span>
                 {mode === 'parallel'
-                  ? 'Paralel DAG: Aşamalar eşzamanlı çalışıyor...'
-                  : `Sıralı Akış: Aşama 0${runningStage} çalışıyor...`}
+                  ? 'Üretim Akışı: Aşamalar eşzamanlı çalışıyor...'
+                  : `Adım Adım: Aşama 0${runningStage} çalışıyor...`}
               </span>
             </span>
           )}
@@ -107,12 +125,12 @@ export const Header: React.FC<HeaderProps> = ({
             disabled={isLoading || !hasSession || undefined}
             title={
               mode === 'parallel'
-                ? 'Tüm boru hattını Paralel DAG motoruyla çalıştır'
-                : 'Tüm aşamaları sırayla uçtan uca çözümle'
+                ? 'Seçili oturumda Web Studio üretim akışını birebir test et'
+                : 'Tüm aşamaları (01 → 04) adım adım sırayla çözümle'
             }
           >
             <md-icon slot="icon">{mode === 'parallel' ? 'bolt' : 'play_arrow'}</md-icon>
-            <span>{mode === 'parallel' ? 'Paralel Çalıştır' : 'Tümünü Çözümle'}</span>
+            <span>{mode === 'parallel' ? 'Üretim Akışını Test Et' : 'Adım Adım Çalıştır'}</span>
           </md-filled-button>
 
           <md-icon-button
