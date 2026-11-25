@@ -122,12 +122,18 @@ interface UseStemAudioOptions {
   song: StudioSong;
   playbackSpeed: number;
   loopRangeSec: [number, number] | null;
+  initialTimeSec?: number;
 }
 
-export function useStemAudio({ song, playbackSpeed, loopRangeSec }: UseStemAudioOptions) {
+export function useStemAudio({
+  song,
+  playbackSpeed,
+  loopRangeSec,
+  initialTimeSec = 0
+}: UseStemAudioOptions) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMasterMuted, setIsMasterMuted] = useState(false);
-  const [currentTimeSec, setCurrentTimeSec] = useState(0);
+  const [currentTimeSec, setCurrentTimeSec] = useState(initialTimeSec);
   const [activePreset, setActivePreset] = useState<MixPresetId>('full');
   const [hasReadyMaster, setHasReadyMaster] = useState(false);
   const [hasReadyStems, setHasReadyStems] = useState(false);
@@ -325,8 +331,8 @@ export function useStemAudio({ song, playbackSpeed, loopRangeSec }: UseStemAudio
     if (!isSameSong) {
       isPlayingRef.current = false;
       setIsPlaying(false);
-      setCurrentTimeSec(0);
-      prevTimeRef.current = 0;
+      setCurrentTimeSec(initialTimeSec);
+      prevTimeRef.current = initialTimeSec;
       setActivePreset('full');
     }
 

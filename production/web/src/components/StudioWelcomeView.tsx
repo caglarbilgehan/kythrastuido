@@ -13,23 +13,29 @@ import { SourceOriginIcon, detectSongSource } from './icons';
 interface StudioWelcomeViewProps {
   language: AppLanguage;
   privateUploads: PrivateUploadedSongItem[];
+  initialLibrarySongs?: LibrarySongItem[];
   onOpenUpload: () => void;
   onSongLoaded: (song: StudioSong) => void;
   onRenameTrack?: (trackKey: string, newTitle: string) => Promise<void>;
   onDeleteTrack?: (trackKey: string) => Promise<void>;
+  onShowcaseQuickOpen?: (trackKey: string) => void;
 }
 
 export const StudioWelcomeView: React.FC<StudioWelcomeViewProps> = ({
   language,
   privateUploads,
+  initialLibrarySongs,
   onOpenUpload,
   onSongLoaded,
   onRenameTrack,
-  onDeleteTrack
+  onDeleteTrack,
+  onShowcaseQuickOpen
 }) => {
   const wT = TRANSLATIONS[language].welcome;
   const hT = TRANSLATIONS[language].header;
-  const [libraryItems, setLibraryItems] = useState<LibrarySongItem[]>([]);
+  const [libraryItems, setLibraryItems] = useState<LibrarySongItem[]>(
+    () => initialLibrarySongs || []
+  );
   const [loadingTrackKey, setLoadingTrackKey] = useState<string | null>(null);
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
@@ -37,8 +43,12 @@ export const StudioWelcomeView: React.FC<StudioWelcomeViewProps> = ({
   const [mutatingKey, setMutatingKey] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialLibrarySongs && initialLibrarySongs.length > 0) {
+      setLibraryItems(initialLibrarySongs);
+      return;
+    }
     fetchLibrarySongs().then(setLibraryItems);
-  }, [privateUploads.length]);
+  }, [privateUploads.length, initialLibrarySongs]);
 
   const combinedRecent = React.useMemo(() => {
     const map = new Map<
@@ -59,6 +69,10 @@ export const StudioWelcomeView: React.FC<StudioWelcomeViewProps> = ({
   }, [privateUploads, libraryItems]);
 
   const handleQuickOpen = async (trackKey: string) => {
+    if (onShowcaseQuickOpen) {
+      onShowcaseQuickOpen(trackKey);
+      return;
+    }
     setLoadingTrackKey(trackKey);
     try {
       const song = await loadCachedSongByTrackKey(trackKey);

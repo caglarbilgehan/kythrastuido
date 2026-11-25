@@ -28,28 +28,64 @@ import {
   StudioSong,
   StudioUser
 } from './types/studio';
+import {
+  SHOWCASE_FAVORITES,
+  SHOWCASE_LIBRARY_SONGS,
+  SHOWCASE_PRIVATE_UPLOADS,
+  SHOWCASE_STUDIO_SONG,
+  SHOWCASE_USER,
+  parseShowcaseFromSearch
+} from './showcase/showcaseData';
 
 export const App: React.FC = () => {
-  const [song, setSong] = useState<StudioSong | null>(null);
-  const [language, setLanguage] = useState<AppLanguage>(() => detectInitialLanguage());
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const [user, setUser] = useState<StudioUser | null>(null);
-  const [favorites, setFavorites] = useState<FavoriteSongItem[]>([]);
-  const [privateUploads, setPrivateUploads] = useState<PrivateUploadedSongItem[]>([]);
+  const showcaseConfig = useMemo(
+    () => (typeof window !== 'undefined' ? parseShowcaseFromSearch(window.location.search) : null),
+    []
+  );
+  const isShowcaseMode = showcaseConfig !== null;
+
+  const [song, setSong] = useState<StudioSong | null>(() =>
+    showcaseConfig && showcaseConfig.view !== 'welcome' ? SHOWCASE_STUDIO_SONG : null
+  );
+  const [language, setLanguage] = useState<AppLanguage>(() =>
+    showcaseConfig ? showcaseConfig.language : detectInitialLanguage()
+  );
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() =>
+    showcaseConfig ? showcaseConfig.theme === 'dark' : false
+  );
+  const [user, setUser] = useState<StudioUser | null>(() =>
+    isShowcaseMode ? SHOWCASE_USER : null
+  );
+  const [favorites, setFavorites] = useState<FavoriteSongItem[]>(() =>
+    isShowcaseMode ? SHOWCASE_FAVORITES : []
+  );
+  const [privateUploads, setPrivateUploads] = useState<PrivateUploadedSongItem[]>(() =>
+    isShowcaseMode ? SHOWCASE_PRIVATE_UPLOADS : []
+  );
   const [isAccountCardOpen, setIsAccountCardOpen] = useState<boolean>(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
 
-  const [instrument, setInstrument] = useState<InstrumentType>('guitar');
+  const [instrument, setInstrument] = useState<InstrumentType>(() =>
+    showcaseConfig ? showcaseConfig.instrument : 'guitar'
+  );
   const [transposeSemitones, setTransposeSemitones] = useState<number>(0);
   const [capo, setCapo] = useState<number>(0);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [chordComplexity, setChordComplexity] = useState<ChordComplexityMode>('all');
   const [autoFollowSection, setAutoFollowSection] = useState<boolean>(true);
-  const [manualSectionId, setManualSectionId] = useState<string | null>(null);
+  const [manualSectionId, setManualSectionId] = useState<string | null>(() =>
+    showcaseConfig && showcaseConfig.view !== 'welcome'
+      ? SHOWCASE_STUDIO_SONG.sections[2]?.id || null
+      : null
+  );
 
-  const [isLoopActive, setIsLoopActive] = useState<boolean>(false);
+  const [isLoopActive, setIsLoopActive] = useState<boolean>(() =>
+    Boolean(showcaseConfig && showcaseConfig.view !== 'welcome')
+  );
   const [customBarLoopRange, setCustomBarLoopRange] = useState<[number, number] | null>(null);
-  const [openPopover, setOpenPopover] = useState<DockerPopoverId>(null);
+  const [openPopover, setOpenPopover] = useState<DockerPopoverId>(() =>
+    showcaseConfig?.view === 'mixer' ? 'mixer' : null
+  );
 
   const activeSong = song ?? EMPTY_STUDIO_SONG;
 
@@ -59,27 +95,32 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     document.documentElement.setAttribute('lang', language);
-    persistLanguage(language);
-  }, [language]);
+    if (!isShowcaseMode) {
+      persistLanguage(language);
+    }
+  }, [language, isShowcaseMode]);
 
   const refreshAccountOverview = useCallback(() => {
+    if (isShowcaseMode) return;
     fetchAccountOverview().then((overview) => {
       setUser(overview.user);
       setFavorites(overview.favorites);
       setPrivateUploads(overview.private_uploads);
     });
-  }, []);
+  }, [isShowcaseMode]);
 
   useEffect(() => {
+    if (isShowcaseMode) return;
     fetchActiveStudioSong().then((liveSong) => {
       if (liveSong) {
         setSong(liveSong);
       }
     });
     refreshAccountOverview();
-  }, [refreshAccountOverview]);
+  }, [refreshAccountOverview, isShowcaseMode]);
 
   const isBackgroundProcessing = Boolean(
+    !isShowcaseMode &&
     song &&
     song.source === 'live' &&
     (song.stage3Status === 'running' ||
@@ -114,8 +155,10 @@ export const App: React.FC = () => {
   return () => window.clearInterval(interval);
   }, [isBackgroundProcessing]);
 
-const [currentSectionForLoop, setCurrentSectionForLoop] = useState<SongSection | undefined>(
-  activeSong.sections[0]
+const [currentSectionForLoop, setCurrentSectionForLoop] = useState<SongSection | undefined>(() =>
+  showcaseConfig && showcaseConfig.view !== 'welcome'
+    ? SHOWCASE_STUDIO_SONG.sections[2] || activeSong.sections[0]
+    : activeSong.sections[0]
 );
 
 const loopRangeSec = useMemo<[number, number] | null>(() => {
@@ -139,8 +182,17 @@ const loopRangeSec = useMemo<[number, number] | null>(() => {
 const stemAudio = useStemAudio({
   song: activeSong,
   playbackSpeed,
-  loopRangeSec
+  loopRangeSec,
+  initialTimeSec: showcaseConfig ? showcaseConfig.currentTimeSec : 0
 });
+
+useEffect(() => {
+  if (showcaseConfig?.view === 'mixer') {
+    stemAudio.applyMixPreset('guitar_backing');
+  }
+  // Run once on showcase mixer boot to illustrate an active mix preset cleanly
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [showcaseConfig?.view]);
 
 const activeBarIndex = useMemo(() => {
   if (!activeSong.bars.length) return 0;
@@ -317,6 +369,7 @@ return (
       user={user}
       favorites={favorites}
       privateUploads={privateUploads}
+      initialLibrarySongs={isShowcaseMode ? SHOWCASE_LIBRARY_SONGS : undefined}
       isAccountCardOpen={isAccountCardOpen}
       isUploadDialogOpen={isUploadDialogOpen}
       onSetAccountCardOpen={setIsAccountCardOpen}
@@ -340,10 +393,21 @@ return (
       <StudioWelcomeView
         language={language}
         privateUploads={privateUploads}
+        initialLibrarySongs={isShowcaseMode ? SHOWCASE_LIBRARY_SONGS : undefined}
         onOpenUpload={() => setIsUploadDialogOpen(true)}
         onSongLoaded={handleSongLoaded}
         onRenameTrack={handleRenameTrack}
         onDeleteTrack={handleDeleteTrack}
+        onShowcaseQuickOpen={
+          isShowcaseMode
+            ? () => {
+                setSong(SHOWCASE_STUDIO_SONG);
+                setIsLoopActive(true);
+                setCurrentSectionForLoop(SHOWCASE_STUDIO_SONG.sections[2]);
+                setManualSectionId(SHOWCASE_STUDIO_SONG.sections[2]?.id || null);
+              }
+            : undefined
+        }
       />
     ) : (
       <>

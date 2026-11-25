@@ -26,6 +26,7 @@ interface StudioHeaderProps {
   user: StudioUser | null;
   favorites: FavoriteSongItem[];
   privateUploads: PrivateUploadedSongItem[];
+  initialLibrarySongs?: LibrarySongItem[];
   isAccountCardOpen: boolean;
   isUploadDialogOpen: boolean;
   onSetAccountCardOpen: (open: boolean) => void;
@@ -54,6 +55,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   user,
   favorites,
   privateUploads,
+  initialLibrarySongs,
   isAccountCardOpen,
   isUploadDialogOpen,
   onSetAccountCardOpen,
@@ -68,7 +70,9 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
 
   const [query, setQuery] = useState('');
   const [isOmniboxOpen, setIsOmniboxOpen] = useState(false);
-  const [librarySongs, setLibrarySongs] = useState<LibrarySongItem[]>([]);
+  const [librarySongs, setLibrarySongs] = useState<LibrarySongItem[]>(
+    () => initialLibrarySongs || []
+  );
   const [isLoadingSong, setIsLoadingSong] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -106,13 +110,18 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (initialLibrarySongs && initialLibrarySongs.length > 0) {
+      setLibrarySongs(initialLibrarySongs);
+      return;
+    }
     fetchLibrarySongs().then(setLibrarySongs);
-  }, [privateUploads.length]);
+  }, [privateUploads.length, initialLibrarySongs]);
 
   useEffect(() => {
     if (!isOmniboxOpen) return;
+    if (initialLibrarySongs && initialLibrarySongs.length > 0) return;
     fetchLibrarySongs().then(setLibrarySongs);
-  }, [isOmniboxOpen]);
+  }, [isOmniboxOpen, initialLibrarySongs]);
 
   useEffect(() => {
     const handleOutside = (e: MouseEvent) => {

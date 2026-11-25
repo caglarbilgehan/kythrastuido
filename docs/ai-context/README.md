@@ -19,11 +19,24 @@ Yeni bir Notebook oluştur ve şu dosyaları doğrudan **Kaynak (Source)** olara
 
 ---
 
-### 2. Google Stitch (UI / UX Tasarım & Ekran Prototipleme)
-Stitch kod tabanından ziyade **Tasarım Sistemi + Ekran Prompt'ları + Referans Görseller** ile en iyi sonucu verir:
-1. `docs/ai-context/stitch/stitch-design-system-and-prompts.md` dosyasını aç.
-2. Tasarlamak istediğin ekranın **hazır Stitch prompt'unu** kopyala.
-3. İlgili ekran için `docs/references/` klasöründeki (Moises, Songsterr, ChordMini, Guitar Ultimate) referans ekran görüntülerinden 1–2 tanesini Stitch'e görsel referans olarak ekle.
+### 2. Google Stitch (UI / UX Tasarım — Doğrudan Arayüz Aktarımı)
+Mevcut Web Studio ekranlarını prompt yazmadan birebir Stitch'e (veya Figma'ya) aktarmanın **iki hazır yolu** var:
+
+#### A) Tek Dosya Statik HTML/CSS Ekran Paketleri (`docs/ai-context/stitch/html/`)
+Gerçek Web Studio React bileşenlerinden ve Material 3 CSS token'larından otomatik üretilen **6 bağımsız HTML dosyası** (her biri sıfır JS ile tarayıcıda, Google Stitch'te ve Figma `html.to.design` eklentisinde birebir açılır):
+- `web-studio-active-light.html` / `web-studio-active-dark.html` *(Aktif Stüdyo)*
+- `web-studio-mixer-light.html` / `web-studio-mixer-dark.html` *(6-Kanal Stem Mikser Açık)*
+- `web-studio-welcome-light.html` / `web-studio-welcome-dark.html` *(Karşılama & Kütüphane)*
+- `index.html` *(Tüm 6 ekranı tek sayfada önizleme galerisi)*
+
+#### B) Canlı Demo URL'leri (Showcase Modu — Backend Gerektirmez)
+Uygulama adresinin sonuna aşağıdaki parametreleri ekleyerek doğrudan Stitch'e URL olarak verebilir veya yüksek çözünürlüklü ekran görüntüsü alabilirsin:
+- `?showcase=studio&theme=light` | `?showcase=studio&theme=dark`
+- `?showcase=mixer&theme=light` | `?showcase=mixer&theme=dark`
+- `?showcase=welcome&theme=light` | `?showcase=welcome&theme=dark`
+*(İsteğe bağlı `&lang=en` veya `&instrument=piano|ukulele` parametreleri de desteklenir.)*
+
+*(İstersen yeni ekran varyasyonları üretmek için `docs/ai-context/stitch/stitch-design-system-and-prompts.md` içindeki tasarım sistemi özetini de yanına ekleyebilirsin.)*
 
 ---
 
@@ -41,10 +54,7 @@ En akıcı kullanım için Gemini'de **"KythraStudio Mimarı"** adında bir **Ge
 
 ## Kod Değiştikçe Paketleri Tek Komutla Güncelleme
 
-Kod tabanında büyük değişiklik yaptıktan sonra `codebase-backend.md` ve `codebase-frontend.md` dosyalarını tek komutla tazeleyebilirsin:
-
 ```bash
-npm run export:context
+npm run export:stitch   # 6 tek-dosya Stitch HTML/CSS ekranını gerçek bileşenlerden yeniden üretir
+npm run export:context  # NotebookLM & Gemini kod paketlerini yeniler
 ```
-
-Bu komut; fontları, soundfont'ları, `node_modules`, `dist`, `__pycache__`, lock dosyalarını ve görselleri otomatik dışarıda bırakarak tertemiz, AI bağlam penceresine uygun tek parça Markdown kod paketleri üretir.
