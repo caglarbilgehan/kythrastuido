@@ -10,6 +10,7 @@
     "dev": "npm run dev --workspace=production/web",
     "build": "npm run build --workspace=production/web",
     "preview": "npm run preview --workspace=production/web",
-    "lint": "npm run lint --workspace=production/web"
+    "lint": "npm run lint --workspace=production/web",
+    "export:context": "node scripts/export-ai-context.mjs"
   }
 }
