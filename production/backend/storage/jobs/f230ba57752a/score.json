@@ -1,0 +1,206 @@
+{
+  "title": "Test Integration Track",
+  "artist": "Kythra Dev",
+  "tempo_bpm": 120.0,
+  "time_signature": "4/4",
+  "key_signature": "G major",
+  "duration_sec": 4.0,
+  "tuning": [
+    "E4",
+    "B3",
+    "G3",
+    "D3",
+    "A2",
+    "E2"
+  ],
+  "notes": [
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 0,
+        "beat_position": 2.0,
+        "duration_beats": 1.0,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 0.4895833333333333,
+        "raw_end_sec": 0.9895833333333334
+      }
+    },
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 0,
+        "beat_position": 3.0,
+        "duration_beats": 1.0,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 0.9895833333333334,
+        "raw_end_sec": 1.4895833333333333
+      }
+    },
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 0,
+        "beat_position": 4.0,
+        "duration_beats": 1.0,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 1.4895833333333333,
+        "raw_end_sec": 1.9895833333333333
+      }
+    },
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 1,
+        "beat_position": 1.0,
+        "duration_beats": 0.25,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 1.9895833333333333,
+        "raw_end_sec": 2.0479166666666666
+      }
+    },
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 1,
+        "beat_position": 2.0,
+        "duration_beats": 0.25,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 2.4895833333333335,
+        "raw_end_sec": 2.5395833333333333
+      }
+    },
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 1,
+        "beat_position": 3.0,
+        "duration_beats": 0.25,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 2.9895833333333335,
+        "raw_end_sec": 3.0395833333333333
+      }
+    },
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 1,
+        "beat_position": 4.0,
+        "duration_beats": 0.25,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 3.4895833333333335,
+        "raw_end_sec": 3.5395833333333333
+      }
+    },
+    {
+      "string": 6,
+      "fret": 3,
+      "spelled": {
+        "step": "G",
+        "alter": 0,
+        "octave": 2,
+        "name": "G"
+      },
+      "quantized": {
+        "bar_index": 2,
+        "beat_position": 1.0,
+        "duration_beats": 0.25,
+        "pitch": 43,
+        "is_tied": false,
+        "tuplet_type": null,
+        "raw_start_sec": 3.9895833333333335,
+        "raw_end_sec": 4.0
+      }
+    }
+  ],
+  "chords": [
+    {
+      "start_sec": 0.0,
+      "end_sec": 3.7962962962962963,
+      "chord": "C"
+    }
+  ],
+  "alphatex": "\\title \"Test Integration Track\"\n\\tempo 120\n.\n\\tuning e5 b4 g4 d4 a3 e3\n\"C\" :4 3.6 :4 3.6 :4 3.6 |\n:16 3.6 :16 3.6 :16 3.6 :16 3.6 |\n:16 3.6 |",
+  "stems": {
+    "guitar": {
+      "stem_name": "guitar",
+      "audio_path": "/home/cserver/projects/open-projects/playground/music/kythra/kythra/storage/jobs/f230ba57752a/source.wav",
+      "sdr_db": null,
+      "sir_db": null,
+      "quality_badge": "silver"
+    }
+  },
+  "timings_ms": {
+    "beat": 619.5545196533203,
+    "chords": 5016.679048538208,
+    "mss": 0.24962425231933594,
+    "amt": 4601.434946060181,
+    "quantize": 0.20503997802734375,
+    "spelling": 658.440113067627,
+    "fsa": 16.017436981201172,
+    "pipeline_total": 11183.216094970703
+  },
+  "metrics": null
+}

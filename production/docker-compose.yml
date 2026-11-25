@@ -1,0 +1,48 @@
+name: kythrastudio-prod
+
+services:
+  # 1. Production Web UI Container -> https://kythrastudio.bilgehan.biz (Host Port: 8095)
+  kythra-web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: "https://kythrastudio-api.bilgehan.biz"
+    container_name: kythrastudio_prod_web
+    restart: unless-stopped
+    ports:
+      - "8095:80"
+    depends_on:
+      - kythra-api
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # 2. Standalone GPU Production Backend Container -> https://kythrastudio-api.bilgehan.biz (Host Port: 8096)
+  kythra-api:
+    image: ubuntu:22.04
+    container_name: kythrastudio_prod_api
+    restart: unless-stopped
+    user: "1000:1000"
+    shm_size: "2gb"
+    working_dir: /home/cserver/projects/open-projects/playground/music/kythrastudio/production
+    command:
+      - /home/cserver/projects/open-projects/playground/music/.venv/bin/python3
+      - run.py
+    environment:
+      - PORT=8000
+      - HOME=/home/cserver
+      - KYTHRA_SESSION_NAME=kythra_prod_docker_session
+      - PATH=/home/cserver/projects/open-projects/playground/music/.venv/bin:/home/cserver/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    ports:
+      - "8096:8000"
+    volumes:
+      - /home/cserver:/home/cserver
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "KythraStudio",
+    "slug": "kythrastudio-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kythrastudio.mobile",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      }
+    },
+    "android": {
+      "package": "com.kythrastudio.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#003FB1"
+      }
+    }
+  }
+}

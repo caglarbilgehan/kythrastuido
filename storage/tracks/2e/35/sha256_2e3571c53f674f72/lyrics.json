@@ -1,0 +1,1418 @@
+{
+  "engine": "stable-ts (large-v3) + Meta MMS_FA CTC",
+  "transcription_engine": "stable-ts (large-v3)",
+  "alignment_engine": "torchaudio.MMS_FA_CTC",
+  "detected_language": "english",
+  "is_instrumental": false,
+  "vocal_rms_dbfs": -26.9,
+  "word_count": 120,
+  "line_count": 29,
+  "inference_sec": 23.064,
+  "lines": [
+    {
+      "start_sec": 26.341,
+      "end_sec": 27.582,
+      "text": "Thank you.",
+      "words": [
+        {
+          "word": "Thank",
+          "start_sec": 26.341,
+          "end_sec": 27.322
+        },
+        {
+          "word": "you.",
+          "start_sec": 27.382,
+          "end_sec": 27.582
+        }
+      ]
+    },
+    {
+      "start_sec": 27.622,
+      "end_sec": 27.982,
+      "text": "The",
+      "words": [
+        {
+          "word": "The",
+          "start_sec": 27.622,
+          "end_sec": 27.982
+        }
+      ]
+    },
+    {
+      "start_sec": 30.184,
+      "end_sec": 32.546,
+      "text": "world is troubled, roads are muddy.",
+      "words": [
+        {
+          "word": "world",
+          "start_sec": 30.184,
+          "end_sec": 30.625
+        },
+        {
+          "word": "is",
+          "start_sec": 30.685,
+          "end_sec": 30.805
+        },
+        {
+          "word": "troubled,",
+          "start_sec": 30.885,
+          "end_sec": 31.365
+        },
+        {
+          "word": "roads",
+          "start_sec": 31.485,
+          "end_sec": 31.966
+        },
+        {
+          "word": "are",
+          "start_sec": 32.026,
+          "end_sec": 32.126
+        },
+        {
+          "word": "muddy.",
+          "start_sec": 32.206,
+          "end_sec": 32.546
+        }
+      ]
+    },
+    {
+      "start_sec": 34.448,
+      "end_sec": 36.289,
+      "text": "Every day a fight, a rush.",
+      "words": [
+        {
+          "word": "Every",
+          "start_sec": 34.448,
+          "end_sec": 34.688
+        },
+        {
+          "word": "day",
+          "start_sec": 34.808,
+          "end_sec": 35.068
+        },
+        {
+          "word": "a",
+          "start_sec": 35.108,
+          "end_sec": 35.128
+        },
+        {
+          "word": "fight,",
+          "start_sec": 35.348,
+          "end_sec": 35.709
+        },
+        {
+          "word": "a",
+          "start_sec": 35.769,
+          "end_sec": 35.789
+        },
+        {
+          "word": "rush.",
+          "start_sec": 35.869,
+          "end_sec": 36.289
+        }
+      ]
+    },
+    {
+      "start_sec": 38.451,
+      "end_sec": 40.933,
+      "text": "Tears keep falling, tears won't hush.",
+      "words": [
+        {
+          "word": "Tears",
+          "start_sec": 38.451,
+          "end_sec": 38.811
+        },
+        {
+          "word": "keep",
+          "start_sec": 38.871,
+          "end_sec": 39.131
+        },
+        {
+          "word": "falling,",
+          "start_sec": 39.211,
+          "end_sec": 39.712
+        },
+        {
+          "word": "tears",
+          "start_sec": 39.772,
+          "end_sec": 40.172
+        },
+        {
+          "word": "won't",
+          "start_sec": 40.232,
+          "end_sec": 40.613
+        },
+        {
+          "word": "hush.",
+          "start_sec": 40.613,
+          "end_sec": 40.933
+        }
+      ]
+    },
+    {
+      "start_sec": 42.654,
+      "end_sec": 44.616,
+      "text": "But forgetting you, you know.",
+      "words": [
+        {
+          "word": "But",
+          "start_sec": 42.654,
+          "end_sec": 42.754
+        },
+        {
+          "word": "forgetting",
+          "start_sec": 42.814,
+          "end_sec": 43.535
+        },
+        {
+          "word": "you,",
+          "start_sec": 43.595,
+          "end_sec": 43.755
+        },
+        {
+          "word": "you",
+          "start_sec": 43.855,
+          "end_sec": 44.015
+        },
+        {
+          "word": "know.",
+          "start_sec": 44.175,
+          "end_sec": 44.616
+        }
+      ]
+    },
+    {
+      "start_sec": 46.717,
+      "end_sec": 48.279,
+      "text": "It takes just a moment,",
+      "words": [
+        {
+          "word": "It",
+          "start_sec": 46.717,
+          "end_sec": 46.757
+        },
+        {
+          "word": "takes",
+          "start_sec": 46.818,
+          "end_sec": 47.198
+        },
+        {
+          "word": "just",
+          "start_sec": 47.298,
+          "end_sec": 47.618
+        },
+        {
+          "word": "a",
+          "start_sec": 47.698,
+          "end_sec": 47.718
+        },
+        {
+          "word": "moment,",
+          "start_sec": 47.818,
+          "end_sec": 48.279
+        }
+      ]
+    },
+    {
+      "start_sec": 48.339,
+      "end_sec": 59.268,
+      "text": "though.",
+      "words": [
+        {
+          "word": "though.",
+          "start_sec": 48.339,
+          "end_sec": 59.268
+        }
+      ]
+    },
+    {
+      "start_sec": 59.268,
+      "end_sec": 61.489,
+      "text": "Pockets empty, mind is crowded",
+      "words": [
+        {
+          "word": "Pockets",
+          "start_sec": 59.268,
+          "end_sec": 59.788
+        },
+        {
+          "word": "empty,",
+          "start_sec": 59.888,
+          "end_sec": 60.168
+        },
+        {
+          "word": "mind",
+          "start_sec": 60.308,
+          "end_sec": 60.729
+        },
+        {
+          "word": "is",
+          "start_sec": 60.789,
+          "end_sec": 60.929
+        },
+        {
+          "word": "crowded",
+          "start_sec": 61.009,
+          "end_sec": 61.489
+        }
+      ]
+    },
+    {
+      "start_sec": 63.391,
+      "end_sec": 65.833,
+      "text": "Can't find any road unclouded",
+      "words": [
+        {
+          "word": "Can't",
+          "start_sec": 63.391,
+          "end_sec": 63.691
+        },
+        {
+          "word": "find",
+          "start_sec": 63.751,
+          "end_sec": 64.171
+        },
+        {
+          "word": "any",
+          "start_sec": 64.211,
+          "end_sec": 64.372
+        },
+        {
+          "word": "road",
+          "start_sec": 64.512,
+          "end_sec": 64.892
+        },
+        {
+          "word": "unclouded",
+          "start_sec": 64.952,
+          "end_sec": 65.833
+        }
+      ]
+    },
+    {
+      "start_sec": 67.574,
+      "end_sec": 70.016,
+      "text": "We're wanting to need a solve",
+      "words": [
+        {
+          "word": "We're",
+          "start_sec": 67.574,
+          "end_sec": 67.794
+        },
+        {
+          "word": "wanting",
+          "start_sec": 67.814,
+          "end_sec": 68.675
+        },
+        {
+          "word": "to",
+          "start_sec": 68.675,
+          "end_sec": 68.715
+        },
+        {
+          "word": "need",
+          "start_sec": 68.815,
+          "end_sec": 69.055
+        },
+        {
+          "word": "a",
+          "start_sec": 69.095,
+          "end_sec": 69.115
+        },
+        {
+          "word": "solve",
+          "start_sec": 69.336,
+          "end_sec": 70.016
+        }
+      ]
+    },
+    {
+      "start_sec": 71.737,
+      "end_sec": 76.802,
+      "text": "Life keeps asking more tomorrow Forgetting",
+      "words": [
+        {
+          "word": "Life",
+          "start_sec": 71.737,
+          "end_sec": 72.058
+        },
+        {
+          "word": "keeps",
+          "start_sec": 72.098,
+          "end_sec": 72.478
+        },
+        {
+          "word": "asking",
+          "start_sec": 72.578,
+          "end_sec": 73.059
+        },
+        {
+          "word": "more",
+          "start_sec": 73.119,
+          "end_sec": 73.619
+        },
+        {
+          "word": "tomorrow",
+          "start_sec": 73.679,
+          "end_sec": 75.921
+        },
+        {
+          "word": "Forgetting",
+          "start_sec": 76.061,
+          "end_sec": 76.802
+        }
+      ]
+    },
+    {
+      "start_sec": 76.842,
+      "end_sec": 77.822,
+      "text": "you, you know",
+      "words": [
+        {
+          "word": "you,",
+          "start_sec": 76.842,
+          "end_sec": 76.962
+        },
+        {
+          "word": "you",
+          "start_sec": 77.082,
+          "end_sec": 77.182
+        },
+        {
+          "word": "know",
+          "start_sec": 77.322,
+          "end_sec": 77.822
+        }
+      ]
+    },
+    {
+      "start_sec": 80.164,
+      "end_sec": 81.725,
+      "text": "Eager than you think",
+      "words": [
+        {
+          "word": "Eager",
+          "start_sec": 80.164,
+          "end_sec": 80.745
+        },
+        {
+          "word": "than",
+          "start_sec": 80.785,
+          "end_sec": 81.105
+        },
+        {
+          "word": "you",
+          "start_sec": 81.165,
+          "end_sec": 81.245
+        },
+        {
+          "word": "think",
+          "start_sec": 81.285,
+          "end_sec": 81.725
+        }
+      ]
+    },
+    {
+      "start_sec": 81.826,
+      "end_sec": 109.127,
+      "text": "though",
+      "words": [
+        {
+          "word": "though",
+          "start_sec": 81.826,
+          "end_sec": 109.127
+        }
+      ]
+    },
+    {
+      "start_sec": 109.147,
+      "end_sec": 111.109,
+      "text": "Friends keep asking after you",
+      "words": [
+        {
+          "word": "Friends",
+          "start_sec": 109.147,
+          "end_sec": 109.508
+        },
+        {
+          "word": "keep",
+          "start_sec": 109.568,
+          "end_sec": 109.888
+        },
+        {
+          "word": "asking",
+          "start_sec": 110.028,
+          "end_sec": 110.469
+        },
+        {
+          "word": "after",
+          "start_sec": 110.569,
+          "end_sec": 110.889
+        },
+        {
+          "word": "you",
+          "start_sec": 110.969,
+          "end_sec": 111.109
+        }
+      ]
+    },
+    {
+      "start_sec": 113.331,
+      "end_sec": 116.173,
+      "text": "Why dig up what's long been through",
+      "words": [
+        {
+          "word": "Why",
+          "start_sec": 113.331,
+          "end_sec": 113.611
+        },
+        {
+          "word": "dig",
+          "start_sec": 113.731,
+          "end_sec": 114.051
+        },
+        {
+          "word": "up",
+          "start_sec": 114.131,
+          "end_sec": 114.292
+        },
+        {
+          "word": "what's",
+          "start_sec": 114.372,
+          "end_sec": 114.612
+        },
+        {
+          "word": "long",
+          "start_sec": 114.772,
+          "end_sec": 115.292
+        },
+        {
+          "word": "been",
+          "start_sec": 115.392,
+          "end_sec": 115.693
+        },
+        {
+          "word": "through",
+          "start_sec": 115.813,
+          "end_sec": 116.173
+        }
+      ]
+    },
+    {
+      "start_sec": 117.554,
+      "end_sec": 122.438,
+      "text": "I know time, the hours are few They're rooming",
+      "words": [
+        {
+          "word": "I",
+          "start_sec": 117.554,
+          "end_sec": 117.574
+        },
+        {
+          "word": "know",
+          "start_sec": 117.574,
+          "end_sec": 117.854
+        },
+        {
+          "word": "time,",
+          "start_sec": 117.995,
+          "end_sec": 118.535
+        },
+        {
+          "word": "the",
+          "start_sec": 118.555,
+          "end_sec": 118.675
+        },
+        {
+          "word": "hours",
+          "start_sec": 118.835,
+          "end_sec": 119.516
+        },
+        {
+          "word": "are",
+          "start_sec": 119.616,
+          "end_sec": 119.876
+        },
+        {
+          "word": "few",
+          "start_sec": 119.956,
+          "end_sec": 120.156
+        },
+        {
+          "word": "They're",
+          "start_sec": 120.236,
+          "end_sec": 121.097
+        },
+        {
+          "word": "rooming",
+          "start_sec": 121.637,
+          "end_sec": 122.438
+        }
+      ]
+    },
+    {
+      "start_sec": 122.538,
+      "end_sec": 123.799,
+      "text": "me for you",
+      "words": [
+        {
+          "word": "me",
+          "start_sec": 122.538,
+          "end_sec": 122.638
+        },
+        {
+          "word": "for",
+          "start_sec": 122.999,
+          "end_sec": 123.339
+        },
+        {
+          "word": "you",
+          "start_sec": 123.639,
+          "end_sec": 123.799
+        }
+      ]
+    },
+    {
+      "start_sec": 125.981,
+      "end_sec": 127.742,
+      "text": "Forgetting you, you know",
+      "words": [
+        {
+          "word": "Forgetting",
+          "start_sec": 125.981,
+          "end_sec": 126.682
+        },
+        {
+          "word": "you,",
+          "start_sec": 126.742,
+          "end_sec": 126.882
+        },
+        {
+          "word": "you",
+          "start_sec": 127.042,
+          "end_sec": 127.182
+        },
+        {
+          "word": "know",
+          "start_sec": 127.302,
+          "end_sec": 127.742
+        }
+      ]
+    },
+    {
+      "start_sec": 129.844,
+      "end_sec": 131.646,
+      "text": "It takes just a moment",
+      "words": [
+        {
+          "word": "It",
+          "start_sec": 129.844,
+          "end_sec": 129.924
+        },
+        {
+          "word": "takes",
+          "start_sec": 129.964,
+          "end_sec": 130.384
+        },
+        {
+          "word": "just",
+          "start_sec": 130.465,
+          "end_sec": 130.785
+        },
+        {
+          "word": "a",
+          "start_sec": 130.845,
+          "end_sec": 130.865
+        },
+        {
+          "word": "moment",
+          "start_sec": 130.985,
+          "end_sec": 131.646
+        }
+      ]
+    },
+    {
+      "start_sec": 131.726,
+      "end_sec": 159.448,
+      "text": "though",
+      "words": [
+        {
+          "word": "though",
+          "start_sec": 131.726,
+          "end_sec": 159.448
+        }
+      ]
+    },
+    {
+      "start_sec": 160.489,
+      "end_sec": 163.891,
+      "text": "Thank",
+      "words": [
+        {
+          "word": "Thank",
+          "start_sec": 160.489,
+          "end_sec": 163.891
+        }
+      ]
+    },
+    {
+      "start_sec": 164.692,
+      "end_sec": 165.873,
+      "text": "you.",
+      "words": [
+        {
+          "word": "you.",
+          "start_sec": 164.692,
+          "end_sec": 165.873
+        }
+      ]
+    },
+    {
+      "start_sec": 167.514,
+      "end_sec": 170.176,
+      "text": "even your name's gone from me",
+      "words": [
+        {
+          "word": "even",
+          "start_sec": 167.514,
+          "end_sec": 167.774
+        },
+        {
+          "word": "your",
+          "start_sec": 167.855,
+          "end_sec": 168.035
+        },
+        {
+          "word": "name's",
+          "start_sec": 168.115,
+          "end_sec": 168.855
+        },
+        {
+          "word": "gone",
+          "start_sec": 168.955,
+          "end_sec": 169.576
+        },
+        {
+          "word": "from",
+          "start_sec": 169.676,
+          "end_sec": 169.976
+        },
+        {
+          "word": "me",
+          "start_sec": 170.096,
+          "end_sec": 170.176
+        }
+      ]
+    },
+    {
+      "start_sec": 171.578,
+      "end_sec": 177.202,
+      "text": "so goodbye and let it be forgetting you you",
+      "words": [
+        {
+          "word": "so",
+          "start_sec": 171.578,
+          "end_sec": 171.678
+        },
+        {
+          "word": "goodbye",
+          "start_sec": 171.798,
+          "end_sec": 172.819
+        },
+        {
+          "word": "and",
+          "start_sec": 172.919,
+          "end_sec": 173.079
+        },
+        {
+          "word": "let",
+          "start_sec": 173.199,
+          "end_sec": 173.439
+        },
+        {
+          "word": "it",
+          "start_sec": 173.499,
+          "end_sec": 173.599
+        },
+        {
+          "word": "be",
+          "start_sec": 173.679,
+          "end_sec": 175.881
+        },
+        {
+          "word": "forgetting",
+          "start_sec": 175.961,
+          "end_sec": 176.702
+        },
+        {
+          "word": "you",
+          "start_sec": 176.742,
+          "end_sec": 176.842
+        },
+        {
+          "word": "you",
+          "start_sec": 177.062,
+          "end_sec": 177.202
+        }
+      ]
+    },
+    {
+      "start_sec": 177.242,
+      "end_sec": 181.626,
+      "text": "know easier than you think",
+      "words": [
+        {
+          "word": "know",
+          "start_sec": 177.242,
+          "end_sec": 180.004
+        },
+        {
+          "word": "easier",
+          "start_sec": 180.064,
+          "end_sec": 180.705
+        },
+        {
+          "word": "than",
+          "start_sec": 180.765,
+          "end_sec": 180.985
+        },
+        {
+          "word": "you",
+          "start_sec": 181.045,
+          "end_sec": 181.165
+        },
+        {
+          "word": "think",
+          "start_sec": 181.205,
+          "end_sec": 181.626
+        }
+      ]
+    },
+    {
+      "start_sec": 181.726,
+      "end_sec": 195.417,
+      "text": "Thank",
+      "words": [
+        {
+          "word": "Thank",
+          "start_sec": 181.726,
+          "end_sec": 195.417
+        }
+      ]
+    },
+    {
+      "start_sec": 195.617,
+      "end_sec": 205.485,
+      "text": "you.",
+      "words": [
+        {
+          "word": "you.",
+          "start_sec": 195.617,
+          "end_sec": 205.485
+        }
+      ]
+    }
+  ],
+  "words": [
+    {
+      "word": "Thank",
+      "start_sec": 26.341,
+      "end_sec": 27.322
+    },
+    {
+      "word": "you.",
+      "start_sec": 27.382,
+      "end_sec": 27.582
+    },
+    {
+      "word": "The",
+      "start_sec": 27.622,
+      "end_sec": 27.982
+    },
+    {
+      "word": "world",
+      "start_sec": 30.184,
+      "end_sec": 30.625
+    },
+    {
+      "word": "is",
+      "start_sec": 30.685,
+      "end_sec": 30.805
+    },
+    {
+      "word": "troubled,",
+      "start_sec": 30.885,
+      "end_sec": 31.365
+    },
+    {
+      "word": "roads",
+      "start_sec": 31.485,
+      "end_sec": 31.966
+    },
+    {
+      "word": "are",
+      "start_sec": 32.026,
+      "end_sec": 32.126
+    },
+    {
+      "word": "muddy.",
+      "start_sec": 32.206,
+      "end_sec": 32.546
+    },
+    {
+      "word": "Every",
+      "start_sec": 34.448,
+      "end_sec": 34.688
+    },
+    {
+      "word": "day",
+      "start_sec": 34.808,
+      "end_sec": 35.068
+    },
+    {
+      "word": "a",
+      "start_sec": 35.108,
+      "end_sec": 35.128
+    },
+    {
+      "word": "fight,",
+      "start_sec": 35.348,
+      "end_sec": 35.709
+    },
+    {
+      "word": "a",
+      "start_sec": 35.769,
+      "end_sec": 35.789
+    },
+    {
+      "word": "rush.",
+      "start_sec": 35.869,
+      "end_sec": 36.289
+    },
+    {
+      "word": "Tears",
+      "start_sec": 38.451,
+      "end_sec": 38.811
+    },
+    {
+      "word": "keep",
+      "start_sec": 38.871,
+      "end_sec": 39.131
+    },
+    {
+      "word": "falling,",
+      "start_sec": 39.211,
+      "end_sec": 39.712
+    },
+    {
+      "word": "tears",
+      "start_sec": 39.772,
+      "end_sec": 40.172
+    },
+    {
+      "word": "won't",
+      "start_sec": 40.232,
+      "end_sec": 40.613
+    },
+    {
+      "word": "hush.",
+      "start_sec": 40.613,
+      "end_sec": 40.933
+    },
+    {
+      "word": "But",
+      "start_sec": 42.654,
+      "end_sec": 42.754
+    },
+    {
+      "word": "forgetting",
+      "start_sec": 42.814,
+      "end_sec": 43.535
+    },
+    {
+      "word": "you,",
+      "start_sec": 43.595,
+      "end_sec": 43.755
+    },
+    {
+      "word": "you",
+      "start_sec": 43.855,
+      "end_sec": 44.015
+    },
+    {
+      "word": "know.",
+      "start_sec": 44.175,
+      "end_sec": 44.616
+    },
+    {
+      "word": "It",
+      "start_sec": 46.717,
+      "end_sec": 46.757
+    },
+    {
+      "word": "takes",
+      "start_sec": 46.818,
+      "end_sec": 47.198
+    },
+    {
+      "word": "just",
+      "start_sec": 47.298,
+      "end_sec": 47.618
+    },
+    {
+      "word": "a",
+      "start_sec": 47.698,
+      "end_sec": 47.718
+    },
+    {
+      "word": "moment,",
+      "start_sec": 47.818,
+      "end_sec": 48.279
+    },
+    {
+      "word": "though.",
+      "start_sec": 48.339,
+      "end_sec": 59.268
+    },
+    {
+      "word": "Pockets",
+      "start_sec": 59.268,
+      "end_sec": 59.788
+    },
+    {
+      "word": "empty,",
+      "start_sec": 59.888,
+      "end_sec": 60.168
+    },
+    {
+      "word": "mind",
+      "start_sec": 60.308,
+      "end_sec": 60.729
+    },
+    {
+      "word": "is",
+      "start_sec": 60.789,
+      "end_sec": 60.929
+    },
+    {
+      "word": "crowded",
+      "start_sec": 61.009,
+      "end_sec": 61.489
+    },
+    {
+      "word": "Can't",
+      "start_sec": 63.391,
+      "end_sec": 63.691
+    },
+    {
+      "word": "find",
+      "start_sec": 63.751,
+      "end_sec": 64.171
+    },
+    {
+      "word": "any",
+      "start_sec": 64.211,
+      "end_sec": 64.372
+    },
+    {
+      "word": "road",
+      "start_sec": 64.512,
+      "end_sec": 64.892
+    },
+    {
+      "word": "unclouded",
+      "start_sec": 64.952,
+      "end_sec": 65.833
+    },
+    {
+      "word": "We're",
+      "start_sec": 67.574,
+      "end_sec": 67.794
+    },
+    {
+      "word": "wanting",
+      "start_sec": 67.814,
+      "end_sec": 68.675
+    },
+    {
+      "word": "to",
+      "start_sec": 68.675,
+      "end_sec": 68.715
+    },
+    {
+      "word": "need",
+      "start_sec": 68.815,
+      "end_sec": 69.055
+    },
+    {
+      "word": "a",
+      "start_sec": 69.095,
+      "end_sec": 69.115
+    },
+    {
+      "word": "solve",
+      "start_sec": 69.336,
+      "end_sec": 70.016
+    },
+    {
+      "word": "Life",
+      "start_sec": 71.737,
+      "end_sec": 72.058
+    },
+    {
+      "word": "keeps",
+      "start_sec": 72.098,
+      "end_sec": 72.478
+    },
+    {
+      "word": "asking",
+      "start_sec": 72.578,
+      "end_sec": 73.059
+    },
+    {
+      "word": "more",
+      "start_sec": 73.119,
+      "end_sec": 73.619
+    },
+    {
+      "word": "tomorrow",
+      "start_sec": 73.679,
+      "end_sec": 75.921
+    },
+    {
+      "word": "Forgetting",
+      "start_sec": 76.061,
+      "end_sec": 76.802
+    },
+    {
+      "word": "you,",
+      "start_sec": 76.842,
+      "end_sec": 76.962
+    },
+    {
+      "word": "you",
+      "start_sec": 77.082,
+      "end_sec": 77.182
+    },
+    {
+      "word": "know",
+      "start_sec": 77.322,
+      "end_sec": 77.822
+    },
+    {
+      "word": "Eager",
+      "start_sec": 80.164,
+      "end_sec": 80.745
+    },
+    {
+      "word": "than",
+      "start_sec": 80.785,
+      "end_sec": 81.105
+    },
+    {
+      "word": "you",
+      "start_sec": 81.165,
+      "end_sec": 81.245
+    },
+    {
+      "word": "think",
+      "start_sec": 81.285,
+      "end_sec": 81.725
+    },
+    {
+      "word": "though",
+      "start_sec": 81.826,
+      "end_sec": 109.127
+    },
+    {
+      "word": "Friends",
+      "start_sec": 109.147,
+      "end_sec": 109.508
+    },
+    {
+      "word": "keep",
+      "start_sec": 109.568,
+      "end_sec": 109.888
+    },
+    {
+      "word": "asking",
+      "start_sec": 110.028,
+      "end_sec": 110.469
+    },
+    {
+      "word": "after",
+      "start_sec": 110.569,
+      "end_sec": 110.889
+    },
+    {
+      "word": "you",
+      "start_sec": 110.969,
+      "end_sec": 111.109
+    },
+    {
+      "word": "Why",
+      "start_sec": 113.331,
+      "end_sec": 113.611
+    },
+    {
+      "word": "dig",
+      "start_sec": 113.731,
+      "end_sec": 114.051
+    },
+    {
+      "word": "up",
+      "start_sec": 114.131,
+      "end_sec": 114.292
+    },
+    {
+      "word": "what's",
+      "start_sec": 114.372,
+      "end_sec": 114.612
+    },
+    {
+      "word": "long",
+      "start_sec": 114.772,
+      "end_sec": 115.292
+    },
+    {
+      "word": "been",
+      "start_sec": 115.392,
+      "end_sec": 115.693
+    },
+    {
+      "word": "through",
+      "start_sec": 115.813,
+      "end_sec": 116.173
+    },
+    {
+      "word": "I",
+      "start_sec": 117.554,
+      "end_sec": 117.574
+    },
+    {
+      "word": "know",
+      "start_sec": 117.574,
+      "end_sec": 117.854
+    },
+    {
+      "word": "time,",
+      "start_sec": 117.995,
+      "end_sec": 118.535
+    },
+    {
+      "word": "the",
+      "start_sec": 118.555,
+      "end_sec": 118.675
+    },
+    {
+      "word": "hours",
+      "start_sec": 118.835,
+      "end_sec": 119.516
+    },
+    {
+      "word": "are",
+      "start_sec": 119.616,
+      "end_sec": 119.876
+    },
+    {
+      "word": "few",
+      "start_sec": 119.956,
+      "end_sec": 120.156
+    },
+    {
+      "word": "They're",
+      "start_sec": 120.236,
+      "end_sec": 121.097
+    },
+    {
+      "word": "rooming",
+      "start_sec": 121.637,
+      "end_sec": 122.438
+    },
+    {
+      "word": "me",
+      "start_sec": 122.538,
+      "end_sec": 122.638
+    },
+    {
+      "word": "for",
+      "start_sec": 122.999,
+      "end_sec": 123.339
+    },
+    {
+      "word": "you",
+      "start_sec": 123.639,
+      "end_sec": 123.799
+    },
+    {
+      "word": "Forgetting",
+      "start_sec": 125.981,
+      "end_sec": 126.682
+    },
+    {
+      "word": "you,",
+      "start_sec": 126.742,
+      "end_sec": 126.882
+    },
+    {
+      "word": "you",
+      "start_sec": 127.042,
+      "end_sec": 127.182
+    },
+    {
+      "word": "know",
+      "start_sec": 127.302,
+      "end_sec": 127.742
+    },
+    {
+      "word": "It",
+      "start_sec": 129.844,
+      "end_sec": 129.924
+    },
+    {
+      "word": "takes",
+      "start_sec": 129.964,
+      "end_sec": 130.384
+    },
+    {
+      "word": "just",
+      "start_sec": 130.465,
+      "end_sec": 130.785
+    },
+    {
+      "word": "a",
+      "start_sec": 130.845,
+      "end_sec": 130.865
+    },
+    {
+      "word": "moment",
+      "start_sec": 130.985,
+      "end_sec": 131.646
+    },
+    {
+      "word": "though",
+      "start_sec": 131.726,
+      "end_sec": 159.448
+    },
+    {
+      "word": "Thank",
+      "start_sec": 160.489,
+      "end_sec": 163.891
+    },
+    {
+      "word": "you.",
+      "start_sec": 164.692,
+      "end_sec": 165.873
+    },
+    {
+      "word": "even",
+      "start_sec": 167.514,
+      "end_sec": 167.774
+    },
+    {
+      "word": "your",
+      "start_sec": 167.855,
+      "end_sec": 168.035
+    },
+    {
+      "word": "name's",
+      "start_sec": 168.115,
+      "end_sec": 168.855
+    },
+    {
+      "word": "gone",
+      "start_sec": 168.955,
+      "end_sec": 169.576
+    },
+    {
+      "word": "from",
+      "start_sec": 169.676,
+      "end_sec": 169.976
+    },
+    {
+      "word": "me",
+      "start_sec": 170.096,
+      "end_sec": 170.176
+    },
+    {
+      "word": "so",
+      "start_sec": 171.578,
+      "end_sec": 171.678
+    },
+    {
+      "word": "goodbye",
+      "start_sec": 171.798,
+      "end_sec": 172.819
+    },
+    {
+      "word": "and",
+      "start_sec": 172.919,
+      "end_sec": 173.079
+    },
+    {
+      "word": "let",
+      "start_sec": 173.199,
+      "end_sec": 173.439
+    },
+    {
+      "word": "it",
+      "start_sec": 173.499,
+      "end_sec": 173.599
+    },
+    {
+      "word": "be",
+      "start_sec": 173.679,
+      "end_sec": 175.881
+    },
+    {
+      "word": "forgetting",
+      "start_sec": 175.961,
+      "end_sec": 176.702
+    },
+    {
+      "word": "you",
+      "start_sec": 176.742,
+      "end_sec": 176.842
+    },
+    {
+      "word": "you",
+      "start_sec": 177.062,
+      "end_sec": 177.202
+    },
+    {
+      "word": "know",
+      "start_sec": 177.242,
+      "end_sec": 180.004
+    },
+    {
+      "word": "easier",
+      "start_sec": 180.064,
+      "end_sec": 180.705
+    },
+    {
+      "word": "than",
+      "start_sec": 180.765,
+      "end_sec": 180.985
+    },
+    {
+      "word": "you",
+      "start_sec": 181.045,
+      "end_sec": 181.165
+    },
+    {
+      "word": "think",
+      "start_sec": 181.205,
+      "end_sec": 181.626
+    },
+    {
+      "word": "Thank",
+      "start_sec": 181.726,
+      "end_sec": 195.417
+    },
+    {
+      "word": "you.",
+      "start_sec": 195.617,
+      "end_sec": 205.485
+    }
+  ]
+}

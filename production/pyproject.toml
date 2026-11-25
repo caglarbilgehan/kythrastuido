@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kythrastudio"
+version = "0.1.0"
+description = "KythraStudio - AI-Powered Guitar & Multi-Instrument Transcription Engine"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Google DeepMind / User" }
+]
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.23.0",
+    "python-multipart>=0.0.6",
+    "pydantic>=2.0.0",
+    "torch>=2.0.0",
+    "torchaudio",
+    "librosa",
+    "soundfile",
+    "pretty_midi",
+    "mir_eval",
+    "partitura",
+    "music21",
+    "madmom",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*"]
